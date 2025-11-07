@@ -19,6 +19,7 @@ This development plan outlines steps to refine the EARS requirements in `spec-pa
    - Review and prioritize suggestions from the initial review.  
    - Assign owners (user for domain expertise, AI for drafting).  
    - Set up tracking (daily-notes folder).  
+   - Create guideline examples folder with sample clinical guidelines for BDD testing.  
    - Milestone: Prioritized list of improvements with timelines.
 
 2. **Phase 2: Structural Improvements (2-3 days)**  
