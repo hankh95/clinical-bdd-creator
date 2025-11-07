@@ -31,6 +31,7 @@ This development plan outlines steps to refine the EARS requirements in `spec-pa
    - Strengthen acceptance criteria (add metrics, negative scenarios).  
    - Add new sections (assumptions, dependencies, risks, testing reqs).  
    - Refine MCP tools (schemas, idempotency).  
+   - Create example BDD test scenarios demonstrating system capabilities across clinical domains.
    - Milestone: Updated requirements with enhanced testability and completeness.
 
 4. **Phase 4: Validation and Review (1-2 days)**  
@@ -57,6 +58,7 @@ This development plan outlines steps to refine the EARS requirements in `spec-pa
   - Add performance/scalability requirements.  
   - Expand security/compliance for PHI handling.  
   - Create traceability matrix.
+  - Add example BDD test scenarios demonstrating system capabilities across different clinical domains and generation modes.
 
 - **Low Priority (Could Do):**  
   - Add diagrams and examples.  

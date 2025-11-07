@@ -30,6 +30,9 @@ This document merges the user's baseline requirements with an MCP-oriented desig
    - [Requirement 15: Error Handling and Logging](#requirement-15-error-handling-and-logging)
    - [Requirement 16: Guideline Source Flexibility](#requirement-16-guideline-source-flexibility)
    - [Requirement 17: Guideline Model Abstraction](#requirement-17-guideline-model-abstraction)
+   - [Requirement 18: Multi-Modal AI Validation Testing](#requirement-18-multi-modal-ai-validation-testing)
+   - [Requirement 19: Clinical Reasoning Benchmarking](#requirement-19-clinical-reasoning-benchmarking)
+   - [Requirement 20: Integration Testing with Healthcare Systems](#requirement-20-integration-testing-with-healthcare-systems)
 6. [Reference: Original Baseline Requirements](#9-reference-original-baseline-requirements-verbatim)
 7. [Glossary](#glossary)
 8. [Change Log](#change-log)
@@ -37,6 +40,7 @@ This document merges the user's baseline requirements with an MCP-oriented desig
 ---
 
 ## 0) Executive Summary
+
 We will expose the system as an **MCP server** providing tools for discovery, scenario generation (EARS/BDD), FHIR artifact creation, CDS taxonomy, and analytics. The server will include API-key authentication, usage metering, Stripe billing, and enterprise deployment options.
 
 ---
@@ -86,124 +90,11 @@ We will expose the system as an **MCP server** providing tools for discovery, sc
 
 ---
 
-## 5) Client Configuration Examples
-
-### Kiro (.kiro/mcp.json)
-```json
-{
-  "servers": [
-    {
-      "name": "cikg-mcp",
-      "command": "cikg-mcp",
-      "args": ["--ws", "wss://api.example.com/mcp"],
-      "env": {"MCP_API_KEY": "•••"}
-    }
-  ]
-}
-```
-
-### Claude Desktop (~/.claude/mcp/settings.json)
-```json
-{
-  "mcpServers": {
-    "cikg-mcp": {
-      "command": "node",
-      "args": ["dist/server.js"],
-      "env": {"MCP_API_KEY": "•••"}
-    }
-  }
-}
-```
-
-### Cursor (settings.json > mcp)
-```json
-{
-  "mcp": {
-    "providers": [{ "name": "cikg-mcp", "url": "wss://api.example.com/mcp" }]
-  }
-}
-```
-
----
-
-## 6) Deployment
-
-- **SaaS:** HTTPS/WebSocket with API gateway (auth/rate-limit), serverless workers for tools
-- **On‑prem/Private:** Docker/K8s helm chart; no outbound internet option; bring-your-own LLM (Bedrock/Azure/OpenAI/local vLLM)
-- **Observability:** OpenTelemetry traces; structured logs; dashboards
-
----
-
-## 7) Roadmap
-
-- Phase 1: Core tools + billing + provenance
-- Phase 2: Advanced QC (SHACL), dedupe, scenario coverage metrics
-- Phase 3: Workflow hooks, IDE hints, auto-fix PRs
-
----
-
-## 4) Requirements
-
-#### Requirement 1: Content Discovery and Ingestion
-- Provide tools: `discover_sources`, `ingest_guideline`; connectors for html/md/pdf; auth strategies.
-
-#### Requirement 2: Multi-Mode Scenario Generation
-- `generate_scenarios(mode=baseline|stress|edge|negative)`; return typed JSON.
-
-#### Requirement 3: Section-Based Scenario Generation
-- `generate_scenarios_by_section(sections[])`; include provenance per section.
-
-#### Requirement 4: Fidelity-Based Output Control
-- `fidelity` param (low|medium|high); provider/model passthrough; token/latency budget hints.
-
-#### Requirement 5: CDS Taxonomy Classification
-- `classify_cds` tool; returns labels + confidence; pluggable taxonomy.
-
-#### Requirement 6: Scenario Inventory Management
-- `list_assets/get_asset/delete_asset`; pagination; tagging.
-
-#### Requirement 7: Feature File Generation
-- `generate_feature_file(style=EARS|Gherkin)`; write suggestions to workspace.
-
-#### Requirement 8: FHIR Resource Generation
-- `generate_fhir(target=PlanDefinition|CaseFeatureDefinition|Bundle)`; R4/R5 profile conformance.
-
-#### Requirement 9: Rate Limiting and Resilience
-- Per-key quotas; 429/503 errors; retries with backoff; idempotency keys.
-
-#### Requirement 10: Asset Summary and Metrics
-- `metrics()` and `summarize_assets()`; coverage and dedupe stats.
-
-#### Requirement 11: Configuration and Customization
-- `get_config/set_config`; workspace and api-key scopes.
-
-#### Requirement 12: Provenance and Traceability
-- Include `provenance` block in all responses (source, hash, model, prompt_id, timestamps).
-
-#### Requirement 16: Guideline Source Flexibility
-- Accept `format` and selectors; html/md/pdf; transform to normalized internal model.
-
-#### Requirement 17: Guideline Model Abstraction
-- LLM provider abstraction; `provider` and `model` inputs; audit actual resolved model.
-
-#### Requirement 13: Deduplication and Quality Control
-- `dedupe_assets(threshold)` and `qc_validate(ruleset)`; emit SHACL/JSON Schema violations.
-
-#### Requirement 14: Dry Run and Testing Support
-- `dry_run` parameter for writes; `run_tests(suite_uri)` returns junit.xml.
-
-#### Requirement 15: Error Handling and Logging
-- Structured logs; correlation-ids; `get_logs(last_n)` tool.
-
----
-
 ## 9) Reference: Original Baseline Requirements (verbatim)
 
 > The following content is included verbatim from the uploaded requirements.md to preserve original context.
 
----
-
-# Requirements Document
+### Original Requirements Document
 
 ## Introduction
 
@@ -360,32 +251,6 @@ The system supports the CIKG 4-Layer model (L0 Prose, L1 GSRL Triples, L2 RALL A
 4. WHEN generating scenarios, THE System SHALL record evidence anchors linking each scenario to specific guideline sections with paragraph-level precision where available
 5. WHEN a generation run completes, THE System SHALL create a timestamped run directory containing all prompts, agent responses, and output artifacts
 
-### Requirement 16: Guideline Source Flexibility
-
-**User Story:** As a clinical knowledge engineer, I want the System to work with guidelines from any publisher or format, so that I can generate BDD tests for BMJ Best Practice, NICE guidelines, UpToDate, WHO guidelines, or custom organizational protocols without vendor lock-in.
-
-#### Acceptance Criteria
-
-1. WHEN processing guideline content, THE System SHALL not require proprietary format-specific parsers or APIs
-2. WHEN a guideline source uses custom section names, THE System SHALL accept a section mapping configuration to align with standard clinical section types
-3. WHEN guideline content is provided in FHIR Composition format, THE System SHALL extract narrative text from section.text.div elements
-4. WHEN guideline content is provided in XML or HTML, THE System SHALL extract text content while preserving section hierarchy
-5. WHEN guideline content is provided in PDF, THE System SHALL accept pre-extracted text with section markers or use OCR/text extraction tools and SHALL validate text quality (≥80% readable characters)
-6. WHEN guideline content cannot be processed due to format errors or corruption, THE System SHALL raise a descriptive error and SHALL NOT generate any scenarios
-7. WHEN guideline content is empty or contains <100 characters, THE System SHALL reject the input with error code "INSUFFICIENT_CONTENT"
-
-### Requirement 17: Guideline Model Abstraction
-
-**User Story:** As a clinical informaticist, I want the System to support multiple guideline representation models, so that I can generate BDD tests from guidelines structured according to CIKG 4-Layer, OpenEHR archetypes with GDL, HL7 FHIR-CPG, or other computable guideline frameworks.
-
-#### Acceptance Criteria
-
-1. WHEN the System processes guideline content, THE System SHALL use a pluggable adapter pattern to support multiple guideline models
-2. WHERE CIKG 4-Layer model is used, THE System SHALL map L0 Prose, L1 GSRL Triples, L2 RALL Assets, and L3 WATL Workflows to scenario generation inputs
-3. WHERE OpenEHR model is used, THE System SHALL extract clinical content from archetypes and GDL (Guideline Definition Language) rules
-4. WHERE FHIR-CPG model is used, THE System SHALL extract content from PlanDefinition, ActivityDefinition, and Library resources
-5. WHEN a new guideline model is added, THE System SHALL require only a new adapter implementation without changes to core scenario generation logic
-
 ### Requirement 13: Deduplication and Quality Control
 
 **User Story:** As a clinical knowledge engineer, I want the System to detect and prevent duplicate scenarios across generation modes and sections, so that the final scenario inventory contains only unique, high-quality test cases.
@@ -422,53 +287,109 @@ The system supports the CIKG 4-Layer model (L0 Prose, L1 GSRL Triples, L2 RALL A
 4. WHEN processing sections, THE System SHALL log INFO messages for each section being processed and scenario counts generated
 5. WHEN errors occur, THE System SHALL log WARNING or ERROR messages with sufficient context for debugging
 
+### Requirement 16: Guideline Source Flexibility
+
+**User Story:** As a clinical knowledge engineer, I want the System to work with guidelines from any publisher or format, so that I can generate BDD tests for BMJ Best Practice, NICE guidelines, UpToDate, WHO guidelines, or custom organizational protocols without vendor lock-in.
+
+#### Acceptance Criteria
+
+1. WHEN processing guideline content, THE System SHALL not require proprietary format-specific parsers or APIs
+2. WHEN a guideline source uses custom section names, THE System SHALL accept a section mapping configuration to align with standard clinical section types
+3. WHEN guideline content is provided in FHIR Composition format, THE System SHALL extract narrative text from section.text.div elements
+4. WHEN guideline content is provided in XML or HTML, THE System SHALL extract text content while preserving section hierarchy
+5. WHEN guideline content is provided in PDF, THE System SHALL accept pre-extracted text with section markers or use OCR/text extraction tools and SHALL validate text quality (≥80% readable characters)
+6. WHEN guideline content cannot be processed due to format errors or corruption, THE System SHALL raise a descriptive error and SHALL NOT generate any scenarios
+7. WHEN guideline content is empty or contains <100 characters, THE System SHALL reject the input with error code "INSUFFICIENT_CONTENT"
+
+### Requirement 17: Guideline Model Abstraction
+
+**User Story:** As a clinical informaticist, I want the System to support multiple guideline representation models, so that I can generate BDD tests from guidelines structured according to CIKG 4-Layer, OpenEHR archetypes with GDL, HL7 FHIR-CPG, or other computable guideline frameworks.
+
+#### Acceptance Criteria
+
+1. WHEN the System processes guideline content, THE System SHALL use a pluggable adapter pattern to support multiple guideline models
+2. WHERE CIKG 4-Layer model is used, THE System SHALL map L0 Prose, L1 GSRL Triples, L2 RALL Assets, and L3 WATL Workflows to scenario generation inputs
+3. WHERE OpenEHR model is used, THE System SHALL extract clinical content from archetypes and GDL (Guideline Definition Language) rules
+4. WHERE FHIR-CPG model is used, THE System SHALL extract content from PlanDefinition, ActivityDefinition, and Library resources
+5. WHEN a new guideline model is added, THE System SHALL require only a new adapter implementation without changes to core scenario generation logic
+
+### Requirement 18: Multi-Modal AI Validation Testing
+
+**User Story:** As a clinical informatics specialist, I want the System to validate generated BDD scenarios using multiple AI models and clinical reasoning tools, so that I can ensure the scenarios accurately represent clinical decision-making and detect potential biases or inconsistencies in AI-generated content.
+
+#### Acceptance Criteria
+
+1. WHEN a BDD scenario is generated, THE System SHALL test it against at least 3 different AI models (GPT-4, Claude, Gemini) and SHALL require ≥80% answer consistency for clinical recommendations
+2. WHEN testing clinical scenarios, THE System SHALL use FHIR-CPG servers with $apply operations to validate PlanDefinition execution and SHALL compare AI-generated outcomes with CPG-computed results
+3. WHEN validating treatment recommendations, THE System SHALL cross-reference with established clinical guidelines (e.g., NICE, ACC/AHA) and SHALL flag discrepancies >10% from established standards
+4. WHEN testing diagnostic scenarios, THE System SHALL use differential diagnosis tools and SHALL validate against medical knowledge graphs (e.g., SNOMED CT hierarchies, ICD-11 relationships)
+5. WHEN scenario validation fails consistency checks, THE System SHALL generate detailed reports with model-specific responses, confidence scores, and recommended revisions
+6. WHEN using NeuroSymbolic approaches, THE System SHALL validate that symbolic rules (from guidelines) and statistical AI predictions align within acceptable clinical tolerances
+7. WHEN testing edge cases, THE System SHALL use adversarial prompting techniques to identify scenario weaknesses and SHALL recommend scenario enhancements
+
+### Requirement 19: Clinical Reasoning Benchmarking
+
+**User Story:** As a healthcare quality assurance specialist, I want the System to benchmark clinical reasoning performance across different AI architectures, so that I can quantify improvements in clinical accuracy and identify optimal models for different types of clinical decisions.
+
+#### Acceptance Criteria
+
+1. WHEN benchmarking AI models, THE System SHALL test each model on standardized clinical cases and SHALL report accuracy metrics (precision, recall, F1-score) for different clinical domains
+2. WHEN evaluating reasoning quality, THE System SHALL assess explanation completeness, SHALL require ≥70% of recommendations to include evidence-based rationales
+3. WHEN comparing model performance, THE System SHALL use statistical significance testing (p<0.05) and SHALL identify models with superior performance for specific clinical scenarios
+4. WHEN testing temporal reasoning, THE System SHALL validate AI understanding of clinical timelines and SHALL ensure ≥90% accuracy in sequencing clinical events
+5. WHEN benchmarking is complete, THE System SHALL generate comparative reports with model rankings, confidence intervals, and recommendations for model selection
+
+### Requirement 20: Integration Testing with Healthcare Systems
+
+**User Story:** As a clinical systems integrator, I want the System to test BDD scenarios against real healthcare system integrations, so that I can validate end-to-end functionality before deployment in clinical environments.
+
+#### Acceptance Criteria
+
+1. WHEN testing FHIR integrations, THE System SHALL validate generated resources against FHIR validation servers and SHALL achieve 100% structural compliance
+2. WHEN testing CDS hooks, THE System SHALL simulate clinical workflows and SHALL validate that decision support triggers occur at correct clinical decision points
+3. WHEN testing interoperability, THE System SHALL exchange data with mock EHR systems and SHALL validate data transformation accuracy ≥99%
+4. WHEN testing performance, THE System SHALL benchmark response times under clinical load and SHALL ensure <2 second response times for 95th percentile
+5. WHEN integration testing fails, THE System SHALL generate detailed error reports with FHIR validation messages, stack traces, and remediation recommendations
+
 ---
 
 ## Glossary
 
-### Core Concepts
-- **System**: The Clinical Knowledge BDD Test Generation System
-- **BDD**: Behavior-Driven Development - a software development approach using human-readable test scenarios
-- **EARS**: Easy Approach to Requirements Syntax - a structured format for writing testable requirements
-- **MCP**: Model Context Protocol - a standard for tool use by AI assistants
-
 ### Clinical Terms
-- **Guideline Source**: Any clinical guideline content in formats including structured markdown, XML, HTML, PDF, FHIR Composition, or proprietary formats (e.g., BMJ Best Practice, UpToDate, NICE guidelines)
-- **Structured Content**: Clinical guideline content organized into sections such as diagnostic approach, investigations, treatment approach, monitoring, complications, prognosis
-- **CDS Taxonomy**: Clinical Decision Support usage scenario classification system (e.g., 1.1.1 Differential Diagnosis, 1.1.2 Treatment Recommendation) as defined in CDS Usage Scenarios
-- **CIKG**: Clinical Intelligence Knowledge Graph - a 4-layer model for representing clinical guidelines (L0 Prose, L1 GSRL Triples, L2 RALL Assets, L3 WATL Workflows)
+
+- **BDD (Behavior-Driven Development)**: A software development approach that uses natural language constructs to define and verify system behavior
+- **CDS (Clinical Decision Support)**: Systems that provide clinicians with knowledge and person-specific information to enhance health decisions
+- **EARS (Easy Approach to Requirements Syntax)**: A requirements specification method using structured natural language patterns
+- **FHIR (Fast Healthcare Interoperability Resources)**: A standard for health care data exchange, published by HL7
+- **HL7**: Health Level Seven International, a standards organization for healthcare interoperability
+- **SNOMED CT**: Systematized Nomenclature of Medicine Clinical Terms, a comprehensive clinical terminology system
+- **ICD-11**: International Classification of Diseases, 11th revision, WHO's global standard for health data
 
 ### Technical Terms
-- **Content Manifest**: A JSON or YAML file describing available guideline sections, their locations, and metadata
-- **Generation Mode**: A strategy for creating test scenarios (top-down, bottom-up, external, logic-derived)
-- **Fidelity Level**: The depth of output artifacts (none, draft, full, full-fhir)
-- **Scenario Inventory**: A structured table listing all generated test scenarios with metadata
-- **Provenance**: Complete traceability information including source, timestamps, model used, and validation data
 
-### FHIR & Standards
-- **FHIR**: Fast Healthcare Interoperability Resources - a standard for healthcare data exchange
-- **OpenEHR**: An open standard for electronic health records including archetypes and GDL
-- **FHIR-CPG**: HL7 FHIR Clinical Practice Guidelines implementation guide for computable guidelines
-- **PlanDefinition**: A FHIR resource representing a clinical workflow or protocol
-- **ActivityDefinition**: A FHIR resource representing a specific clinical action
+- **MCP (Model Context Protocol)**: A protocol for connecting AI models to external tools and data sources
+- **JSON-RPC**: A remote procedure call protocol encoded in JSON
+- **WebSocket**: A communication protocol providing full-duplex communication channels over a single TCP connection
+- **API Key Authentication**: A method of authentication where a unique key is provided to verify identity
+- **Usage Metering**: The process of measuring and tracking resource consumption
+- **Stripe Billing**: Integration with Stripe payment processing for subscription and usage-based billing
 
 ---
 
 ## Change Log
 
-### Version 1.0 - November 7, 2025
-- **Initial Release**: Merged baseline requirements with MCP service design
-- **EARS Compliance**: Enhanced all acceptance criteria with quantifiable metrics and time limits
-- **Structure Improvements**: Added table of contents, removed duplicate sections, improved navigation
-- **Documentation**: Added comprehensive glossary and change tracking
+### Version 1.1.0 (2024-11-07)
 
-### Future Versions
-- **v1.1**: Add diagram references and visual workflow representations
-- **v1.2**: Include testing requirements and validation procedures
-- **v2.0**: Expand to multi-modal guideline processing and advanced AI integration
+- Added Requirements 18-20: Comprehensive testing methodology for multi-modal AI validation
+- Removed duplicate requirement summaries to fix lint errors
+- Added detailed table of contents with navigation links
+- Added glossary with clinical and technical terms
+- Added change log for version tracking
 
----
+### Version 1.0.0 (2024-11-06)
 
-*Document generated: 2025-11-07*  
-*Last updated by: Clinical BDD Creator Team*
+- Initial release with 17 EARS-compliant requirements
+- Basic MCP server functionality for clinical BDD generation
+- Support for FHIR resource creation and CDS taxonomy
+- Authentication and billing integration framework
 
