@@ -1,0 +1,16 @@
+openapi: 3.0.3
+info:
+  title: Clinical Recommendations API
+  version: 0.1.0
+paths:
+  /recommendations:
+    post:
+      summary: Get recommendations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "../04-data/schemas/patient.schema.json"
+      responses:
+        "200": { description: OK }

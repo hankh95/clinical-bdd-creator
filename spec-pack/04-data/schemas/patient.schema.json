@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["age", "sex", "conditions"],
+  "properties": {
+    "age": { "type": "integer" },
+    "sex": { "type": "string", "enum": ["female","male","other","unknown"]},
+    "conditions": { "type": "array", "items": { "type": "string" }}
+  }
+}

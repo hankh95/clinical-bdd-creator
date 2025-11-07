@@ -1,0 +1,12 @@
+apiVersion: core.oam.dev/v1alpha2
+kind: ApplicationConfiguration
+metadata:
+  name: clinical-reco
+spec:
+  components:
+    - componentName: reco-api
+      traits:
+        - trait:
+            apiVersion: standard.oam.dev/v1alpha1
+            kind: Autoscaler
+            spec: { min: 1, max: 5, cpuPercent: 60 }
