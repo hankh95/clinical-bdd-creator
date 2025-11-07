@@ -220,10 +220,13 @@ The system supports the CIKG 4-Layer model (L0 Prose, L1 GSRL Triples, L2 RALL A
 #### Acceptance Criteria
 
 1. WHEN a guideline source is provided, THE System SHALL accept content in formats including structured markdown, XML, HTML, PDF, FHIR Composition, and JSON manifests
-2. WHEN a content manifest is provided, THE System SHALL parse the manifest to identify available guideline sections and their locations
-3. WHEN manifest files are missing, THE System SHALL generate a content manifest by scanning the source directory for guideline files matching common patterns
-4. WHEN guideline sections are incomplete or missing, THE System SHALL report content validation errors listing specific missing sections
-5. WHERE content quality thresholds are defined, THE System SHALL validate that guideline content meets minimum section count and character count requirements
+2. WHEN a content manifest is provided, THE System SHALL parse the manifest to identify available guideline sections and their locations within 30 seconds
+3. WHEN manifest files are missing, THE System SHALL generate a content manifest by scanning the source directory for guideline files matching common patterns (e.g., `*.md`, `*.xml`, `*.html`, `*.pdf`, `composition.json`) within 10 seconds
+4. WHEN guideline sections are incomplete or missing (defined as < 3 core sections: diagnosis, treatment, monitoring), THE System SHALL report content validation errors listing specific missing sections and SHALL NOT proceed with scenario generation
+5. WHERE content quality thresholds are defined (minimum 3 sections, 1000 characters per section), THE System SHALL validate that guideline content meets minimum section count (≥3) and character count requirements (≥1000 chars/section) and SHALL reject content below thresholds
+6. WHEN guideline content is provided in PDF, THE System SHALL accept pre-extracted text with section markers or use OCR/text extraction tools and SHALL validate text quality (≥80% readable characters)
+7. WHEN guideline content cannot be processed due to format errors or corruption, THE System SHALL raise a descriptive error and SHALL NOT generate any scenarios
+8. WHEN guideline content is empty or contains <100 characters, THE System SHALL reject the input with error code "INSUFFICIENT_CONTENT"
 
 ### Requirement 2: Multi-Mode Scenario Generation
 
@@ -231,11 +234,11 @@ The system supports the CIKG 4-Layer model (L0 Prose, L1 GSRL Triples, L2 RALL A
 
 #### Acceptance Criteria
 
-1. WHERE top-down mode is enabled, THE System SHALL generate scenarios by analyzing raw guideline source documents holistically without section-level decomposition
-2. WHERE bottom-up mode is enabled, THE System SHALL generate 3-5 scenarios per selected guideline section by analyzing structured clinical content at the section level
-3. WHERE external mode is enabled, THE System SHALL incorporate scenarios from external risk catalysts such as FDA alerts, PubMed summaries, or other evidence sources
-4. WHERE logic-derived mode is enabled, THE System SHALL infer decision pathways from guideline content and generate scenarios covering all logical paths
-5. WHEN multiple modes are enabled, THE System SHALL execute each mode independently and merge results with deduplication
+1. WHERE top-down mode is enabled, THE System SHALL generate scenarios by analyzing raw guideline source documents holistically without section-level decomposition and SHALL produce at least 5 scenarios per guideline document
+2. WHERE bottom-up mode is enabled, THE System SHALL generate 3-5 scenarios per selected guideline section by analyzing structured clinical content at the section level, resulting in a minimum total of 9 scenarios for 3 sections
+3. WHERE external mode is enabled, THE System SHALL incorporate scenarios from external risk catalysts such as FDA alerts, PubMed summaries, or other evidence sources and SHALL generate at least 2 external scenarios per catalyst source
+4. WHERE logic-derived mode is enabled, THE System SHALL infer decision pathways from guideline content and generate scenarios covering all logical paths, ensuring 100% path coverage for decision trees with ≤5 branches
+5. WHEN multiple modes are enabled, THE System SHALL execute each mode independently and merge results with deduplication, removing ≥90% of duplicate scenarios based on decision question similarity
 
 ### Requirement 3: Section-Based Scenario Generation
 
@@ -255,11 +258,11 @@ The system supports the CIKG 4-Layer model (L0 Prose, L1 GSRL Triples, L2 RALL A
 
 #### Acceptance Criteria
 
-1. WHERE fidelity level is "none", THE System SHALL skip all scenario generation and produce no output
-2. WHERE fidelity level is "draft", THE System SHALL generate scenario inventory tables in JSON and Markdown formats only
-3. WHERE fidelity level is "full", THE System SHALL generate scenario inventory plus Gherkin feature files grouped by CDS category
-4. WHERE fidelity level is "full-fhir", THE System SHALL generate scenario inventory, feature files, and FHIR resources including PlanDefinition, ActivityDefinition, and Library
-5. WHEN fidelity level is "draft", THE System SHALL default to top-down and external generation modes only
+1. WHERE fidelity level is "none", THE System SHALL skip all scenario generation and produce no output files
+2. WHERE fidelity level is "draft", THE System SHALL generate scenario inventory tables in JSON and Markdown formats only, containing ≥10 metadata fields per scenario
+3. WHERE fidelity level is "full", THE System SHALL generate scenario inventory plus Gherkin feature files grouped by CDS category, with ≥1 feature file per category and ≥3 scenarios per file
+4. WHERE fidelity level is "full-fhir", THE System SHALL generate scenario inventory, feature files, and FHIR resources including PlanDefinition, ActivityDefinition, and Library, with ≥1 FHIR resource per CDS category
+5. WHEN fidelity level is "draft", THE System SHALL default to top-down and external generation modes only and SHALL complete generation within 60 seconds
 
 ### Requirement 5: CDS Taxonomy Classification
 
@@ -329,9 +332,9 @@ The system supports the CIKG 4-Layer model (L0 Prose, L1 GSRL Triples, L2 RALL A
 
 1. WHEN scenario generation completes successfully, THE System SHALL generate an asset summary report in Markdown format
 2. WHEN generating an asset summary, THE System SHALL include counts for feature files, total scenarios, generation modes used, and CDS categories covered
-3. WHERE enhanced metrics are enabled, THE System SHALL analyze scenario complexity by counting Given/When/Then steps and categorizing as Simple/Moderate/Complex/Very Complex
-4. WHERE enhanced metrics are enabled, THE System SHALL identify coverage gaps by listing missing generation modes and CDS categories
-5. WHERE enhanced metrics are enabled, THE System SHALL estimate generation efficiency including API calls, token consumption, success rate, and provide actionable recommendations
+3. WHERE enhanced metrics are enabled, THE System SHALL analyze scenario complexity by counting Given/When/Then steps and categorizing as Simple (≤2 steps), Moderate (3-5 steps), Complex (6-10 steps), Very Complex (>10 steps)
+4. WHERE enhanced metrics are enabled, THE System SHALL identify coverage gaps by listing missing generation modes and CDS categories, targeting ≥80% coverage completeness
+5. WHERE enhanced metrics are enabled, THE System SHALL estimate generation efficiency including API calls, token consumption, success rate ≥95%, and provide actionable recommendations for optimization
 
 ### Requirement 11: Configuration and Customization
 
@@ -367,7 +370,9 @@ The system supports the CIKG 4-Layer model (L0 Prose, L1 GSRL Triples, L2 RALL A
 2. WHEN a guideline source uses custom section names, THE System SHALL accept a section mapping configuration to align with standard clinical section types
 3. WHEN guideline content is provided in FHIR Composition format, THE System SHALL extract narrative text from section.text.div elements
 4. WHEN guideline content is provided in XML or HTML, THE System SHALL extract text content while preserving section hierarchy
-5. WHEN guideline content is provided in PDF, THE System SHALL accept pre-extracted text with section markers or use OCR/text extraction tools
+5. WHEN guideline content is provided in PDF, THE System SHALL accept pre-extracted text with section markers or use OCR/text extraction tools and SHALL validate text quality (≥80% readable characters)
+6. WHEN guideline content cannot be processed due to format errors or corruption, THE System SHALL raise a descriptive error and SHALL NOT generate any scenarios
+7. WHEN guideline content is empty or contains <100 characters, THE System SHALL reject the input with error code "INSUFFICIENT_CONTENT"
 
 ### Requirement 17: Guideline Model Abstraction
 
