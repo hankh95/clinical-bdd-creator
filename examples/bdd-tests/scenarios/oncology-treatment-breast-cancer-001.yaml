@@ -1,0 +1,214 @@
+# Standard Clinical Scenario Header
+scenario:
+  id: "oncology-treatment-breast-cancer-001"
+  title: "Stage II Breast Cancer - Anthracycline-Based Chemotherapy Cycle 1"
+  domain: "oncology"
+  category: "treatment-recommendation"
+  condition: "breast-cancer"
+  version: "1.0"
+  created: "2025-11-08"
+  author: "Clinical BDD Creator"
+  guidelines:
+    - name: "NCCN Guidelines for Breast Cancer"
+      url: "https://www.nccn.org/guidelines/category_1"
+    - name: "Anthracycline-Based Chemotherapy Protocols"
+      reference: "Standard adjuvant chemotherapy for breast cancer"
+
+# Clinical Context
+clinical:
+  patient:
+    demographics:
+      age: 48
+      gender: "female"
+      menopausal_status: "premenopausal or perimenopausal"
+    
+    presentation:
+      chief_complaint: "Stage II breast cancer requiring adjuvant chemotherapy"
+      treatment_phase: "Cycle 1 of anthracycline-based regimen"
+      performance_status: "adequate for chemotherapy"
+  
+  diagnosis:
+    primary: "Breast Cancer"
+    stage: "Stage II"
+    histology: "invasive ductal carcinoma (presumed)"
+    receptor_status: "to be specified based on pathology"
+    treatment_intent: "adjuvant"
+    prognosis: "good with appropriate treatment"
+  
+  current_treatment:
+    regimen: "Anthracycline-based chemotherapy"
+    cycle: "Cycle 1"
+    schedule: "21-day cycles (q21d)"
+    agents:
+      - name: "doxorubicin"
+        type: "anthracycline"
+        route: "IV"
+        schedule: "q21d"
+  
+  baseline_labs:
+    anc: "adequate"
+    anc_status: "no baseline neutropenia (neutropenia historical flags = 0)"
+    hemoglobin: "adequate"
+    hemoglobin_target: "> 10 g/dL"
+    liver_function: "adequate"
+    renal_function: "adequate"
+    note: "baseline labs indicate patient can proceed with chemotherapy"
+  
+  risk_factors:
+    neutropenia: "historical neutropenia = 0 (no prior episodes)"
+    anemia: "monitor during treatment"
+    infections: "sepsis historical = 0 (no prior infections)"
+    cardiotoxicity: "anthracycline-associated risk, monitor LVEF"
+  
+  vitals:
+    blood_pressure: "stable"
+    heart_rate: "stable"
+    temperature: "afebrile"
+    performance_status: "good"
+  
+  medications:
+    chemotherapy:
+      - "doxorubicin (anthracycline)"
+    supportive:
+      - "antiemetics as needed"
+      - "growth factors if indicated"
+    allergies: []
+  
+  contraindications:
+    none_documented: true
+    adequate_organ_function: true
+
+# Expected Clinical Actions
+expectations:
+  recommendations:
+    - type: "medication"
+      category: "chemotherapy"
+      specific: "doxorubicin"
+      dose: "per protocol (typically 60 mg/m² IV)"
+      schedule: "21-day cycles (q21d)"
+      route: "IV"
+      rationale: "Standard anthracycline-based adjuvant chemotherapy for stage II breast cancer"
+    
+    - type: "care_plan"
+      description: "Comprehensive breast cancer chemotherapy care plan"
+      components:
+        - "chemotherapy administration schedule"
+        - "supportive care measures"
+        - "monitoring plan"
+        - "patient education"
+    
+    - type: "supportive_care"
+      interventions:
+        - "antiemetic prophylaxis"
+        - "hydration"
+        - "growth factor support if needed"
+        - "symptom management"
+  
+  monitoring:
+    - type: "labs"
+      tests: ["CBC with differential", "ANC"]
+      frequency: "weekly during cycle (days 7, 14, 21)"
+      schedule: "every 7 days, count 3 per cycle"
+      rationale: "Monitor for neutropenia and hematologic toxicity"
+      target: "ANC adequate for next cycle"
+    
+    - type: "labs"
+      tests: ["hemoglobin"]
+      frequency: "weekly"
+      target: ">= 10 g/dL"
+      rationale: "Monitor for chemotherapy-induced anemia"
+    
+    - type: "labs"
+      tests: ["liver function tests (LFT)"]
+      frequency: "each cycle"
+      rationale: "Monitor hepatotoxicity from chemotherapy"
+    
+    - type: "labs"
+      tests: ["renal function (metabolic panel)"]
+      frequency: "each cycle"
+      rationale: "Monitor renal function and electrolytes"
+    
+    - type: "cardiac"
+      assessment: "LVEF monitoring"
+      frequency: "baseline and periodic"
+      rationale: "Monitor for anthracycline-associated cardiotoxicity"
+    
+    - type: "clinical"
+      assessments: ["infection signs", "bleeding", "mucositis", "neuropathy"]
+      frequency: "ongoing throughout cycle"
+      rationale: "Early detection of chemotherapy complications"
+  
+  risk_assessments:
+    - type: "neutropenia_risk"
+      description: "Febrile neutropenia risk assessment"
+      factors: "anthracycline use, cycle 1, baseline risk factors"
+      status: "monitor closely"
+    
+    - type: "cardiotoxicity_risk"
+      description: "Anthracycline-associated cardiomyopathy risk"
+      monitoring: "baseline and periodic LVEF"
+  
+  goals:
+    - description: "Maintain hemoglobin >= 10 g/dL"
+      type: "lab_target"
+      rationale: "Prevent severe anemia during chemotherapy"
+    
+    - description: "Prevent febrile neutropenia"
+      type: "safety"
+      interventions: "growth factors if needed, patient education on infection prevention"
+    
+    - description: "Complete planned chemotherapy cycles"
+      type: "treatment_completion"
+      rationale: "Maximize oncologic benefit"
+  
+  referrals:
+    - type: "nutrition counseling"
+      rationale: "Support nutritional status during chemotherapy"
+      timing: "early in treatment"
+  
+  education:
+    topics:
+      - "Chemotherapy schedule and expectations for cycle 1"
+      - "Common side effects (nausea, fatigue, hair loss, myelosuppression)"
+      - "Infection prevention and when to seek care (fever > 100.4°F)"
+      - "Bleeding precautions with low platelets"
+      - "Nutrition and hydration during treatment"
+      - "Symptom management strategies"
+      - "Importance of laboratory monitoring"
+      - "When to contact oncology team"
+
+# Test Metadata
+testing:
+  complexity: "advanced"
+  fidelity: "medium"
+  priority: "P2"
+  tags:
+    - "breast-cancer"
+    - "chemotherapy"
+    - "anthracycline"
+    - "doxorubicin"
+    - "adjuvant-treatment"
+    - "cycle-1"
+    - "monitoring"
+  
+  clinical_decision_points:
+    - "Appropriate chemotherapy regimen selection for stage II breast cancer"
+    - "Comprehensive monitoring plan for hematologic toxicity"
+    - "Risk assessment for neutropenia and cardiotoxicity"
+    - "Supportive care integration"
+    - "Patient education on chemotherapy management"
+  
+  edge_cases:
+    - "Cycle 1 of treatment (baseline toxicity risk)"
+    - "Anthracycline with cardiotoxicity risk"
+    - "Weekly lab monitoring schedule (every 7 days x 3)"
+    - "Multiple risk assessments (neutropenia, cardiotoxicity)"
+
+# Source Mapping
+source:
+  original_file: "JaniceDoe_BreastCancer"
+  original_location: "examples/bdd-tests/unsorted/"
+  original_case_id: "JaniceDoe_BreastCancer"
+  original_bundle_id: "Bundle-JaniceDoe-BreastCancer"
+  migration_date: "2025-11-08"
+  notes: "Converted from reference-based format to standardized format with clinical focus on chemotherapy cycle management"

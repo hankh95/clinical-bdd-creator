@@ -1,0 +1,224 @@
+scenario_id: "oncology-treatment-breast-cancer-001"
+validation_level: "clinical-outcome"
+guideline: "NCCN Breast Cancer Guidelines - Adjuvant Chemotherapy"
+
+assertions:
+  # Patient and Diagnosis
+  - id: "patient-resource-exists"
+    description: "Bundle has a Patient resource"
+    severity: "error"
+    fhirpath: "entry.resource.ofType(Patient).exists()"
+    expect: true
+    rationale: "Valid FHIR bundle must contain patient"
+
+  - id: "breast-cancer-condition-present"
+    description: "Breast cancer condition documented (ICD-10 C50.* or SNOMED 254837009)"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(Condition).code.coding.exists(
+        (system='http://hl7.org/fhir/sid/icd-10' and code.startsWith('C50'))
+        or
+        (system='http://snomed.info/sct' and code='254837009')
+      )
+    expect: true
+    rationale: "Breast cancer diagnosis guides treatment plan"
+
+  # Chemotherapy Order
+  - id: "doxorubicin-medication-request"
+    description: "Doxorubicin chemotherapy ordered with appropriate schedule"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest).where(
+        medication.as(CodeableConcept).text.contains('Doxorubicin')
+        or medication.as(CodeableConcept).coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm'
+        ).exists()
+      ).where(
+        timing.repeat.period = 21 and timing.repeat.periodUnit = 'd'
+      ).exists()
+    expect: true
+    rationale: "Doxorubicin on 21-day cycle is standard anthracycline-based regimen"
+
+  # Care Plan
+  - id: "chemotherapy-care-plan-present"
+    description: "Comprehensive chemotherapy care plan documented"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(CarePlan).where(
+        title.exists() and (
+          title.contains('Breast') or 
+          title.contains('Chemotherapy') or
+          title.contains('Cancer')
+        )
+      ).exists()
+    expect: true
+    rationale: "Care plan coordinates comprehensive chemotherapy management"
+
+  # Monitoring - CBC Weekly
+  - id: "cbc-monitoring-weekly"
+    description: "CBC ordered every 7 days during cycle (count 3)"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(
+          code.text.contains('CBC') or 
+          code.text.contains('Complete blood count') or
+          code.coding.where(system='http://loinc.org' and code='58410-2').exists()
+        )
+        .occurrence.as(Timing).repeat.where(
+          period=7 and periodUnit='d' and count=3
+        ).exists()
+    expect: true
+    rationale: "Weekly CBC monitoring essential for detecting hematologic toxicity"
+
+  # Monitoring - ANC
+  - id: "anc-monitoring-present"
+    description: "Absolute neutrophil count (ANC) monitoring ordered"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(
+          code.text.contains('Absolute neutrophil count') or 
+          code.text.contains('ANC') or
+          code.text.contains('neutrophil')
+        ).exists()
+    expect: true
+    rationale: "ANC monitoring critical for neutropenia detection"
+
+  # Monitoring - Hemoglobin
+  - id: "hemoglobin-monitoring-present"
+    description: "Hemoglobin monitoring ordered"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(
+          code.text.contains('Hemoglobin') or
+          code.text.contains('hemoglobin')
+        ).exists()
+    expect: true
+    rationale: "Hemoglobin monitoring needed for anemia detection"
+
+  # Monitoring - LFT
+  - id: "lft-monitoring-present"
+    description: "Liver function tests ordered for hepatotoxicity monitoring"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(
+          code.text.contains('Liver function') or 
+          code.text.contains('LFT') or
+          code.text.contains('hepatic')
+        ).exists()
+    expect: true
+    rationale: "LFT monitoring needed to detect hepatotoxicity"
+
+  # Monitoring - Renal Function
+  - id: "renal-function-monitoring-present"
+    description: "Renal function monitoring ordered"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(
+          code.text.contains('Renal') or 
+          code.text.contains('Metabolic panel') or
+          code.text.contains('renal')
+        ).exists()
+    expect: true
+    rationale: "Renal function monitoring needed for chemotherapy safety"
+
+  # Supportive Care - Nutrition
+  - id: "nutrition-counseling-referral"
+    description: "Nutrition counseling referral ordered"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(
+          code.text.contains('Nutrition') or 
+          code.text.contains('Diet') or
+          code.text.contains('nutrition')
+        ).exists()
+    expect: true
+    rationale: "Nutrition support important during chemotherapy"
+
+  # Goals
+  - id: "hemoglobin-goal-documented"
+    description: "Goal to maintain hemoglobin >= 10 g/dL documented"
+    severity: "info"
+    fhirpath: >
+      entry.resource.ofType(Goal).where(
+        description.text.contains('Hemoglobin') or
+        description.text.contains('hemoglobin')
+      ).where(
+        target.detail.ofType(Quantity).value >= 10 and
+        target.detail.ofType(Quantity).unit = 'g/dL'
+      ).exists()
+    expect: true
+    rationale: "Hemoglobin goal guides anemia management"
+
+  # Risk Assessments
+  - id: "neutropenia-risk-assessment"
+    description: "Neutropenia risk assessment documented"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(RiskAssessment).where(
+        code.text.contains('neutropenia') or 
+        code.text.contains('febrile') or
+        code.text.contains('infection')
+      ).exists()
+    expect: true
+    rationale: "Neutropenia risk assessment guides prophylaxis and monitoring"
+
+  # Patient Education
+  - id: "patient-education-documented"
+    description: "Patient education on chemotherapy management documented"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(CommunicationRequest)
+        .where(category.coding.where(code='education').exists())
+        .exists()
+    expect: true
+    rationale: "Patient education critical for safe chemotherapy administration"
+
+contraindications:
+  # Baseline Requirements
+  - id: "adequate-baseline-counts-required"
+    description: "Adequate baseline blood counts required before chemotherapy"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(Observation)
+        .where(code.coding.where(
+          system='http://loinc.org' and 
+          (code='6690-2' or code='26453-1')  # WBC or ANC
+        ).exists())
+        .where(valueQuantity.value >= 1.5)  # typical minimum ANC
+        .exists()
+    rationale: "Adequate neutrophil counts required to safely administer chemotherapy"
+
+  - id: "adequate-cardiac-function-for-anthracycline"
+    description: "Baseline cardiac function should be assessed before anthracycline"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(Observation)
+        .where(code.text.contains('LVEF') or code.text.contains('ejection'))
+        .exists()
+    rationale: "Baseline LVEF needed before anthracycline due to cardiotoxicity risk"
+
+  - id: "no-severe-hepatic-dysfunction"
+    description: "Chemotherapy should be adjusted or avoided with severe hepatic dysfunction"
+    severity: "warning"
+    fhirpath: >
+      not(entry.resource.ofType(Observation)
+        .where(code.coding.where(code='1742-6').exists())  # ALT
+        .where(valueQuantity.value > 200)  # significantly elevated
+        .exists())
+    rationale: "Severe hepatic dysfunction may require dose adjustment or contraindicate chemotherapy"
+
+  - id: "no-severe-renal-dysfunction"
+    description: "Chemotherapy dosing may need adjustment with renal dysfunction"
+    severity: "warning"
+    fhirpath: >
+      not(entry.resource.ofType(Observation)
+        .where(code.coding.where(code='33914-3').exists())  # eGFR
+        .where(valueQuantity.value < 30)
+        .exists())
+    rationale: "Severe renal dysfunction may require chemotherapy dose adjustment"

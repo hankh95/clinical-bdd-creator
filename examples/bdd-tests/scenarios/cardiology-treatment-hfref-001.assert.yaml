@@ -1,0 +1,196 @@
+scenario_id: "cardiology-treatment-hfref-001"
+validation_level: "clinical-outcome"
+guideline: "2022 AHA/ACC/HFSA Heart Failure Guideline"
+
+assertions:
+  # Medication Recommendations - ARNI
+  - id: "arni-recommended"
+    description: "ARNI (sacubitril/valsartan) should be recommended as first-line therapy"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(medication.coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm' and
+          code='1731986'  # sacubitril/valsartan
+        ).exists())
+        .exists()
+    expect: true
+    rationale: "ARNI is first-line renin-angiotensin inhibition for HFrEF per guidelines"
+
+  - id: "arni-dose-appropriate"
+    description: "ARNI dose should be 49/51 mg twice daily for initiation"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(medication.coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm' and
+          code='1731986'
+        ).exists())
+        .dosageInstruction.doseAndRate.dose.as(Quantity)
+        .where(value=49 or value=51)
+        .exists()
+    expect: true
+    rationale: "Starting dose should be 49/51 mg BID for stable patients"
+
+  # Medication Recommendations - Beta-blocker
+  - id: "beta-blocker-recommended"
+    description: "Evidence-based beta-blocker should be recommended"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(medication.coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm' and
+          (code='866924' or code='200031' or code='206765')  # metoprolol succinate, carvedilol, bisoprolol
+        ).exists())
+        .exists()
+    expect: true
+    rationale: "Evidence-based beta-blocker is essential component of quadruple therapy"
+
+  - id: "beta-blocker-type-appropriate"
+    description: "Beta-blocker should be one with proven mortality benefit in HFrEF"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(medication.coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm' and
+          (code='866924' or code='200031' or code='206765')  # metoprolol succinate, carvedilol, bisoprolol
+        ).exists())
+        .exists()
+    expect: true
+    rationale: "Only certain beta-blockers have proven mortality benefit in HFrEF"
+
+  # Medication Recommendations - MRA
+  - id: "mra-recommended"
+    description: "Mineralocorticoid receptor antagonist should be recommended"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(medication.coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm' and
+          (code='9997' or code='298869')  # spironolactone or eplerenone
+        ).exists())
+        .exists()
+    expect: true
+    rationale: "MRA provides additional mortality benefit in HFrEF"
+
+  # Medication Recommendations - SGLT2 Inhibitor
+  - id: "sglt2i-recommended"
+    description: "SGLT2 inhibitor should be recommended regardless of diabetes status"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(medication.coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm' and
+          (code='1488564' or code='1545653')  # dapagliflozin or empagliflozin
+        ).exists())
+        .exists()
+    expect: true
+    rationale: "SGLT2i provides cardiorenal protection in HFrEF regardless of diabetes"
+
+  # Monitoring Requirements
+  - id: "potassium-monitoring-ordered"
+    description: "Potassium monitoring should be ordered within 3-7 days"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.coding.where(
+          system='http://loinc.org' and
+          code='2823-3'  # Potassium in Serum or Plasma
+        ).exists())
+        .exists()
+    expect: true
+    rationale: "Potassium monitoring is essential with MRA and ARNI to detect hyperkalemia"
+
+  - id: "renal-function-monitoring-ordered"
+    description: "Renal function monitoring should be ordered within 3-7 days"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.coding.where(
+          system='http://loinc.org' and
+          (code='2160-0' or code='33914-3')  # Creatinine or eGFR
+        ).exists())
+        .exists()
+    expect: true
+    rationale: "Renal function monitoring is essential with ARNI and MRA"
+
+  # Education and Documentation
+  - id: "patient-education-documented"
+    description: "Patient education should be documented"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(CommunicationRequest)
+        .where(category.coding.where(
+          code='education'
+        ).exists())
+        .exists()
+    expect: true
+    rationale: "Patient education on self-management is critical for HFrEF outcomes"
+
+  # Alert System
+  - id: "incomplete-therapy-alert"
+    description: "Alert should fire when SGLT2i is omitted without contraindication"
+    severity: "error"
+    fhirpath: >
+      (entry.resource.ofType(MedicationRequest)
+        .where(medication.coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm' and
+          (code='1488564' or code='1545653')
+        ).exists()).exists()
+      or
+      entry.resource.ofType(DetectedIssue)
+        .where(code.text.contains('SGLT2') or code.text.contains('quadruple therapy'))
+        .exists())
+    expect: true
+    rationale: "System must alert if quadruple therapy is incomplete without documented reason"
+
+contraindications:
+  # Safety checks
+  - id: "no-arni-with-recent-acei"
+    description: "ARNI should not be given within 36 hours of ACE inhibitor"
+    severity: "error"
+    fhirpath: >
+      not (
+        entry.resource.ofType(MedicationRequest)
+          .where(medication.coding.where(code='1731986').exists())
+          .exists()
+        and
+        entry.resource.ofType(MedicationStatement)
+          .where(medication.coding.where(
+            system='http://www.nlm.nih.gov/research/umls/rxnorm' and
+            (code='1998' or code='3827' or code='29046')  # lisinopril, enalapril, ramipril
+          ).exists())
+          .where(effective.end > now() - 36 hours)
+          .exists()
+      )
+    rationale: "36-hour washout period required to prevent angioedema"
+
+  - id: "no-mra-with-severe-hyperkalemia"
+    description: "MRA should not be given with severe hyperkalemia (K+ > 5.5)"
+    severity: "error"
+    fhirpath: >
+      not (
+        entry.resource.ofType(MedicationRequest)
+          .where(medication.coding.where(
+            code='9997' or code='298869'
+          ).exists())
+          .exists()
+        and
+        entry.resource.ofType(Observation)
+          .where(code.coding.where(code='2823-3').exists())
+          .where(valueQuantity.value > 5.5)
+          .exists()
+      )
+    rationale: "MRA contraindicated with severe hyperkalemia"
+
+  - id: "no-gdmt-with-severe-renal-failure"
+    description: "Standard GDMT doses may need adjustment with eGFR < 30"
+    severity: "warning"
+    fhirpath: >
+      not (
+        entry.resource.ofType(Observation)
+          .where(code.coding.where(code='33914-3').exists())
+          .where(valueQuantity.value < 30)
+          .exists()
+      )
+    rationale: "Severe renal failure may require dose adjustments or alternative strategies"

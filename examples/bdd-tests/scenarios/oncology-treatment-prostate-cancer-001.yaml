@@ -1,0 +1,221 @@
+# Standard Clinical Scenario Header
+scenario:
+  id: "oncology-treatment-prostate-cancer-001"
+  title: "Metastatic Castration-Resistant Prostate Cancer - Docetaxel Chemotherapy"
+  domain: "oncology"
+  category: "treatment-recommendation"
+  condition: "prostate-cancer"
+  version: "1.0"
+  created: "2025-11-08"
+  author: "Clinical BDD Creator"
+  guidelines:
+    - name: "NCCN Prostate Cancer Guidelines"
+      url: "https://www.nccn.org/guidelines/category_1"
+    - name: "AUA Guidelines for Advanced Prostate Cancer"
+      reference: "Management of castration-resistant prostate cancer"
+    - name: "SWOG 0421 Trial Protocol"
+      reference: "Docetaxel-based regimen for mCRPC"
+
+# Clinical Context
+clinical:
+  patient:
+    demographics:
+      age: 67
+      gender: "male"
+      year: "2011"
+    
+    presentation:
+      chief_complaint: "Metastatic castration-resistant prostate cancer"
+      disease_status: "progressive on hormone therapy"
+      performance_status: "adequate for chemotherapy"
+  
+  diagnosis:
+    primary: "Prostate Cancer"
+    stage: "Metastatic castration-resistant (mCRPC)"
+    gleason_score: 8
+    gleason_risk: "high-risk disease"
+    metastases:
+      - site: "bone"
+        status: "active"
+        description: "multiple bone metastases"
+    psa_status: "rising despite hormone therapy"
+  
+  treatment_history:
+    prior_treatments:
+      - "radical prostatectomy"
+      - "radiation therapy"
+      - "androgen deprivation therapy (ADT)"
+      - "hormone therapy with progression"
+    current_status: "hormone therapy failure"
+    trial_enrollment: "SWOG 0421 trial"
+  
+  current_treatment:
+    trial: "SWOG 0421"
+    regimen: "Docetaxel-based chemotherapy"
+    agents:
+      - name: "docetaxel"
+        dose: "75 mg/m²"
+        route: "IV"
+        schedule: "every 3 weeks (q3w)"
+      - name: "prednisone"
+        dose: "5 mg"
+        route: "oral"
+        frequency: "twice daily (BID)"
+      - name: "atrasentan or placebo"
+        note: "randomized trial component"
+    
+    supportive:
+      - name: "zoledronic acid"
+        dose: "4 mg"
+        route: "IV"
+        schedule: "every 4 weeks (q4w)"
+        indication: "bone health and metastases management"
+  
+  vitals:
+    performance_status: "adequate for chemotherapy"
+    pain_status: "managed with hydrocodone as needed"
+  
+  labs:
+    psa: "elevated and rising"
+    bone_markers: "elevated"
+    renal_function: "adequate for chemotherapy"
+    liver_function: "adequate"
+    hematology: "adequate baseline counts"
+  
+  medications:
+    chemotherapy:
+      - "docetaxel 75 mg/m² IV q3w"
+      - "prednisone 5 mg PO BID"
+    bone_support:
+      - "zoledronic acid 4 mg IV q4w"
+    pain_management:
+      - "hydrocodone as required"
+    trial_agent:
+      - "atrasentan or placebo (randomized)"
+    
+    allergies: []
+  
+  risk_factors:
+    bone_fracture: "increased risk with bone metastases"
+    skeletal_related_events: "high risk"
+    disease_progression: "monitor with PSA and imaging"
+
+# Expected Clinical Actions
+expectations:
+  recommendations:
+    - type: "medication"
+      category: "chemotherapy"
+      specific: "docetaxel"
+      dose: "75 mg/m²"
+      route: "IV"
+      schedule: "every 3 weeks (q3w)"
+      rationale: "Standard chemotherapy for symptomatic mCRPC per SWOG 0421 protocol"
+      evidence: "Proven survival benefit in mCRPC"
+    
+    - type: "medication"
+      category: "corticosteroid"
+      specific: "prednisone"
+      dose: "5 mg twice daily"
+      route: "oral"
+      rationale: "Standard adjunct with docetaxel for mCRPC"
+    
+    - type: "medication"
+      category: "bone protection"
+      specific: "zoledronic acid"
+      dose: "4 mg IV every 4 weeks"
+      rationale: "Bone health and prevention of skeletal-related events"
+      monitoring: "renal function before each dose"
+    
+    - type: "medication"
+      category: "pain management"
+      specific: "hydrocodone"
+      dosing: "as required"
+      rationale: "Pain control for bone metastases"
+  
+  alternatives:
+    - agent: "denosumab"
+      indication: "alternative bone protective agent if renal issues develop"
+      dosing: "120 mg subcutaneous monthly"
+    
+    - agent: "radium-223"
+      indication: "for symptomatic bone metastases if disease progresses"
+      timing: "consider if progression on docetaxel"
+  
+  monitoring:
+    - type: "labs"
+      tests: ["PSA"]
+      frequency: "every 3-6 months"
+      rationale: "Monitor disease response and progression"
+    
+    - type: "imaging"
+      modalities: ["bone scan", "CT"]
+      frequency: "as needed for progression assessment"
+      indication: "monitor metastatic disease burden"
+    
+    - type: "labs"
+      tests: ["renal function", "creatinine"]
+      frequency: "before each zoledronic acid dose"
+      rationale: "Monitor for renal toxicity with bisphosphonate"
+    
+    - type: "labs"
+      tests: ["CBC", "liver function"]
+      frequency: "each chemotherapy cycle"
+      rationale: "Monitor for chemotherapy toxicity"
+    
+    - type: "clinical"
+      assessments: ["pain", "performance status", "neuropathy"]
+      frequency: "each visit"
+      rationale: "Monitor quality of life and toxicity"
+  
+  education:
+    topics:
+      - "Metastatic castration-resistant prostate cancer and prognosis"
+      - "Docetaxel chemotherapy expectations and side effects"
+      - "Trial participation (SWOG 0421) and randomization"
+      - "Bone health and skeletal-related event prevention"
+      - "Pain management strategies"
+      - "Importance of PSA and imaging monitoring"
+      - "Signs of disease progression"
+      - "When to contact oncology team"
+      - "Quality of life considerations"
+
+# Test Metadata
+testing:
+  complexity: "expert"
+  fidelity: "high"
+  priority: "P2"
+  tags:
+    - "prostate-cancer"
+    - "mCRPC"
+    - "castration-resistant"
+    - "metastatic"
+    - "docetaxel"
+    - "chemotherapy"
+    - "bone-metastases"
+    - "clinical-trial"
+    - "SWOG-0421"
+  
+  clinical_decision_points:
+    - "Appropriate chemotherapy selection for mCRPC"
+    - "Bone protective therapy with zoledronic acid"
+    - "PSA and imaging monitoring schedule"
+    - "Pain management integration"
+    - "Alternative therapies if progression"
+    - "Clinical trial enrollment and management"
+  
+  edge_cases:
+    - "Metastatic castration-resistant disease with hormone therapy failure"
+    - "Multiple prior treatments (surgery, radiation, ADT)"
+    - "High Gleason score (8) requiring aggressive therapy"
+    - "Clinical trial enrollment (SWOG 0421)"
+    - "Bone metastases requiring specialized management"
+    - "Consideration of alternative agents if progression"
+
+# Source Mapping
+source:
+  original_file: "2011_AdamEveryman_Prostate_Cancer_GrokFromPDF"
+  original_location: "examples/bdd-tests/unsorted/"
+  original_case_id: "2011_AdamEveryman_Prostate_Cancer_GrokFromPDF"
+  original_bundle_id: "Bundle-2011-AdamEveryman-Prostate-Cancer-GrokFromPDF"
+  migration_date: "2025-11-08"
+  notes: "Converted from reference-based format to standardized format with clinical focus on advanced prostate cancer management per NCCN/AUA guidelines and SWOG 0421 trial protocol"

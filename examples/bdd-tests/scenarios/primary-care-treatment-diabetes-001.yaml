@@ -1,0 +1,185 @@
+# Standard Clinical Scenario Header
+scenario:
+  id: "primary-care-treatment-diabetes-001"
+  title: "Type 2 Diabetes with ASCVD - Cardioprotective Therapy Initiation"
+  domain: "primary-care"
+  category: "treatment-recommendation"
+  condition: "diabetes"
+  version: "1.0"
+  created: "2025-11-08"
+  author: "Clinical BDD Creator"
+  guidelines:
+    - name: "ADA 2025 Standards of Care in Diabetes"
+      section: "Section 9 - Pharmacologic Approaches to Glycemic Treatment"
+      url: "https://diabetesjournals.org/care/issue/48/Supplement_1"
+    - name: "ASCVD Risk Management in Diabetes"
+      reference: "Cardiovascular risk reduction strategies"
+
+# Clinical Context
+clinical:
+  patient:
+    demographics:
+      age: 65
+      gender: "male"
+      ethnicity: "not specified"
+    
+    presentation:
+      chief_complaint: "Undiagnosed Type 2 Diabetes"
+      discovery_method: "elevated HbA1c screening"
+      symptoms: "likely asymptomatic or mild hyperglycemia symptoms"
+  
+  diagnosis:
+    primary: "Type 2 Diabetes Mellitus"
+    status: "undiagnosed until now"
+    severity: "inadequately controlled"
+    evidence:
+      - lab: "HbA1c"
+        value: 8.5
+        unit: "percent"
+        interpretation: "above target of <7%"
+  
+  comorbidities:
+    - name: "Atherosclerotic Cardiovascular Disease (ASCVD)"
+      type: "established ASCVD"
+      evidence: "history of myocardial infarction"
+      status: "active"
+      risk_level: "high cardiovascular risk"
+      impact: "mandates cardioprotective diabetes therapy"
+  
+  vitals:
+    blood_pressure: "to be monitored"
+    weight: "to be monitored"
+    note: "cardiovascular monitoring required"
+  
+  labs:
+    hba1c:
+      value: 8.5
+      unit: "percent"
+      target: "< 7%"
+      status: "elevated"
+    
+    egfr: "adequate for SGLT2i and GLP-1 RA"
+    renal_status: "monitor for cardiorenal protection"
+    
+    note: "confirm T2DM diagnosis and monitor eGFR"
+  
+  medications:
+    current: "likely none for diabetes (newly diagnosed)"
+    allergies: []
+  
+  contraindications:
+    sglt2i:
+      - condition: "eGFR < 30 mL/min/1.73m²"
+        status: "not present"
+      - condition: "history of euglycemic ketoacidosis"
+        status: "not present"
+
+# Expected Clinical Actions
+expectations:
+  recommendations:
+    - type: "medication"
+      drug_class: "SGLT2 inhibitor"
+      rationale: "First-line for diabetes with ASCVD - proven cardiovascular benefit"
+      options:
+        - name: "empagliflozin"
+        - name: "dapagliflozin"
+        - name: "canagliflozin"
+      considerations: "Cardiorenal protection regardless of glycemic control"
+      evidence: "EMPA-REG, CANVAS, DECLARE-TIMI trials"
+    
+    - type: "medication"
+      drug_class: "GLP-1 receptor agonist"
+      rationale: "First-line for diabetes with ASCVD - proven cardiovascular benefit"
+      options:
+        - name: "liraglutide"
+        - name: "semaglutide"
+        - name: "dulaglutide"
+      considerations: "Alternative or addition to SGLT2i for ASCVD protection"
+      evidence: "LEADER, SUSTAIN-6, REWIND trials"
+    
+    - type: "medication"
+      drug_class: "Metformin"
+      status: "consider as adjunct"
+      rationale: "Traditional first-line agent, may be used alongside SGLT2i/GLP-1 RA"
+      note: "No longer sole first-line in high-risk ASCVD patients per ADA 2025"
+  
+  treatment_strategy:
+    approach: "Escalate to dual therapy with cardioprotective agents"
+    priority: "SGLT2 inhibitor or GLP-1 RA first-line for ASCVD"
+    rationale: "High HbA1c (8.5%) + established ASCVD mandates aggressive cardioprotective therapy"
+    targets:
+      hba1c: "< 7%"
+      cardiovascular_risk: "reduction through evidence-based agents"
+  
+  monitoring:
+    - type: "labs"
+      tests: ["HbA1c"]
+      frequency: "every 3 months"
+      target: "< 7%"
+      rationale: "Monitor glycemic control response to therapy"
+    
+    - type: "labs"
+      tests: ["eGFR", "creatinine"]
+      frequency: "baseline and periodic"
+      rationale: "Monitor renal function for SGLT2i safety and cardiorenal protection"
+    
+    - type: "labs"
+      tests: ["lipid panel"]
+      frequency: "periodic"
+      rationale: "Comprehensive cardiovascular risk management"
+    
+    - type: "clinical"
+      parameters: ["blood pressure", "weight"]
+      frequency: "each visit"
+      rationale: "Monitor cardiovascular status and treatment effects"
+    
+    - type: "cardiovascular"
+      assessments: ["ASCVD status", "cardiac symptoms"]
+      frequency: "ongoing"
+      rationale: "Monitor for cardiovascular events and therapy efficacy"
+  
+  education:
+    topics:
+      - "Type 2 diabetes diagnosis and implications"
+      - "Cardiovascular risk and importance of cardioprotective therapy"
+      - "Medication adherence for SGLT2i/GLP-1 RA"
+      - "Blood glucose monitoring if initiated"
+      - "Lifestyle modifications (diet, exercise, weight management)"
+      - "ASCVD secondary prevention strategies"
+      - "Recognition of hyperglycemia and hypoglycemia symptoms"
+      - "When to seek medical attention"
+
+# Test Metadata
+testing:
+  complexity: "advanced"
+  fidelity: "medium"
+  priority: "P2"
+  tags:
+    - "type-2-diabetes"
+    - "ASCVD"
+    - "cardioprotective-therapy"
+    - "SGLT2-inhibitor"
+    - "GLP-1-agonist"
+    - "new-diagnosis"
+    - "high-risk"
+  
+  clinical_decision_points:
+    - "Recognition of high cardiovascular risk requiring cardioprotective agents"
+    - "Preference for SGLT2i or GLP-1 RA over traditional metformin monotherapy"
+    - "Dual therapy approach for high HbA1c and ASCVD"
+    - "Monitoring for both glycemic control and cardiovascular outcomes"
+  
+  edge_cases:
+    - "Newly diagnosed diabetes with established ASCVD"
+    - "High HbA1c (8.5%) requiring aggressive management"
+    - "Paradigm shift from metformin-first to cardioprotective agents first"
+    - "Monitoring for cardiorenal protection beyond glycemic control"
+
+# Source Mapping
+source:
+  original_file: "JohnSmith_Diabetes_ASCVD"
+  original_location: "examples/bdd-tests/unsorted/"
+  original_case_id: "JohnSmith_Diabetes_ASCVD"
+  original_bundle_id: "Bundle-JohnSmith-Diabetes-ASCVD"
+  migration_date: "2025-11-08"
+  notes: "Converted from reference-based format to standardized format emphasizing cardioprotective therapy per ADA 2025 guidelines"
