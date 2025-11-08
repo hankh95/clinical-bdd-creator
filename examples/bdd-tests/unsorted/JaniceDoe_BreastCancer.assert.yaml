@@ -1,0 +1,101 @@
+# Summary: This patient (48-year-old female with stage II breast cancer starting cycle 1 of anthracycline-based chemotherapy) is meant to test CIKG v8's handling of oncology scenarios. Specifically: L1 semantic relationships (e.g., breast cancer investigatedBy labs like ANC/hemoglobin, treatedWith chemo like Doxorubicin); L2 reusable logic (e.g., risk scores for neutropenia/anemia based on low flags=0, GFR for dose adjustment, goals like maintaining hemoglobin >10); L3 workflows (e.g., temporal sequencing of 21-day chemo cycles, monitoring for complications like sepsis=0); and overall CDS use cases like Treatment Recommendation (chemo dosing), Risk Stratification (historical neutropenia=0, current anthracyclines=1), and Diagnostic Test Recommendation (e.g., labs for toxicity monitoring).
+id: breast-JaniceDoe_BreastCancer-v1
+layer: WATL
+guideline: "Breast cancer chemotherapy — anthracycline-based, cycle 1"
+subject_tag: JaniceDoe_BreastCancer
+priority: P2
+provenance:
+  author: Hank Head
+  last_reviewed: "2025-09-19"
+
+assert:
+  - label: Bundle has a Patient
+    fhirpath: "entry.resource.ofType(Patient).exists()"
+    expect: true
+
+  - label: Breast cancer Condition present (ICD-10 C50.* or SNOMED 254837009)
+    fhirpath: >
+      entry.resource.ofType(Condition).code.coding.exists(
+        (system='http://hl7.org/fhir/sid/icd-10' and code.startsWith('C50'))
+        or
+        (system='http://snomed.info/sct' and code='254837009')
+      )
+    expect: true
+
+  # Chemo order + plan
+  - label: Doxorubicin MedicationRequest present (IV q21d)
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest).where(
+        medication.as(CodeableConcept).text.contains('Doxorubicin')
+        or medication.as(CodeableConcept).coding.where(system='http://www.nlm.nih.gov/research/umls/rxnorm').exists()
+      ).where(
+        timing.repeat.period = 21 and timing.repeat.periodUnit = 'd'
+      ).exists()
+    expect: true
+
+  - label: Chemotherapy CarePlan present
+    fhirpath: >
+      entry.resource.ofType(CarePlan).where(
+        title.exists() and (title.contains('Breast') or title.contains('Chemotherapy'))
+      ).exists()
+    expect: true
+
+  # Follow-up cycle assertions (21-day cycle: weekly labs x3)
+  - label: CBC follow-up every 7 days, count 3
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.text.contains('CBC') or code.text.contains('Complete blood count'))
+        .occurrence.as(Timing).repeat.where(period=7 and periodUnit='d' and count=3).exists()
+    expect: true
+
+  - label: ANC follow-up present
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.text.contains('Absolute neutrophil count') or code.text.contains('ANC'))
+        .exists()
+    expect: true
+
+  - label: Hemoglobin follow-up present
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.text.contains('Hemoglobin'))
+        .exists()
+    expect: true
+
+  - label: LFT follow-up present
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.text.contains('Liver function') or code.text.contains('LFT'))
+        .exists()
+    expect: true
+
+  - label: Renal function follow-up present
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.text.contains('Renal') or code.text.contains('Metabolic panel'))
+        .exists()
+    expect: true
+
+  - label: Nutrition counseling referral present
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.text.contains('Nutrition') or code.text.contains('Diet'))
+        .exists()
+    expect: true
+
+  # Goals and risk
+  - label: Goal to maintain Hemoglobin >= 10 g/dL present
+    fhirpath: >
+      entry.resource.ofType(Goal).where(
+        description.text.contains('Hemoglobin')
+        and target.detail.ofType(Quantity).value >= 10
+        and target.detail.ofType(Quantity).unit = 'g/dL'
+      ).exists()
+    expect: true
+
+  - label: Neutropenia risk assessment present
+    fhirpath: >
+      entry.resource.ofType(RiskAssessment).where(
+        code.text.contains('neutropenia') or code.text.contains('febrile')
+      ).exists()
+    expect: true
