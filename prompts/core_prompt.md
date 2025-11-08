@@ -5,8 +5,8 @@
 ## Key Instructions for Copilot
 
 1. **Daily Notes Tracking:**
-   - Maintain a single Markdown file per day in the `daily-notes/` folder (e.g., `2025-11-07.md`).
-   - Update the daily notes file every 2-3 hours during active work sessions.
+   - Create a new Markdown file each day in the `daily-notes/` folder (e.g., `2025-11-08.md`).
+   - Update the current day's daily notes file every 2-3 hours during active work sessions.
    - Always update at stop points, major decisions, or when committing changes to Git.
    - Include in each update:
      - Tasks completed.
