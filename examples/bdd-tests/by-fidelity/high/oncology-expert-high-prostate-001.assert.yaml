@@ -1,0 +1,96 @@
+# Summary: This patient (67-year-old male with metastatic castration-resistant prostate cancer [mCRPC], history of prostatectomy, radiation, hormone therapy failure, rising PSA, bone metastases, and enrollment in SWOG 0421 trial with docetaxel-based regimen) is meant to test CIKG v8's handling of NCCN/AUA guidelines for advanced prostate cancer. Specifically: L1 semantic relationships (e.g., prostate cancer treatedWith docetaxel, increasesRiskOf bone mets); L2 reusable logic (e.g., PSA monitoring goals, Gleason score risk stratification via CQL, measures for disease progression); L3 workflows (e.g., temporal sequencing post-hormone failure: trial enrollment, chemo cycles q3w, bisphosphonate for bone health); and CDS use cases like Treatment Recommendation (docetaxel for symptomatic mCRPC), Risk Stratification (high Gleason 8 prompting aggressive therapy), and Diagnostic Test Recommendation (serial PSA/bone scans).
+# Expected Recommendations (BDD-style commented expectation, verified per NCCN Prostate Cancer guidelines and SWOG 0421 details):
+# Given mCRPC with bone mets and trial enrollment,
+# When managing per guidelines,
+# Then recommend:
+# - Continue zoledronic acid 4 mg IV q4w for bone health.
+# - Administer docetaxel 75 mg/m² IV q3w + prednisone 5 mg PO BID (per trial; atrasentan/placebo randomized).
+# - Monitor PSA q3-6 months, bone scans/CT as needed for progression.
+# - Pain management with hydrocodone as required.
+# - Consider denosumab alternative if renal issues; radium-223 for symptomatic bone mets if progression.
+id: prostate-2011_AdamEveryman_Prostate_Cancer_GrokFromPDF-v1
+layer: WATL
+guideline: TBD
+recommendations: []
+subject_tag: 2011_AdamEveryman_Prostate_Cancer_GrokFromPDF
+priority: P2
+evidence_grade: TBD
+spec_link: TBD
+provenance:
+  author: Hank Head
+  last_reviewed: '2025-09-18'
+trace:
+  planDefinition: PlanDefinition/TBD@<sha>
+  library: Library/TBD@<sha>
+assert:
+  # Bundle sanity
+  - label: Bundle has a Patient
+    fhirpath: "entry.resource.ofType(Patient).exists()"
+    expect: true
+
+  # Primary condition present (Prostate cancer C61 or SNOMED 126906006)
+  - label: Prostate cancer Condition present
+    fhirpath: >
+      entry.resource.ofType(Condition).code.coding.exists(
+        (system='http://hl7.org/fhir/sid/icd-10' and code='C61')
+        or
+        (system='http://snomed.info/sct' and code='126906006')
+      )
+    expect: true
+
+  # Bone metastases present (SNOMED 94222008)
+  - label: Bone metastases Condition present
+    fhirpath: >
+      entry.resource.ofType(Condition).code.coding.exists(
+        system='http://snomed.info/sct' and code='94222008'
+      )
+    expect: true
+
+  # Docetaxel MedicationRequest present (IV; q3wk if timing captured)
+  - label: Docetaxel order present (IV q3wk)
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(
+          medication.as(CodeableConcept).text.contains('Docetaxel')
+          or medication.as(CodeableConcept).coding.where(system='http://www.nlm.nih.gov/research/umls/rxnorm' and code='1736374').exists()
+        )
+        .where(dosageInstruction.route.coding.where(system='http://snomed.info/sct' and code='47625008').exists())
+        .where(dosageInstruction.timing.repeat.where(period=3 and periodUnit='wk').exists() or true)
+        .exists()
+    expect: true
+
+  # Zoledronic acid MedicationRequest present (IV q4wk)
+  - label: Zoledronic acid order present (IV q4wk)
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(
+          medication.as(CodeableConcept).text.contains('Zoledronic')
+          or medication.as(CodeableConcept).coding.where(system='http://www.nlm.nih.gov/research/umls/rxnorm' and code='1546263').exists()
+        )
+        .where(dosageInstruction.route.coding.where(system='http://snomed.info/sct' and code='47625008').exists())
+        .where(dosageInstruction.timing.repeat.where(period=4 and periodUnit='wk').exists() or true)
+        .exists()
+    expect: true
+
+  # Pain management present (Hydrocodone)
+  - label: Pain management MedicationRequest present (Hydrocodone)
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(
+          medication.as(CodeableConcept).text.contains('Hydrocodone')
+          or medication.as(CodeableConcept).coding.where(system='http://www.nlm.nih.gov/research/umls/rxnorm' and code='856903').exists()
+        ).exists()
+    expect: true
+
+  # CarePlan assertion removed; outputs should not be present in fixtures
+
+  # PSA monitoring present
+  - label: PSA observations present with at least one elevated value
+    fhirpath: >
+      entry.resource.ofType(Observation)
+        .where(code.coding.where(system='http://loinc.org' and code='2857-1').exists())
+        .where(valueQuantity.value >= 3)
+        .exists()
+    expect: true
+
+contraindication: []

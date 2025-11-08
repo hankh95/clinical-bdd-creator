@@ -1,0 +1,91 @@
+# Summary: AFib + COPD + Obesity scenario assertions
+# Expected Treatment (BDD-style commented expectation):
+# Then recommend:
+# - Anticoagulation with DOAC (e.g., apixaban, adjusted for obesity/renal function) for stroke prevention (CHA2DS2-VASc >=2).
+# - Rate control with non-beta-blocker (e.g., diltiazem) due to COPD.
+# - Continue COPD management with tiotropium; assess for rhythm control if symptomatic.
+# - Lifestyle interventions for obesity (weight loss, exercise).
+# - Monitor HR, bleeding, and cardiorenal status over 3–6 months.
+
+id: afib-RobertJohnson_Afib_CPOE_Obese-v1
+layer: WATL
+guideline: "AHA/ACC/HRS Atrial Fibrillation (latest)"
+subject_tag: RobertJohnson_Afib_CPOE_Obese
+priority: P2
+provenance:
+  author: Hank Head
+  last_reviewed: "2025-09-19"
+
+assert:
+  # Patient and AFib presence
+  - label: Bundle has a Patient resource
+    fhirpath: "entry.resource.ofType(Patient).exists()"
+    expect: true
+
+  - label: AFib Condition present (SNOMED or ICD-10)
+    fhirpath: >
+      entry.resource.ofType(Condition).code.coding.exists(
+        (system='http://snomed.info/sct' and code='49436004')
+        or
+        (system='http://hl7.org/fhir/sid/icd-10' and code.startsWith('I48'))
+      )
+    expect: true
+
+  # Anticoagulation (DOAC: Apixaban)
+  - label: Apixaban MedicationRequest present
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .medication.coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm' and code='1361224'
+        ).exists()
+    expect: true
+
+  # Rate control (Diltiazem)
+  - label: Diltiazem MedicationRequest present (avoid beta-blocker due to COPD)
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .medication.coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm' and code='34366'
+        ).exists()
+    expect: true
+
+  # COPD tiotropium continuation
+  - label: Tiotropium MedicationRequest present (LAMA)
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .medication.coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm' and code='155200'
+        ).exists()
+    expect: true
+
+  # Lifestyle: Nutrition counseling order
+  - label: Nutrition counseling ServiceRequest present
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.text.contains('Nutrition') or code.text.contains('Diet'))
+        .exists()
+    expect: true
+
+  # Follow-up cycles: HbA1c every 3 months within 6 months
+  - label: HbA1c follow-up ServiceRequest timing every 3 months
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.text.contains('HbA1c'))
+        .occurrence.as(Timing).repeat.where(period=3 and periodUnit='mo').exists()
+    expect: true
+
+  # Follow-up cycles: Renal function panel every 3 months
+  - label: Renal function follow-up ServiceRequest timing every 3 months
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.text.contains('Renal') or code.text.contains('Metabolic panel'))
+        .occurrence.as(Timing).repeat.where(period=3 and periodUnit='mo').exists()
+    expect: true
+
+  # Follow-up cycles: CBC for bleeding risk every 3 months
+  - label: CBC follow-up ServiceRequest timing every 3 months
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.text.contains('CBC') or code.text.contains('Complete blood count'))
+        .occurrence.as(Timing).repeat.where(period=3 and periodUnit='mo').exists()
+    expect: true

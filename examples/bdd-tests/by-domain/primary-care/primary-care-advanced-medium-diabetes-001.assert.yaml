@@ -1,0 +1,68 @@
+# Summary: This patient (65-year-old male with undiagnosed Type 2 Diabetes Mellitus, evidenced by high HbA1c of 8.5%, and established ASCVD via history of myocardial infarction) is meant to test CIKG v8's handling of ADA 2025 guidelines for T2DM with high cardiovascular risk. Specifically: L1 semantic relationships (e.g., undiagnosed T2DM investigatedBy high HbA1c, increasesRiskOf ASCVD complications); L2 reusable logic (e.g., risk stratification for ASCVD prompting preferential use of SGLT2 inhibitors or GLP-1 agonists, glycemic goals <7% via CQL rules, measures for HbA1c control); L3 workflows (e.g., temporal sequencing for initial dual therapy in high-risk patients per ADA Section 9, monitoring for cardiorenal protection); and CDS use cases like Treatment Recommendation (escalate to SGLT2i/GLP-1 first-line for ASCVD), Risk Stratification (high HbA1c + ASCVD flags urgent intervention), and Diagnostic Test Recommendation (e.g., confirm T2DM diagnosis and monitor eGFR).
+id: diabetes-JohnSmith_Diabetes_ASCVD-v1
+layer: WATL
+guideline: TBD
+recommendations: []
+subject_tag: JohnSmith_Diabetes_ASCVD
+priority: P2
+evidence_grade: TBD
+spec_link: TBD
+provenance:
+  author: Hank Head
+  last_reviewed: '2025-09-18'
+trace:
+  planDefinition: PlanDefinition/TBD@<sha>
+  library: Library/TBD@<sha>
+assert:
+  # Bundle sanity
+  - label: Bundle has a Patient
+    fhirpath: "entry.resource.ofType(Patient).exists()"
+    expect: true
+
+  # ASCVD condition present (ICD-10 I25.* or SNOMED 441574008)
+  - label: ASCVD condition present
+    fhirpath: >
+      entry.resource.ofType(Condition).code.coding.exists(
+        (system='http://hl7.org/fhir/sid/icd-10' and code.startsWith('I25'))
+        or
+        (system='http://snomed.info/sct' and code='441574008')
+      )
+    expect: true
+
+  # HbA1c high (>= 8) — from fixture state
+  - label: HbA1c observation present and high
+    fhirpath: >
+      entry.resource.ofType(Observation)
+        .where(code.coding.where(system='http://loinc.org' and code='4548-4').exists())
+        .where(valueQuantity.value >= 8)
+        .exists()
+    expect: true
+
+  # CarePlan assertion removed; outputs should not be present in fixtures
+
+  # Clinical intent (output) — prefer ASCVD agents (SGLT2i/GLP-1 RA)
+  # Heuristic text match for now; can be hardened with terminology locks later
+  - label: Initiate SGLT2i or GLP-1 RA (MedicationRequest)
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(medication.as(CodeableConcept).text.contains('flozin')
+          or medication.as(CodeableConcept).text.contains('glutide')
+          or medication.as(CodeableConcept).text.contains('SGLT2')
+          or medication.as(CodeableConcept).text.contains('GLP-1'))
+        .exists()
+    expect: true
+
+contraindication:
+  # Do not recommend SGLT2i if eGFR < 30
+  - label: No SGLT2i if eGFR < 30 mL/min/1.73m2
+    fhirpath: >
+      not (
+        entry.resource.ofType(Observation)
+          .where(code.coding.where(system='http://loinc.org' and code='98979-8').exists())
+          .where(valueQuantity.value < 30)
+          .exists()
+        and
+        entry.resource.ofType(MedicationRequest)
+          .where(medication.as(CodeableConcept).text.contains('flozin') or medication.as(CodeableConcept).text.contains('SGLT2'))
+          .exists()
+      )
