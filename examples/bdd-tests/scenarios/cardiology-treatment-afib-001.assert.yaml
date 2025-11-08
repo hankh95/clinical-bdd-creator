@@ -1,0 +1,190 @@
+scenario_id: "cardiology-treatment-afib-001"
+validation_level: "clinical-outcome"
+guideline: "AHA/ACC/HRS Atrial Fibrillation Management Guidelines"
+
+assertions:
+  # Patient and Diagnosis
+  - id: "patient-resource-exists"
+    description: "Bundle has a Patient resource"
+    severity: "error"
+    fhirpath: "entry.resource.ofType(Patient).exists()"
+    expect: true
+    rationale: "Valid FHIR bundle must contain patient"
+
+  - id: "afib-condition-present"
+    description: "Atrial fibrillation condition is documented"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(Condition).code.coding.exists(
+        (system='http://snomed.info/sct' and code='49436004')
+        or
+        (system='http://hl7.org/fhir/sid/icd-10' and code.startsWith('I48'))
+      )
+    expect: true
+    rationale: "AFib diagnosis must be documented for treatment validation"
+
+  # Anticoagulation - DOAC
+  - id: "doac-anticoagulation-present"
+    description: "DOAC anticoagulation (apixaban) is recommended"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .medication.coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm' and 
+          code='1361224'  # apixaban
+        ).exists()
+    expect: true
+    rationale: "DOAC anticoagulation required for stroke prevention with CHA2DS2-VASc ≥ 2"
+
+  - id: "warfarin-not-preferred"
+    description: "Warfarin should not be chosen over DOAC for obese patients without specific reason"
+    severity: "warning"
+    fhirpath: >
+      not(entry.resource.ofType(MedicationRequest)
+        .medication.coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm' and
+          code='11289'  # warfarin
+        ).exists())
+    expect: true
+    rationale: "DOAC preferred over warfarin for obese patients"
+
+  # Rate Control - Diltiazem (avoid beta-blockers)
+  - id: "diltiazem-rate-control-present"
+    description: "Diltiazem for rate control is recommended (avoiding beta-blockers due to COPD)"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .medication.coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm' and
+          code='3443'  # diltiazem
+        ).exists()
+    expect: true
+    rationale: "Non-beta-blocker rate control needed due to COPD contraindication"
+
+  - id: "beta-blocker-avoided"
+    description: "Beta-blockers should be avoided due to COPD"
+    severity: "error"
+    fhirpath: >
+      not(entry.resource.ofType(MedicationRequest)
+        .medication.coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm' and
+          (code='866924' or code='200031' or code='149' or code='1202')  # metoprolol, carvedilol, atenolol, propranolol
+        ).exists())
+    expect: true
+    rationale: "Beta-blockers contraindicated in COPD"
+
+  # COPD Management Continuation
+  - id: "tiotropium-continued"
+    description: "Tiotropium LAMA inhaler for COPD should be continued"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .medication.coding.where(
+          system='http://www.nlm.nih.gov/research/umls/rxnorm' and
+          code='75582'  # tiotropium
+        ).exists()
+    expect: true
+    rationale: "Continue COPD management with current LAMA therapy"
+
+  # Lifestyle Interventions
+  - id: "nutrition-counseling-ordered"
+    description: "Nutrition counseling should be ordered for obesity management"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.text.contains('Nutrition') or code.text.contains('Diet') or code.text.contains('nutrition'))
+        .exists()
+    expect: true
+    rationale: "Nutrition counseling supports weight loss in obese patients"
+
+  # Monitoring Requirements - Renal Function
+  - id: "renal-function-monitoring"
+    description: "Renal function panel should be ordered every 3-6 months"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.text.contains('Renal') or code.text.contains('Metabolic panel') or code.text.contains('renal'))
+        .occurrence.as(Timing).repeat.where(period=3 and periodUnit='mo').exists()
+    expect: true
+    rationale: "Monitor renal function for DOAC safety and dosing"
+
+  # Monitoring Requirements - CBC for Bleeding Risk
+  - id: "cbc-monitoring"
+    description: "CBC should be ordered every 3 months to monitor bleeding risk"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.text.contains('CBC') or code.text.contains('Complete blood count') or code.text.contains('blood count'))
+        .occurrence.as(Timing).repeat.where(period=3 and periodUnit='mo').exists()
+    expect: true
+    rationale: "Monitor for bleeding complications with anticoagulation"
+
+  # Monitoring Requirements - HbA1c
+  - id: "hba1c-monitoring"
+    description: "HbA1c should be ordered every 3 months to screen for metabolic complications"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.text.contains('HbA1c') or code.text.contains('Hemoglobin A1c') or code.text.contains('glycated'))
+        .occurrence.as(Timing).repeat.where(period=3 and periodUnit='mo').exists()
+    expect: true
+    rationale: "Screen for metabolic complications related to obesity"
+
+  # Patient Education
+  - id: "anticoagulation-education"
+    description: "Patient education on anticoagulation should be provided"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(CommunicationRequest)
+        .where(topic.text.contains('anticoagulation') or topic.text.contains('bleeding') or category.coding.code='education')
+        .exists()
+    expect: true
+    rationale: "Patient education critical for anticoagulation adherence and safety"
+
+contraindications:
+  # Safety Checks
+  - id: "no-beta-blockers-with-copd"
+    description: "Beta-blockers should not be prescribed with active COPD"
+    severity: "error"
+    fhirpath: >
+      not (
+        entry.resource.ofType(Condition)
+          .where(code.coding.where(
+            (system='http://snomed.info/sct' and code='13645005')
+            or
+            (system='http://hl7.org/fhir/sid/icd-10' and code.startsWith('J44'))
+          ).exists())
+          .exists()
+        and
+        entry.resource.ofType(MedicationRequest)
+          .medication.coding.where(
+            (code='866924' or code='200031' or code='149' or code='1202')
+          ).exists()
+          .exists()
+      )
+    rationale: "Beta-blockers can exacerbate COPD and should be avoided"
+
+  - id: "anticoagulation-requires-adequate-renal-function"
+    description: "DOAC requires adequate renal function (typically CrCl > 15-30 depending on agent)"
+    severity: "error"
+    fhirpath: >
+      not (
+        entry.resource.ofType(MedicationRequest)
+          .where(medication.coding.where(code='1361224').exists())
+          .exists()
+        and
+        entry.resource.ofType(Observation)
+          .where(code.coding.where(code='33914-3').exists())  # eGFR
+          .where(valueQuantity.value < 15)
+          .exists()
+      )
+    rationale: "DOAC contraindicated with severe renal failure"
+
+  - id: "stroke-risk-justifies-anticoagulation"
+    description: "Anticoagulation should be based on appropriate stroke risk (CHA2DS2-VASc)"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(RiskAssessment)
+        .where(code.text.contains('CHA2DS2-VASc') or code.text.contains('stroke risk'))
+        .exists()
+    rationale: "Stroke risk assessment guides anticoagulation decisions"

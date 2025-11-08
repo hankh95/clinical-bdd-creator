@@ -1,0 +1,174 @@
+# Standard Clinical Scenario Header
+scenario:
+  id: "cardiology-treatment-hfref-001"
+  title: "Heart Failure with Reduced Ejection Fraction - Quadruple Therapy Initiation"
+  domain: "cardiology"
+  category: "treatment-recommendation"
+  condition: "hfref"
+  version: "1.0"
+  created: "2025-11-08"
+  author: "Clinical BDD Creator"
+  guidelines:
+    - name: "2022 AHA/ACC/HFSA Guideline for Heart Failure"
+      url: "https://www.ahajournals.org/doi/10.1161/CIR.0000000000001063"
+    - name: "LittleFish v10 - Treatment Approach"
+      source: "source_sections/treatment_approach.txt"
+
+# Clinical Context
+clinical:
+  patient:
+    demographics:
+      age: 65
+      gender: "male"
+      ethnicity: "not specified"
+    presentation:
+      chief_complaint: "Chronic symptomatic heart failure"
+      nyha_class: "II"
+      symptoms:
+        - "dyspnea on exertion"
+        - "orthopnea"
+      duration: "chronic"
+  
+  diagnosis:
+    primary: "Heart Failure with Reduced Ejection Fraction"
+    lvef: 30
+    lvef_unit: "percent"
+    severity: "LVEF ≤ 35%"
+    etiology: "not specified"
+  
+  vitals:
+    blood_pressure: "118/72"
+    blood_pressure_status: "stable, no orthostatic symptoms"
+    heart_rate: "not specified"
+    respiratory_rate: "not specified"
+    weight: "stable"
+  
+  labs:
+    potassium: 4.6
+    potassium_unit: "mmol/L"
+    creatinine: 1.2
+    creatinine_unit: "mg/dL"
+    egfr: ">30"
+    egfr_unit: "mL/min/1.73 m²"
+    egfr_status: "no advanced kidney failure"
+  
+  medications:
+    current:
+      - status: "not receiving"
+        classes:
+          - "renin-angiotensin inhibition"
+          - "evidence-based beta-blocker"
+          - "MRA (mineralocorticoid receptor antagonist)"
+          - "SGLT2 inhibitor"
+    allergies: []
+  
+  comorbidities: []
+  
+  contraindications:
+    none:
+      - "no history of angioedema"
+      - "no advanced kidney failure (eGFR >= 30 mL/min/1.73 m²)"
+      - "no intolerance to GDMT agents"
+      - "no euglycemic ketoacidosis history"
+
+# Expected Clinical Actions
+expectations:
+  recommendations:
+    - type: "medication"
+      drug_class: "ARNI"
+      specific: "sacubitril/valsartan"
+      dose: "49/51 mg twice daily"
+      route: "oral"
+      rationale: "First-line renin-angiotensin inhibition for HFrEF"
+      special_instructions: "36-hour ACE inhibitor washout if applicable"
+    
+    - type: "medication"
+      drug_class: "beta-blocker"
+      specific: "metoprolol succinate"
+      dose_initial: "12.5 mg daily"
+      dose_target: "titrate up"
+      route: "oral"
+      rationale: "Evidence-based beta-blocker for HFrEF mortality benefit"
+      titration: "uptitrate every 2 weeks as tolerated"
+    
+    - type: "medication"
+      drug_class: "MRA"
+      specific: "spironolactone"
+      dose: "12.5 mg daily"
+      route: "oral"
+      rationale: "Mineralocorticoid receptor antagonist for additional mortality benefit"
+      monitoring_required: "potassium and renal function in 3-7 days"
+    
+    - type: "medication"
+      drug_class: "SGLT2 inhibitor"
+      specific: "dapagliflozin"
+      dose: "10 mg daily"
+      route: "oral"
+      rationale: "Cardiorenal protection regardless of diabetes status"
+      alternatives:
+        - name: "empagliflozin"
+          dose: "10 mg daily"
+  
+  monitoring:
+    - type: "labs"
+      tests: ["potassium", "creatinine", "eGFR"]
+      timing: "3-7 days after initiation"
+      frequency: "initially frequent, then per protocol"
+      rationale: "Monitor for hyperkalemia and renal function changes with MRA and ARNI"
+    
+    - type: "vitals"
+      parameters: ["blood pressure", "heart rate"]
+      frequency: "every 2 weeks during titration"
+      rationale: "Monitor hemodynamic response to medications"
+    
+    - type: "clinical"
+      parameters: ["weight", "symptoms"]
+      frequency: "daily (patient self-monitoring)"
+      rationale: "Early detection of decompensation"
+  
+  education:
+    topics:
+      - "Daily weight monitoring and reporting sudden gains (>2-3 lbs in 1-2 days)"
+      - "Sodium restriction (<2g/day or per guidelines)"
+      - "Fluid management as appropriate"
+      - "Exercise as tolerated"
+      - "Symptom recognition and when to seek care"
+      - "Medication adherence and timing"
+      - "Lifestyle modifications"
+  
+  alerts:
+    - condition: "SGLT2 inhibitor omitted without contraindication"
+      message: "Alert that quadruple therapy is incomplete"
+      action: "Recommend adding SGLT2 inhibitor with dosing options"
+      documentation: "Capture clinician acknowledgement if declined"
+
+# Test Metadata
+testing:
+  complexity: "advanced"
+  fidelity: "high"
+  priority: "P1"
+  tags:
+    - "guideline-adherent"
+    - "quadruple-therapy"
+    - "GDMT"
+    - "new-diagnosis"
+    - "HFrEF"
+  
+  clinical_decision_points:
+    - "Simultaneous initiation of all four foundational therapies"
+    - "Appropriate starting doses and titration plans"
+    - "Monitoring requirements for safety"
+    - "Alert system for incomplete therapy"
+  
+  edge_cases:
+    - "Patient not on any HF medications (treatment-naive)"
+    - "Stable blood pressure allowing initiation"
+    - "eGFR adequate for all medications"
+    - "Alert when SGLT2i omitted despite being indicated"
+
+# Source Mapping
+source:
+  original_file: "1.1.2-treatment-recommendation-hfref-quadruple-therapy.feature"
+  original_location: "examples/bdd-tests/unsorted/"
+  migration_date: "2025-11-08"
+  notes: "Converted from rich clinical format to standardized format with clinical key-value pairs"

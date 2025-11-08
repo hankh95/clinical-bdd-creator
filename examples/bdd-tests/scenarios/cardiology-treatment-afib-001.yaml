@@ -1,0 +1,192 @@
+# Standard Clinical Scenario Header
+scenario:
+  id: "cardiology-treatment-afib-001"
+  title: "Atrial Fibrillation with COPD and Obesity - Anticoagulation and Rate Control"
+  domain: "cardiology"
+  category: "treatment-recommendation"
+  condition: "afib"
+  version: "1.0"
+  created: "2025-11-08"
+  author: "Clinical BDD Creator"
+  guidelines:
+    - name: "AHA/ACC/HRS Atrial Fibrillation Management Guidelines"
+      url: "https://www.ahajournals.org"
+    - name: "CHA2DS2-VASc Score for Stroke Risk"
+      reference: "Stroke prevention in atrial fibrillation"
+
+# Clinical Context
+clinical:
+  patient:
+    demographics:
+      age: 70
+      gender: "male"
+      bmi: 35
+      bmi_category: "obesity class II"
+    
+    presentation:
+      chief_complaint: "Newly diagnosed atrial fibrillation"
+      symptoms:
+        - "irregular heartbeat"
+        - "possible palpitations"
+      duration: "new diagnosis"
+  
+  diagnosis:
+    primary: "Atrial Fibrillation"
+    type: "newly diagnosed"
+    rhythm_status: "requires rate control"
+    stroke_risk: "high"
+    stroke_risk_score: "CHA2DS2-VASc ≥ 2"
+    stroke_risk_factors:
+      - "age 70 years"
+      - "obesity"
+  
+  comorbidities:
+    - name: "Chronic Obstructive Pulmonary Disease (COPD)"
+      status: "active"
+      current_treatment:
+        - medication: "tiotropium inhaler"
+          type: "LAMA (long-acting muscarinic antagonist)"
+          status: "ongoing"
+      impact: "contraindicates beta-blockers for rate control"
+    
+    - name: "Obesity"
+      bmi: 35
+      status: "active"
+      requires: "lifestyle interventions"
+  
+  vitals:
+    heart_rate: "elevated or irregular"
+    blood_pressure: "to be monitored"
+    respiratory_status: "managed with COPD treatment"
+    weight: "obese, BMI 35"
+  
+  labs:
+    renal_function: "adequate for anticoagulation"
+    liver_function: "adequate"
+    note: "suitable for DOAC therapy"
+  
+  medications:
+    current:
+      - name: "tiotropium"
+        indication: "COPD management"
+        status: "continue"
+    
+    allergies: []
+  
+  contraindications:
+    beta_blockers: "avoid due to COPD"
+    warfarin: "DOAC preferred over warfarin for obese patients"
+
+# Expected Clinical Actions
+expectations:
+  recommendations:
+    - type: "medication"
+      drug_class: "Direct Oral Anticoagulant (DOAC)"
+      specific: "apixaban"
+      dose: "to be adjusted for obesity and renal function"
+      route: "oral"
+      rationale: "Stroke prevention with CHA2DS2-VASc ≥ 2; preferred over warfarin in obesity"
+      indication: "stroke prevention in atrial fibrillation"
+    
+    - type: "medication"
+      drug_class: "Non-dihydropyridine calcium channel blocker"
+      specific: "diltiazem"
+      indication: "rate control"
+      rationale: "Appropriate rate control agent when beta-blockers contraindicated by COPD"
+      avoid: "beta-blockers due to COPD"
+    
+    - type: "medication"
+      drug_class: "LAMA inhaler"
+      specific: "tiotropium"
+      status: "continue"
+      rationale: "Ongoing COPD management"
+    
+    - type: "lifestyle"
+      intervention: "weight loss program"
+      rationale: "Obesity management to reduce cardiovascular risk"
+    
+    - type: "lifestyle"
+      intervention: "exercise program"
+      rationale: "Cardiovascular health and weight management"
+      considerations: "as tolerated with COPD"
+    
+    - type: "referral"
+      service: "nutrition counseling"
+      rationale: "Support for weight loss and dietary modifications"
+  
+  monitoring:
+    - type: "cardiac"
+      parameters: ["heart rate", "rhythm"]
+      frequency: "regular intervals"
+      targets: "rate control goals"
+    
+    - type: "labs"
+      tests: ["renal function", "liver function"]
+      timing: "baseline and periodic"
+      frequency: "every 3-6 months"
+      rationale: "Monitor for anticoagulation safety and DOAC dosing"
+    
+    - type: "labs"
+      tests: ["CBC"]
+      frequency: "every 3 months"
+      rationale: "Monitor for bleeding risk with anticoagulation"
+    
+    - type: "labs"
+      tests: ["HbA1c"]
+      frequency: "every 3 months within 6 months"
+      rationale: "Screen for metabolic complications of obesity"
+    
+    - type: "clinical"
+      parameters: ["bleeding symptoms", "stroke symptoms"]
+      frequency: "ongoing patient education and monitoring"
+      rationale: "Early detection of anticoagulation complications"
+  
+  rhythm_management:
+    strategy: "rate control"
+    rationale: "Initial management with rate control; assess for rhythm control if symptomatic"
+    note: "rhythm control can be considered if patient remains symptomatic"
+  
+  education:
+    topics:
+      - "Anticoagulation therapy adherence and bleeding precautions"
+      - "Recognition of bleeding and stroke symptoms"
+      - "Importance of medication adherence"
+      - "Weight loss strategies and dietary modifications"
+      - "Exercise recommendations appropriate for COPD"
+      - "COPD management and inhaler technique"
+      - "When to seek emergency care"
+
+# Test Metadata
+testing:
+  complexity: "expert"
+  fidelity: "high"
+  priority: "P2"
+  tags:
+    - "atrial-fibrillation"
+    - "anticoagulation"
+    - "rate-control"
+    - "COPD"
+    - "obesity"
+    - "multimorbidity"
+  
+  clinical_decision_points:
+    - "Stroke risk stratification using CHA2DS2-VASc"
+    - "DOAC selection over warfarin for obese patients"
+    - "Rate control agent selection avoiding beta-blockers due to COPD"
+    - "Continuation of COPD therapy"
+    - "Lifestyle interventions for obesity"
+  
+  edge_cases:
+    - "Beta-blocker contraindication requires alternative rate control"
+    - "Obesity influences anticoagulation choice"
+    - "Multiple comorbidities requiring coordinated management"
+    - "Monitoring plan addresses multiple concerns (bleeding, cardiorenal, metabolic)"
+
+# Source Mapping
+source:
+  original_file: "RobertJohnson_Afib_CPOE_Obese"
+  original_location: "examples/bdd-tests/unsorted/"
+  original_case_id: "RobertJohnson_Afib_CPOE_Obese"
+  original_bundle_id: "Bundle-RobertJohnson-Afib-CPOE-Obese"
+  migration_date: "2025-11-08"
+  notes: "Converted from reference-based format to standardized format with clinical key-value pairs"

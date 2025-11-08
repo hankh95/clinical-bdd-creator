@@ -1,0 +1,249 @@
+scenario_id: "oncology-treatment-prostate-cancer-001"
+validation_level: "clinical-outcome"
+guideline: "NCCN/AUA Prostate Cancer Guidelines, SWOG 0421 Trial Protocol"
+
+assertions:
+  # Patient and Diagnosis
+  - id: "patient-resource-exists"
+    description: "Bundle has a Patient resource"
+    severity: "error"
+    fhirpath: "entry.resource.ofType(Patient).exists()"
+    expect: true
+    rationale: "Valid FHIR bundle must contain patient"
+
+  - id: "prostate-cancer-condition-present"
+    description: "Prostate cancer condition documented"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(Condition).code.coding.exists(
+        (system='http://hl7.org/fhir/sid/icd-10' and code.startsWith('C61'))
+        or
+        (system='http://snomed.info/sct' and code='399068003')
+      )
+    expect: true
+    rationale: "Prostate cancer diagnosis guides treatment selection"
+
+  - id: "metastatic-status-documented"
+    description: "Metastatic status should be documented"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(Condition)
+        .where(code.text.contains('metastatic') or stage.text.contains('M1') or bodySite.exists())
+        .exists()
+    expect: true
+    rationale: "Metastatic status determines treatment approach"
+
+  # Chemotherapy - Docetaxel
+  - id: "docetaxel-medication-request"
+    description: "Docetaxel chemotherapy ordered per protocol"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(
+          medication.as(CodeableConcept).text.contains('Docetaxel') or
+          medication.as(CodeableConcept).text.contains('docetaxel') or
+          medication.coding.where(
+            system='http://www.nlm.nih.gov/research/umls/rxnorm' and
+            code='72625'
+          ).exists()
+        ).exists()
+    expect: true
+    rationale: "Docetaxel is standard chemotherapy for mCRPC per SWOG 0421"
+
+  - id: "docetaxel-schedule-q3w"
+    description: "Docetaxel should be ordered every 3 weeks (q3w)"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(medication.as(CodeableConcept).text.contains('Docetaxel'))
+        .where(timing.repeat.period = 3 and timing.repeat.periodUnit = 'wk')
+        .exists()
+    expect: true
+    rationale: "Standard q3w dosing per SWOG 0421 protocol"
+
+  # Corticosteroid - Prednisone
+  - id: "prednisone-adjunct-present"
+    description: "Prednisone should be ordered as adjunct with docetaxel"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(
+          medication.as(CodeableConcept).text.contains('Prednisone') or
+          medication.as(CodeableConcept).text.contains('prednisone') or
+          medication.coding.where(code='8640').exists()
+        ).exists()
+    expect: true
+    rationale: "Prednisone is standard adjunct with docetaxel in mCRPC"
+
+  # Bone Protection - Zoledronic Acid
+  - id: "zoledronic-acid-bone-protection"
+    description: "Zoledronic acid ordered for bone health with bone metastases"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(
+          medication.as(CodeableConcept).text.contains('zoledronic') or
+          medication.as(CodeableConcept).text.contains('Zoledronic') or
+          medication.coding.where(code='174161').exists()
+        ).exists()
+    expect: true
+    rationale: "Bisphosphonate therapy essential for bone metastases management"
+
+  - id: "zoledronic-acid-schedule-q4w"
+    description: "Zoledronic acid should be ordered every 4 weeks"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(medication.as(CodeableConcept).text.contains('zoledronic'))
+        .where(timing.repeat.period = 4 and timing.repeat.periodUnit = 'wk')
+        .exists()
+    expect: true
+    rationale: "Standard monthly dosing for bone protection"
+
+  # Pain Management
+  - id: "pain-management-present"
+    description: "Pain management medication should be ordered"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(
+          medication.as(CodeableConcept).text.contains('hydrocodone') or
+          medication.as(CodeableConcept).text.contains('pain') or
+          medication.as(CodeableConcept).text.contains('opioid')
+        ).exists()
+    expect: true
+    rationale: "Pain management essential for bone metastases"
+
+  # Monitoring - PSA
+  - id: "psa-monitoring-ordered"
+    description: "PSA monitoring should be ordered every 3-6 months"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(
+          code.text.contains('PSA') or
+          code.text.contains('prostate specific antigen') or
+          code.coding.where(system='http://loinc.org' and code='2857-1').exists()
+        ).exists()
+    expect: true
+    rationale: "PSA monitoring essential for disease response assessment"
+
+  # Monitoring - Imaging
+  - id: "bone-scan-monitoring"
+    description: "Bone scan or imaging should be ordered for metastases monitoring"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(
+          code.text.contains('bone scan') or
+          code.text.contains('Bone scan') or
+          code.text.contains('imaging')
+        ).exists()
+    expect: true
+    rationale: "Imaging needed to monitor metastatic disease burden"
+
+  # Monitoring - Renal Function
+  - id: "renal-function-monitoring-for-zoledronic"
+    description: "Renal function monitoring required before zoledronic acid"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(
+          code.text.contains('renal') or
+          code.text.contains('Renal') or
+          code.text.contains('creatinine')
+        ).exists()
+    expect: true
+    rationale: "Renal function monitoring essential before bisphosphonate administration"
+
+  # Monitoring - CBC for Chemotherapy
+  - id: "cbc-monitoring-chemotherapy"
+    description: "CBC monitoring should be ordered for chemotherapy toxicity"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(
+          code.text.contains('CBC') or
+          code.text.contains('Complete blood count')
+        ).exists()
+    expect: true
+    rationale: "CBC monitoring needed for docetaxel toxicity (neutropenia)"
+
+  # Trial Documentation
+  - id: "trial-participation-documented"
+    description: "Clinical trial participation should be documented"
+    severity: "info"
+    fhirpath: >
+      entry.resource.ofType(ResearchStudy).exists() or
+      entry.resource.ofType(Procedure)
+        .where(code.text.contains('trial') or code.text.contains('SWOG'))
+        .exists()
+    expect: true
+    rationale: "Trial enrollment (SWOG 0421) should be documented"
+
+contraindications:
+  # Chemotherapy Safety
+  - id: "adequate-baseline-counts-for-docetaxel"
+    description: "Adequate baseline blood counts required for docetaxel"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(Observation)
+        .where(code.coding.where(code='6690-2' or code='26453-1').exists())  # WBC or ANC
+        .where(valueQuantity.value >= 1.5)
+        .exists()
+    rationale: "Adequate neutrophil counts required for safe docetaxel administration"
+
+  # Bisphosphonate Safety
+  - id: "adequate-renal-function-for-zoledronic"
+    description: "Adequate renal function required for zoledronic acid"
+    severity: "error"
+    fhirpath: >
+      not (
+        entry.resource.ofType(MedicationRequest)
+          .where(medication.as(CodeableConcept).text.contains('zoledronic'))
+          .exists()
+        and
+        entry.resource.ofType(Observation)
+          .where(code.coding.where(code='2160-0').exists())  # Creatinine
+          .where(valueQuantity.value > 3.0)
+          .exists()
+      )
+    rationale: "Severe renal dysfunction contraindicates bisphosphonates"
+
+  # Disease Status Requirements
+  - id: "castration-resistant-status-documented"
+    description: "Castration-resistant status should be documented for docetaxel indication"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(Condition)
+        .where(
+          code.text.contains('castration-resistant') or
+          code.text.contains('hormone-refractory') or
+          note.text.contains('castration-resistant')
+        ).exists()
+    rationale: "Docetaxel indicated for castration-resistant disease"
+
+  - id: "adequate-performance-status"
+    description: "Adequate performance status required for chemotherapy"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(Observation)
+        .where(code.text.contains('performance status') or code.text.contains('ECOG'))
+        .where(valueInteger <= 2)
+        .exists()
+    rationale: "Poor performance status may preclude chemotherapy"
+
+  # Alternative Considerations
+  - id: "denosumab-alternative-if-renal-impairment"
+    description: "Consider denosumab if renal function declines"
+    severity: "info"
+    fhirpath: >
+      (entry.resource.ofType(Observation)
+        .where(code.coding.where(code='33914-3').exists())  # eGFR
+        .where(valueQuantity.value >= 30)
+        .exists()
+      or
+      entry.resource.ofType(MedicationRequest)
+        .where(medication.as(CodeableConcept).text.contains('denosumab'))
+        .exists())
+    rationale: "Denosumab alternative if renal function inadequate for bisphosphonate"

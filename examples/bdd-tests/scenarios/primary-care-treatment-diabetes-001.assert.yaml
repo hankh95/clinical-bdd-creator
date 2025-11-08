@@ -1,0 +1,196 @@
+scenario_id: "primary-care-treatment-diabetes-001"
+validation_level: "clinical-outcome"
+guideline: "ADA 2025 Standards of Care in Diabetes - Section 9"
+
+assertions:
+  # Patient and Diagnosis
+  - id: "patient-resource-exists"
+    description: "Bundle has a Patient resource"
+    severity: "error"
+    fhirpath: "entry.resource.ofType(Patient).exists()"
+    expect: true
+    rationale: "Valid FHIR bundle must contain patient"
+
+  - id: "hba1c-elevated"
+    description: "HbA1c observation present and elevated (≥ 8%)"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(Observation)
+        .where(code.coding.where(system='http://loinc.org' and code='4548-4').exists())
+        .where(valueQuantity.value >= 8)
+        .exists()
+    expect: true
+    rationale: "Elevated HbA1c confirms inadequate glycemic control"
+
+  - id: "ascvd-condition-present"
+    description: "ASCVD condition documented (MI, coronary disease, or ICD-10 I25.*)"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(Condition).code.coding.exists(
+        (system='http://hl7.org/fhir/sid/icd-10' and code.startsWith('I25'))
+        or
+        (system='http://snomed.info/sct' and code='441574008')
+      )
+    expect: true
+    rationale: "ASCVD diagnosis guides cardioprotective therapy selection"
+
+  # Cardioprotective Medication - SGLT2i or GLP-1 RA
+  - id: "cardioprotective-agent-recommended"
+    description: "SGLT2 inhibitor or GLP-1 RA recommended for ASCVD patient"
+    severity: "error"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(
+          medication.as(CodeableConcept).text.contains('flozin')
+          or medication.as(CodeableConcept).text.contains('glutide')
+          or medication.as(CodeableConcept).text.contains('SGLT2')
+          or medication.as(CodeableConcept).text.contains('GLP-1')
+          or medication.coding.where(
+            system='http://www.nlm.nih.gov/research/umls/rxnorm' and
+            (code='1488564' or code='1545653' or code='1991302' or code='1727500' or code='897122' or code='1598392')
+          ).exists()
+        ).exists()
+    expect: true
+    rationale: "ADA 2025 guidelines recommend SGLT2i or GLP-1 RA first-line for T2DM with ASCVD"
+
+  - id: "sglt2i-preferred-option"
+    description: "SGLT2 inhibitor is one preferred option for cardioprotection"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(
+          medication.as(CodeableConcept).text.contains('flozin')
+          or medication.as(CodeableConcept).text.contains('SGLT2')
+          or medication.coding.where(
+            code='1488564' or code='1545653' or code='1991302'  # dapagliflozin, empagliflozin, canagliflozin
+          ).exists()
+        ).exists()
+    expect: true
+    rationale: "SGLT2i provides cardiorenal protection in ASCVD patients"
+
+  - id: "glp1-ra-acceptable-alternative"
+    description: "GLP-1 RA is acceptable alternative or addition"
+    severity: "info"
+    fhirpath: >
+      entry.resource.ofType(MedicationRequest)
+        .where(
+          medication.as(CodeableConcept).text.contains('glutide')
+          or medication.as(CodeableConcept).text.contains('GLP-1')
+          or medication.coding.where(
+            code='1727500' or code='897122' or code='1598392'  # liraglutide, semaglutide, dulaglutide
+          ).exists()
+        ).exists()
+    expect: true
+    rationale: "GLP-1 RA provides cardiovascular benefit per clinical trials"
+
+  # Metformin as Adjunct (not sole therapy)
+  - id: "metformin-not-sole-therapy"
+    description: "If metformin used, should not be sole therapy without cardioprotective agent"
+    severity: "warning"
+    fhirpath: >
+      (not(entry.resource.ofType(MedicationRequest)
+        .where(medication.coding.where(code='6809').exists())  # metformin
+        .exists())
+      or
+      entry.resource.ofType(MedicationRequest)
+        .where(
+          medication.as(CodeableConcept).text.contains('flozin')
+          or medication.as(CodeableConcept).text.contains('glutide')
+        ).exists())
+    expect: true
+    rationale: "ADA 2025 guidelines recommend cardioprotective agents over metformin alone for ASCVD"
+
+  # Monitoring Requirements
+  - id: "hba1c-monitoring-ordered"
+    description: "HbA1c monitoring should be ordered every 3 months"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.coding.where(
+          system='http://loinc.org' and code='4548-4'  # HbA1c
+        ).exists())
+        .exists()
+    expect: true
+    rationale: "Regular HbA1c monitoring needed to assess glycemic control"
+
+  - id: "renal-function-monitoring-ordered"
+    description: "Renal function monitoring should be ordered for SGLT2i safety"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(ServiceRequest)
+        .where(code.coding.where(
+          system='http://loinc.org' and
+          (code='2160-0' or code='33914-3')  # Creatinine or eGFR
+        ).exists())
+        .exists()
+    expect: true
+    rationale: "Renal function monitoring essential for SGLT2i safety and cardiorenal protection assessment"
+
+  # Risk Stratification
+  - id: "high-risk-documented"
+    description: "High cardiovascular risk should be documented or assessed"
+    severity: "info"
+    fhirpath: >
+      entry.resource.ofType(RiskAssessment)
+        .where(code.text.contains('cardiovascular') or code.text.contains('ASCVD'))
+        .exists()
+    expect: true
+    rationale: "Risk stratification guides therapy intensity"
+
+  # Patient Education
+  - id: "diabetes-education-provided"
+    description: "Diabetes and cardiovascular education should be provided"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(CommunicationRequest)
+        .where(category.coding.where(code='education').exists())
+        .exists()
+    expect: true
+    rationale: "Patient education critical for adherence and self-management"
+
+contraindications:
+  # SGLT2i Safety Checks
+  - id: "no-sglt2i-with-severe-renal-failure"
+    description: "SGLT2 inhibitor should not be prescribed with eGFR < 30 mL/min/1.73m²"
+    severity: "error"
+    fhirpath: >
+      not (
+        entry.resource.ofType(MedicationRequest)
+          .where(
+            medication.as(CodeableConcept).text.contains('flozin')
+            or medication.as(CodeableConcept).text.contains('SGLT2')
+          ).exists()
+        and
+        entry.resource.ofType(Observation)
+          .where(code.coding.where(system='http://loinc.org' and code='33914-3').exists())
+          .where(valueQuantity.value < 30)
+          .exists()
+      )
+    rationale: "SGLT2i contraindicated with severe renal impairment (eGFR < 30)"
+
+  - id: "ascvd-requires-cardioprotective-therapy"
+    description: "ASCVD patients should receive cardioprotective agents unless contraindicated"
+    severity: "error"
+    fhirpath: >
+      (entry.resource.ofType(MedicationRequest)
+        .where(
+          medication.as(CodeableConcept).text.contains('flozin')
+          or medication.as(CodeableConcept).text.contains('glutide')
+        ).exists()
+      or
+      entry.resource.ofType(DetectedIssue)
+        .where(code.text.contains('cardioprotective') or code.text.contains('SGLT2') or code.text.contains('GLP-1'))
+        .exists())
+    rationale: "ADA guidelines mandate cardioprotective therapy for T2DM with ASCVD"
+
+  - id: "adequate-renal-function-verified"
+    description: "Baseline renal function should be documented before SGLT2i initiation"
+    severity: "warning"
+    fhirpath: >
+      entry.resource.ofType(Observation)
+        .where(code.coding.where(
+          system='http://loinc.org' and
+          (code='2160-0' or code='33914-3')
+        ).exists())
+        .exists()
+    rationale: "Baseline renal function needed to assess SGLT2i appropriateness and safety"
