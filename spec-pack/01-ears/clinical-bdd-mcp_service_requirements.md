@@ -110,14 +110,16 @@ The system supports the CIKG 4-Layer model (L0 Prose, L1 GSRL Triples, L2 RALL A
 
 #### Acceptance Criteria
 
-1. WHEN a guideline source is provided, THE System SHALL accept content in formats including structured markdown, XML, HTML, PDF, FHIR Composition, and JSON manifests
-2. WHEN a content manifest is provided, THE System SHALL parse the manifest to identify available guideline sections and their locations within 30 seconds
-3. WHEN manifest files are missing, THE System SHALL generate a content manifest by scanning the source directory for guideline files matching common patterns (e.g., `*.md`, `*.xml`, `*.html`, `*.pdf`, `composition.json`) within 10 seconds
-4. WHEN guideline sections are incomplete or missing (defined as < 3 core sections: diagnosis, treatment, monitoring), THE System SHALL report content validation errors listing specific missing sections and SHALL NOT proceed with scenario generation
-5. WHERE content quality thresholds are defined (minimum 3 sections, 1000 characters per section), THE System SHALL validate that guideline content meets minimum section count (≥3) and character count requirements (≥1000 chars/section) and SHALL reject content below thresholds
-6. WHEN guideline content is provided in PDF, THE System SHALL accept pre-extracted text with section markers or use OCR/text extraction tools and SHALL validate text quality (≥80% readable characters)
-7. WHEN guideline content cannot be processed due to format errors or corruption, THE System SHALL raise a descriptive error and SHALL NOT generate any scenarios
-8. WHEN guideline content is empty or contains <100 characters, THE System SHALL reject the input with error code "INSUFFICIENT_CONTENT"
+1. WHEN a guideline source is provided, THE System SHALL accept content in formats including structured markdown, XML, HTML, PDF, FHIR Composition, and JSON manifests with ≥95% parsing success rate
+2. WHEN a content manifest is provided, THE System SHALL parse the manifest to identify available guideline sections and their locations within 30 seconds with ≥98% accuracy for section identification
+3. WHEN manifest files are missing, THE System SHALL generate a content manifest by scanning the source directory for guideline files matching common patterns (e.g., `*.md`, `*.xml`, `*.html`, `*.pdf`, `composition.json`) within 10 seconds, identifying ≥95% of valid guideline files
+4. WHEN guideline sections are incomplete or missing (defined as < 3 core sections: diagnosis, treatment, monitoring), THE System SHALL report content validation errors listing specific missing sections and SHALL NOT proceed with scenario generation, returning error code "INCOMPLETE_CONTENT"
+5. WHERE content quality thresholds are defined (minimum 3 sections, 1000 characters per section), THE System SHALL validate that guideline content meets minimum section count (≥3) and character count requirements (≥1000 chars/section) and SHALL reject content below thresholds with ≥99% accuracy
+6. WHEN guideline content is provided in PDF, THE System SHALL accept pre-extracted text with section markers or use OCR/text extraction tools and SHALL validate text quality (≥80% readable characters), rejecting PDFs with <70% readable content
+7. WHEN guideline content cannot be processed due to format errors or corruption, THE System SHALL raise a descriptive error with specific failure reasons and SHALL NOT generate any scenarios, returning appropriate error codes
+8. WHEN guideline content is empty or contains <100 characters, THE System SHALL reject the input with error code "INSUFFICIENT_CONTENT" within 2 seconds
+9. WHEN invalid file formats are provided (e.g., binary executables, encrypted files), THE System SHALL reject the input with error code "UNSUPPORTED_FORMAT" and list supported formats
+10. WHEN network timeouts occur during content fetching, THE System SHALL retry up to 3 times with exponential backoff and fail gracefully with error code "NETWORK_TIMEOUT" if all retries fail
 
 ### Requirement 2: Multi-Mode Scenario Generation
 
@@ -125,11 +127,14 @@ The system supports the CIKG 4-Layer model (L0 Prose, L1 GSRL Triples, L2 RALL A
 
 #### Acceptance Criteria
 
-1. WHERE top-down mode is enabled, THE System SHALL generate scenarios by analyzing raw guideline source documents holistically without section-level decomposition and SHALL produce at least 5 scenarios per guideline document
-2. WHERE bottom-up mode is enabled, THE System SHALL generate 3-5 scenarios per selected guideline section by analyzing structured clinical content at the section level, resulting in a minimum total of 9 scenarios for 3 sections
-3. WHERE external mode is enabled, THE System SHALL incorporate scenarios from external risk catalysts such as FDA alerts, PubMed summaries, or other evidence sources and SHALL generate at least 2 external scenarios per catalyst source
-4. WHERE logic-derived mode is enabled, THE System SHALL infer decision pathways from guideline content and generate scenarios covering all logical paths, ensuring 100% path coverage for decision trees with ≤5 branches
-5. WHEN multiple modes are enabled, THE System SHALL execute each mode independently and merge results with deduplication, removing ≥90% of duplicate scenarios based on decision question similarity
+1. WHERE top-down mode is enabled, THE System SHALL generate scenarios by analyzing raw guideline source documents holistically without section-level decomposition and SHALL produce exactly 5-7 scenarios per guideline document with ≥90% clinical relevance
+2. WHERE bottom-up mode is enabled, THE System SHALL generate exactly 3-5 scenarios per selected guideline section by analyzing structured clinical content at the section level, resulting in a minimum total of 9 scenarios for 3 sections with ≥85% section-specific coverage
+3. WHERE external mode is enabled, THE System SHALL incorporate scenarios from external risk catalysts such as FDA alerts, PubMed summaries, or other evidence sources and SHALL generate exactly 2-4 external scenarios per catalyst source with ≥80% evidence integration
+4. WHERE logic-derived mode is enabled, THE System SHALL infer decision pathways from guideline content and generate scenarios covering ≥95% of logical paths for decision trees with ≤5 branches
+5. WHEN multiple modes are enabled, THE System SHALL execute each mode independently and merge results with deduplication, removing ≥90% of duplicate scenarios based on ≥85% decision question similarity threshold
+6. WHEN generation modes fail individually, THE System SHALL continue with remaining modes and report partial success with specific failure reasons for each failed mode
+7. WHEN no valid scenarios can be generated from any mode, THE System SHALL return error code "NO_SCENARIOS_GENERATED" with detailed analysis of why generation failed
+8. WHEN guideline content is too complex (>10,000 words), THE System SHALL prioritize core clinical decision points and generate scenarios for the most critical 80% of content
 
 ### Requirement 3: Section-Based Scenario Generation
 
@@ -137,11 +142,13 @@ The system supports the CIKG 4-Layer model (L0 Prose, L1 GSRL Triples, L2 RALL A
 
 #### Acceptance Criteria
 
-1. WHEN bottom-up mode is enabled with selected sections, THE System SHALL make separate generation calls for each selected guideline section
-2. WHEN processing a guideline section, THE System SHALL generate 3-5 distinct scenarios covering different clinical decision points within that section
-3. WHEN generating section-specific scenarios, THE System SHALL include the section name, type, and content in the generation prompt
-4. WHEN scenarios are generated across multiple sections, THE System SHALL assign unique scenario IDs sequentially across all sections
-5. WHEN section-based generation completes, THE System SHALL log the scenario count generated for each section
+1. WHEN bottom-up mode is enabled with selected sections, THE System SHALL make separate generation calls for each selected guideline section with ≥95% success rate per section
+2. WHEN processing a guideline section, THE System SHALL generate exactly 3-5 distinct scenarios covering different clinical decision points within that section, ensuring ≥80% coverage of section content
+3. WHEN generating section-specific scenarios, THE System SHALL include the section name, type, and content in the generation prompt and validate that ≥90% of generated scenarios are section-relevant
+4. WHEN scenarios are generated across multiple sections, THE System SHALL assign unique scenario IDs sequentially across all sections with zero ID conflicts
+5. WHEN section-based generation completes, THE System SHALL log the scenario count generated for each section and provide summary statistics including success rates
+6. WHEN a selected section contains insufficient content (<500 words), THE System SHALL skip that section and report "SECTION_TOO_SMALL" with specific word count
+7. WHEN section parsing fails for any reason, THE System SHALL continue with remaining sections and report partial completion with specific failure reasons
 
 ### Requirement 4: Fidelity-Based Output Control
 
@@ -149,11 +156,13 @@ The system supports the CIKG 4-Layer model (L0 Prose, L1 GSRL Triples, L2 RALL A
 
 #### Acceptance Criteria
 
-1. WHERE fidelity level is "none", THE System SHALL skip all scenario generation and produce no output files
-2. WHERE fidelity level is "draft", THE System SHALL generate scenario inventory tables in JSON and Markdown formats only, containing ≥10 metadata fields per scenario
-3. WHERE fidelity level is "full", THE System SHALL generate scenario inventory plus Gherkin feature files grouped by CDS category, with ≥1 feature file per category and ≥3 scenarios per file
-4. WHERE fidelity level is "full-fhir", THE System SHALL generate scenario inventory, feature files, and FHIR resources including PlanDefinition, ActivityDefinition, and Library, with ≥1 FHIR resource per CDS category
-5. WHEN fidelity level is "draft", THE System SHALL default to top-down and external generation modes only and SHALL complete generation within 60 seconds
+1. WHERE fidelity level is "none", THE System SHALL skip all scenario generation and produce no output files, returning empty results within 1 second
+2. WHERE fidelity level is "draft", THE System SHALL generate scenario inventory tables in JSON and Markdown formats only, containing exactly 15 metadata fields per scenario with ≥95% field completion rate
+3. WHERE fidelity level is "full", THE System SHALL generate scenario inventory plus Gherkin feature files grouped by CDS category, with exactly 1 feature file per category and ≥3 scenarios per file, achieving ≥90% category coverage
+4. WHERE fidelity level is "full-fhir", THE System SHALL generate scenario inventory, feature files, and FHIR resources including PlanDefinition, ActivityDefinition, and Library, with exactly 1 FHIR resource per CDS category and ≥95% FHIR validation compliance
+5. WHEN fidelity level is "draft", THE System SHALL default to top-down and external generation modes only and SHALL complete generation within 60 seconds with ≥85% success rate
+6. WHEN requested fidelity level is not supported, THE System SHALL return error code "UNSUPPORTED_FIDELITY" and list all supported fidelity levels
+7. WHEN generation fails at higher fidelity levels, THE System SHALL automatically fall back to lower fidelity levels and report the fallback action with reason
 
 ### Requirement 5: CDS Taxonomy Classification
 
@@ -161,11 +170,13 @@ The system supports the CIKG 4-Layer model (L0 Prose, L1 GSRL Triples, L2 RALL A
 
 #### Acceptance Criteria
 
-1. WHEN a scenario is generated, THE System SHALL analyze the decision question and expected actions to determine the appropriate CDS category
-2. WHEN the decision question contains differential diagnosis keywords, THE System SHALL classify the scenario as CDS 1.1.1 Differential Diagnosis
-3. WHEN the decision question contains treatment or medication keywords, THE System SHALL classify the scenario as CDS 1.1.2 Treatment Recommendation or 1.1.3 Drug Recommendation
-4. WHEN the decision question contains test or investigation keywords, THE System SHALL classify the scenario as CDS 1.1.5 Diagnostic Test Recommendation
-5. WHEN CDS classification is ambiguous, THE System SHALL default to the most common category (1.1.2 Treatment Recommendation) and log the classification decision
+1. WHEN a scenario is generated, THE System SHALL analyze the decision question and expected actions to determine the appropriate CDS category with ≥90% classification accuracy
+2. WHEN the decision question contains differential diagnosis keywords, THE System SHALL classify the scenario as CDS 1.1.1 Differential Diagnosis with ≥95% precision for diagnosis-related content
+3. WHEN the decision question contains treatment or medication keywords, THE System SHALL classify the scenario as CDS 1.1.2 Treatment Recommendation or 1.1.3 Drug Recommendation with ≥90% accuracy for medication-related content
+4. WHEN the decision question contains test or investigation keywords, THE System SHALL classify the scenario as CDS 1.1.5 Diagnostic Test Recommendation with ≥85% accuracy for testing-related content
+5. WHEN CDS classification is ambiguous, THE System SHALL default to the most common category (1.1.2 Treatment Recommendation) and log the classification decision with confidence score <70%
+6. WHEN classification confidence is <50%, THE System SHALL flag the scenario for manual review and assign "NEEDS_REVIEW" status
+7. WHEN new CDS categories are encountered, THE System SHALL log unknown categories and suggest additions to the taxonomy mapping
 
 ### Requirement 6: Scenario Inventory Management
 
@@ -173,11 +184,13 @@ The system supports the CIKG 4-Layer model (L0 Prose, L1 GSRL Triples, L2 RALL A
 
 #### Acceptance Criteria
 
-1. WHEN scenario generation completes, THE System SHALL write a scenario inventory in JSON format containing all scenarios with required fields
-2. WHEN scenario generation completes, THE System SHALL write a scenario inventory in Markdown table format for human review
-3. WHEN writing scenario inventory, THE System SHALL include metadata fields: scenarioId, decisionQuestion, decisionTargetWindow, patientFixture, preconditions, triggers, expectedActions, timing, contraindications, evidenceAnchor, planDefinition, negativeAssertions, timingAssertions, applyReadiness, persona, status, generationMode
-4. WHEN writing scenario inventory, THE System SHALL validate that applyReadiness values are limited to: ready, blocked, needs-fixture, needs-data
-5. WHEN writing scenario inventory, THE System SHALL validate that status values are limited to: draft, ready, pending
+1. WHEN scenario generation completes, THE System SHALL write a scenario inventory in JSON format containing all scenarios with required fields and validate ≥98% field completeness
+2. WHEN scenario generation completes, THE System SHALL write a scenario inventory in Markdown table format for human review with properly formatted tables and ≥95% readability
+3. WHEN writing scenario inventory, THE System SHALL include exactly 17 metadata fields: scenarioId, decisionQuestion, decisionTargetWindow, patientFixture, preconditions, triggers, expectedActions, timing, contraindications, evidenceAnchor, planDefinition, negativeAssertions, timingAssertions, applyReadiness, persona, status, generationMode
+4. WHEN writing scenario inventory, THE System SHALL validate that applyReadiness values are limited to: ready, blocked, needs-fixture, needs-data with zero invalid values
+5. WHEN writing scenario inventory, THE System SHALL validate that status values are limited to: draft, ready, pending with zero invalid values
+6. WHEN scenario inventory contains validation errors, THE System SHALL report specific field validation failures and continue with partial output
+7. WHEN inventory file writing fails due to permissions or disk space, THE System SHALL return error code "INVENTORY_WRITE_FAILED" with specific failure reason
 
 ### Requirement 7: Feature File Generation
 
@@ -185,11 +198,13 @@ The system supports the CIKG 4-Layer model (L0 Prose, L1 GSRL Triples, L2 RALL A
 
 #### Acceptance Criteria
 
-1. WHEN fidelity level is "full" or "full-fhir", THE System SHALL generate Gherkin feature files for all scenarios
-2. WHEN generating feature files, THE System SHALL group scenarios by CDS category with one feature file per category
-3. WHEN generating a feature file, THE System SHALL include a Feature header with the CDS category title and topic name
-4. WHEN generating a scenario within a feature file, THE System SHALL format it using Gherkin syntax with Given/When/Then steps
+1. WHEN fidelity level is "full" or "full-fhir", THE System SHALL generate Gherkin feature files for all scenarios with ≥95% syntax validity
+2. WHEN generating feature files, THE System SHALL group scenarios by CDS category with exactly 1 feature file per category containing ≥3 scenarios each
+3. WHEN generating a feature file, THE System SHALL include a Feature header with the CDS category title and topic name, formatted according to Gherkin standards
+4. WHEN generating a scenario within a feature file, THE System SHALL format it using valid Gherkin syntax with Given/When/Then steps and ≥90% grammatical correctness
 5. WHEN generating a scenario, THE System SHALL include metadata comments with scenario ID, CDS category, generation mode, and evidence anchor
+6. WHEN Gherkin syntax is invalid, THE System SHALL report syntax errors with line numbers and suggested corrections
+7. WHEN feature file writing fails, THE System SHALL return error code "FEATURE_FILE_WRITE_FAILED" with specific filesystem error details
 
 ### Requirement 8: FHIR Resource Generation
 
