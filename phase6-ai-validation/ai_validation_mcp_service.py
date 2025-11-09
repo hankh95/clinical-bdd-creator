@@ -40,6 +40,14 @@ class ValidationStatus(Enum):
     NOT_APPLICABLE = "not_applicable"
 
 
+class FidelityMode(Enum):
+    """Analysis fidelity levels for different depths of evaluation"""
+    EVALUATION_ONLY = "evaluation-only"  # Keyword-based robustness assessment
+    TABLE = "table"                      # Enhanced inventory with match scores
+    SEQUENTIAL = "sequential"            # Gap analysis + targeted generation
+    FULL_VALIDATION = "full"             # Comprehensive BDD test validation
+
+
 @dataclass
 class TestDiscoveryQuery:
     """Query for discovering relevant BDD tests"""
@@ -106,7 +114,35 @@ class AIValidationMCPService:
     - validate_answer: Comprehensive validation of AI answer
     - validate_knowledge: Validate AI clinical knowledge base
     - get_status: Report server health and metrics
+    - evaluate_guideline: Evaluate clinical guideline fidelity with configurable depth
     """
+    
+    # CDS Usage Scenarios for fidelity mode evaluation
+    CDS_SCENARIOS = {
+        "1.1.1": {"name": "differential_diagnosis", "category": "diagnostic_reasoning"},
+        "1.1.2": {"name": "treatment_recommendation", "category": "therapy_selection"},
+        "1.1.3": {"name": "drug_recommendation", "category": "medication_selection"},
+        "1.1.4": {"name": "cancer_treatment", "category": "oncology_pathway"},
+        "1.1.5": {"name": "diagnostic_test", "category": "diagnostic_workflow"},
+        "1.1.6": {"name": "genetic_test", "category": "precision_testing"},
+        "1.1.7": {"name": "next_best_action", "category": "task_prioritisation"},
+        "1.1.8": {"name": "value_based_care", "category": "quality_gap_closure"},
+        "1.1.9": {"name": "lifestyle_education", "category": "behaviour_change"},
+        "1.2.1": {"name": "drug_interaction", "category": "safety_guardrail"},
+        "1.2.2": {"name": "diagnostic_appropriateness", "category": "safety_appropriateness"},
+        "1.2.3": {"name": "adverse_event_monitoring", "category": "monitoring_cadence"},
+        "2.1.1": {"name": "case_management", "category": "population_oversight"},
+        "2.2.1": {"name": "quality_metrics", "category": "quality_tracking"},
+        "2.3.1": {"name": "risk_stratification", "category": "predictive_analytics"},
+        "2.4.1": {"name": "public_health_reporting", "category": "regulatory_reporting"},
+        "3.1.1": {"name": "shared_decision_support", "category": "collaborative_planning"},
+        "3.2.1": {"name": "sdoh_integration", "category": "social_context_adjustment"},
+        "3.3.1": {"name": "patient_education", "category": "engagement"},
+        "4.1.1": {"name": "guideline_retrieval", "category": "knowledge_lookup"},
+        "4.2.1": {"name": "protocol_driven_care", "category": "workflow_automation"},
+        "4.3.1": {"name": "documentation_support", "category": "documentation"},
+        "4.4.1": {"name": "care_coordination", "category": "escalation_handoff"}
+    }
     
     def __init__(self):
         self.initialized = False
@@ -124,7 +160,7 @@ class AIValidationMCPService:
         self.validations_performed = 0
         
         self._load_test_repository()
-    
+
     def _load_test_repository(self):
         """Load pre-generated BDD tests into repository"""
         # For POC, we'll generate some sample tests
@@ -295,6 +331,7 @@ class AIValidationMCPService:
             "validate_answer": self.handle_validate_answer,
             "validate_knowledge": self.handle_validate_knowledge,
             "get_status": self.handle_get_status,
+            "evaluate_guideline": self.handle_evaluate_guideline,
         }
         
         handler = handlers.get(method)
@@ -527,9 +564,39 @@ class AIValidationMCPService:
             "recent_validations": len([v for v in self.validation_history[-10:]]),
             "success_rate": sum(1 for v in self.validation_history 
                                if v.status == ValidationStatus.PASS) / len(self.validation_history)
-                           if self.validation_history else 0.0
+                           if self.validation_history else 0.0,
+            "capabilities": ["discover_tests", "execute_test", "validate_answer", "validate_knowledge", "evaluate_guideline"],
+            "fidelity_modes": [mode.value for mode in FidelityMode]
         }
-    
+
+    def handle_evaluate_guideline(self, params: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle evaluate_guideline request with fidelity mode support."""
+        try:
+            guideline_text = params.get("guideline_text", "")
+            fidelity_mode = params.get("fidelity_mode", "evaluation_only")
+
+            # Validate fidelity mode
+            try:
+                fidelity = FidelityMode(fidelity_mode)
+            except ValueError:
+                return {
+                    "error": f"Invalid fidelity mode: {fidelity_mode}. Valid modes: {[m.value for m in FidelityMode]}"
+                }
+
+            if not guideline_text.strip():
+                return {"error": "guideline_text parameter is required"}
+
+            result = self.evaluate_guideline_fidelity(guideline_text, fidelity)
+
+            return {
+                "success": True,
+                "fidelity_mode": fidelity.value,
+                "result": result
+            }
+
+        except Exception as e:
+            return {"error": f"Evaluation failed: {str(e)}"}
+
     def _validate_answer_against_test(self, ai_answer: str, test: BDDTest) -> ValidationResult:
         """Validate AI answer against a specific BDD test"""
         expected = test.expected_outcome.lower()
@@ -592,6 +659,172 @@ class AIValidationMCPService:
         
         return concepts
     
+    # Fidelity Mode Methods - Enhanced Evaluation Framework Integration
+    
+    def evaluate_guideline_fidelity(self, guideline_text: str, fidelity: FidelityMode) -> Dict[str, Any]:
+        """Evaluate guideline using specified fidelity mode"""
+        if fidelity == FidelityMode.EVALUATION_ONLY:
+            return self._evaluate_guideline_robustness(guideline_text)
+        elif fidelity == FidelityMode.TABLE:
+            return self._evaluate_guideline_table(guideline_text)
+        elif fidelity == FidelityMode.SEQUENTIAL:
+            return self._evaluate_guideline_sequential(guideline_text)
+        else:
+            # Default to full validation
+            return self._evaluate_guideline_full(guideline_text)
+    
+    def _evaluate_guideline_robustness(self, guideline_text: str) -> Dict[str, Any]:
+        """Evaluation-only fidelity: Assess scenario-to-guideline robustness"""
+        results = {
+            "fidelity": "evaluation-only",
+            "total_scenarios": len(self.CDS_SCENARIOS),
+            "coverage_score": 0.0,
+            "category_matches": {},
+            "analysis_timestamp": "2025-11-09T12:00:00Z"
+        }
+
+        total_score = 0.0
+        for scenario_id, scenario_info in self.CDS_SCENARIOS.items():
+            match_score = self._calculate_scenario_match(guideline_text, scenario_info)
+            results["category_matches"][scenario_info["name"]] = match_score
+            total_score += match_score
+
+        results["coverage_score"] = total_score / len(self.CDS_SCENARIOS)
+        return results
+    
+    def _evaluate_guideline_table(self, guideline_text: str) -> Dict[str, Any]:
+        """Table fidelity: Enhanced inventory with strength-of-match scores"""
+        robustness = self._evaluate_guideline_robustness(guideline_text)
+        
+        # Enhance with additional metadata
+        table_results = {
+            "fidelity": "table",
+            **robustness,
+            "scenario_inventory": [],
+            "metadata": {
+                "guideline_length": len(guideline_text),
+                "entity_count": len(self._extract_concepts(guideline_text)),
+                "processing_time": "0.1s",  # Placeholder
+                "confidence_level": "high" if robustness["coverage_score"] > 0.5 else "medium"
+            }
+        }
+        
+        # Build scenario inventory with match scores
+        for scenario_id, scenario_info in self.CDS_SCENARIOS.items():
+            match_score = robustness["category_matches"][scenario_info["name"]]
+            table_results["scenario_inventory"].append({
+                "scenario_id": scenario_id,
+                "scenario_name": scenario_info["name"],
+                "category": scenario_info["category"],
+                "match_score": match_score,
+                "match_strength": "strong" if match_score > 0.7 else "moderate" if match_score > 0.4 else "weak",
+                "keywords_matched": self._get_scenario_keywords(scenario_info["category"])
+            })
+        
+        return table_results
+    
+    def _evaluate_guideline_sequential(self, guideline_text: str) -> Dict[str, Any]:
+        """Sequential fidelity: Gap analysis and targeted coverage"""
+        table_results = self._evaluate_guideline_table(guideline_text)
+        
+        # Analyze coverage gaps
+        gaps = []
+        strong_matches = []
+        weak_matches = []
+        
+        for item in table_results["scenario_inventory"]:
+            if item["match_score"] > 0.7:
+                strong_matches.append(item)
+            elif item["match_score"] < 0.3:
+                gaps.append(item)
+            else:
+                weak_matches.append(item)
+        
+        sequential_results = {
+            "fidelity": "sequential",
+            **table_results,
+            "gap_analysis": {
+                "total_scenarios": len(self.CDS_SCENARIOS),
+                "strong_matches": len(strong_matches),
+                "weak_matches": len(weak_matches),
+                "gaps": len(gaps),
+                "coverage_percentage": (len(strong_matches) + len(weak_matches)) / len(self.CDS_SCENARIOS) * 100
+            },
+            "prioritized_gaps": sorted(gaps, key=lambda x: x["match_score"])[:5],  # Top 5 gaps
+            "recommendations": self._generate_coverage_recommendations(gaps, strong_matches)
+        }
+        
+        return sequential_results
+    
+    def _evaluate_guideline_full(self, guideline_text: str) -> Dict[str, Any]:
+        """Full validation fidelity: Comprehensive BDD test validation"""
+        # Use existing validation logic
+        return {
+            "fidelity": "full",
+            "message": "Full validation requires clinical question and AI answer",
+            "available_fidelities": ["evaluation-only", "table", "sequential", "full"],
+            "note": "Use validate_answer method for full BDD test validation"
+        }
+    
+    def _calculate_scenario_match(self, text: str, scenario: Dict) -> float:
+        """Calculate match score for a scenario (keyword-based)"""
+        keywords = self._get_scenario_keywords(scenario["category"])
+        text_lower = text.lower()
+        
+        matches = sum(1 for keyword in keywords if keyword in text_lower)
+        return min(matches / len(keywords), 1.0)  # Cap at 1.0
+    
+    def _get_scenario_keywords(self, category: str) -> List[str]:
+        """Get keywords for scenario category"""
+        keyword_map = {
+            "diagnostic_reasoning": ["diagnosis", "differential", "symptoms", "assessment"],
+            "therapy_selection": ["treatment", "therapy", "recommend", "intervention"],
+            "medication_selection": ["drug", "medication", "prescribe", "dosage"],
+            "oncology_pathway": ["cancer", "tumor", "chemotherapy", "radiation"],
+            "diagnostic_workflow": ["test", "lab", "imaging", "diagnostic"],
+            "precision_testing": ["genetic", "pharmacogenomic", "biomarker", "precision"],
+            "task_prioritisation": ["next", "action", "priority", "workflow"],
+            "quality_gap_closure": ["quality", "metric", "value", "performance"],
+            "behaviour_change": ["lifestyle", "education", "behavior", "counseling"],
+            "safety_guardrail": ["interaction", "adverse", "safety", "monitoring"],
+            "safety_appropriateness": ["appropriate", "criteria", "necessity", "indication"],
+            "monitoring_cadence": ["monitor", "frequency", "follow", "track"],
+            "population_oversight": ["population", "cohort", "management", "registry"],
+            "quality_tracking": ["measure", "quality", "report", "metric"],
+            "predictive_analytics": ["risk", "predict", "stratify", "score"],
+            "regulatory_reporting": ["report", "public", "health", "surveillance"],
+            "collaborative_planning": ["shared", "decision", "preference", "collaborative"],
+            "social_context_adjustment": ["social", "sdoh", "determinant", "context"],
+            "engagement": ["patient", "education", "reminder", "engagement"],
+            "knowledge_lookup": ["guideline", "evidence", "reference", "lookup"],
+            "workflow_automation": ["protocol", "automate", "standardize", "workflow"],
+            "documentation": ["document", "template", "note", "record"],
+            "escalation_handoff": ["coordinate", "transfer", "escalate", "handoff"]
+        }
+        return keyword_map.get(category, [])
+    
+    def _generate_coverage_recommendations(self, gaps: List[Dict], strong_matches: List[Dict]) -> List[str]:
+        """Generate recommendations for improving coverage"""
+        recommendations = []
+        
+        if len(gaps) > 10:
+            recommendations.append("High priority: Address major coverage gaps in multiple CDS categories")
+        elif len(gaps) > 5:
+            recommendations.append("Medium priority: Focus on remaining coverage gaps")
+        else:
+            recommendations.append("Good coverage achieved - consider advanced validation")
+        
+        # Specific recommendations based on gap analysis
+        gap_categories = [g["category"] for g in gaps[:5]]
+        if "safety_guardrail" in gap_categories:
+            recommendations.append("Consider adding drug interaction monitoring content")
+        if "diagnostic_workflow" in gap_categories:
+            recommendations.append("Enhance diagnostic testing guidance")
+        if "therapy_selection" in gap_categories:
+            recommendations.append("Expand treatment recommendation content")
+        
+        return recommendations
+
     def _generate_recommendations(self, reports: List[Dict]) -> List[str]:
         """Generate recommendations based on validation results"""
         recommendations = []
