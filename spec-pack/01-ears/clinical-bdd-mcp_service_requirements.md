@@ -157,12 +157,14 @@ The system supports the CIKG 4-Layer model (L0 Prose, L1 GSRL Triples, L2 RALL A
 #### Acceptance Criteria
 
 1. WHERE fidelity level is "none", THE System SHALL skip all scenario generation and produce no output files, returning empty results within 1 second
-2. WHERE fidelity level is "draft", THE System SHALL generate scenario inventory tables in JSON and Markdown formats only, containing exactly 15 metadata fields per scenario with ≥95% field completion rate
-3. WHERE fidelity level is "full", THE System SHALL generate scenario inventory plus Gherkin feature files grouped by CDS category, with exactly 1 feature file per category and ≥3 scenarios per file, achieving ≥90% category coverage
-4. WHERE fidelity level is "full-fhir", THE System SHALL generate scenario inventory, feature files, and FHIR resources including PlanDefinition, ActivityDefinition, and Library, with exactly 1 FHIR resource per CDS category and ≥95% FHIR validation compliance
-5. WHEN fidelity level is "draft", THE System SHALL default to top-down and external generation modes only and SHALL complete generation within 60 seconds with ≥85% success rate
-6. WHEN requested fidelity level is not supported, THE System SHALL return error code "UNSUPPORTED_FIDELITY" and list all supported fidelity levels
-7. WHEN generation fails at higher fidelity levels, THE System SHALL automatically fall back to lower fidelity levels and report the fallback action with reason
+2. WHERE fidelity level is "evaluation-only", THE System SHALL analyze guideline content against CDS usage scenarios and return a robustness assessment table showing scenario-to-guideline match strength with ≥85% coverage analysis accuracy
+3. WHERE fidelity level is "table", THE System SHALL generate scenario inventory tables in JSON and Markdown formats only, containing exactly 15 metadata fields per scenario with ≥95% field completion rate plus strength-of-match scores for each CDS usage scenario category
+4. WHERE fidelity level is "full", THE System SHALL generate scenario inventory plus Gherkin feature files grouped by CDS category, with exactly 1 feature file per category and ≥3 scenarios per file, achieving ≥90% category coverage
+5. WHERE fidelity level is "full-fhir", THE System SHALL generate scenario inventory, feature files, and FHIR resources including PlanDefinition, ActivityDefinition, and Library, with exactly 1 FHIR resource per CDS category and ≥95% FHIR validation compliance
+6. WHERE fidelity level is "sequential", THE System SHALL process CDS usage scenario categories sequentially, analyzing coverage gaps and generating targeted scenarios for under-represented categories with ≥80% gap analysis accuracy
+7. WHEN fidelity level is "draft", THE System SHALL default to top-down and external generation modes only and SHALL complete generation within 60 seconds with ≥85% success rate
+8. WHEN requested fidelity level is not supported, THE System SHALL return error code "UNSUPPORTED_FIDELITY" and list all supported fidelity levels
+9. WHEN generation fails at higher fidelity levels, THE System SHALL automatically fall back to lower fidelity levels and report the fallback action with reason
 
 ### Requirement 5: CDS Taxonomy Classification
 

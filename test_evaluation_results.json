@@ -1,0 +1,31 @@
+{
+  "fidelity": "evaluation-only",
+  "total_scenarios": 23,
+  "coverage_score": 0.20652173913043478,
+  "category_matches": {
+    "differential_diagnosis": 0.0,
+    "treatment_recommendation": 0.75,
+    "drug_recommendation": 0.25,
+    "cancer_treatment": 0.0,
+    "diagnostic_test": 0.5,
+    "genetic_test": 0.0,
+    "next_best_action": 0.25,
+    "value_based_care": 0.5,
+    "lifestyle_education": 0.5,
+    "drug_interaction": 0.25,
+    "diagnostic_appropriateness": 0.0,
+    "adverse_event_monitoring": 0.5,
+    "case_management": 0.0,
+    "quality_metrics": 0.5,
+    "risk_stratification": 0.0,
+    "public_health_reporting": 0.0,
+    "shared_decision_support": 0.0,
+    "sdoh_integration": 0.0,
+    "patient_education": 0.5,
+    "guideline_retrieval": 0.25,
+    "protocol_driven_care": 0.0,
+    "documentation_support": 0.0,
+    "care_coordination": 0.0
+  },
+  "analysis_timestamp": "2025-11-09T12:00:00Z"
+}

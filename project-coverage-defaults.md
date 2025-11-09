@@ -58,20 +58,23 @@ coverage_targets:
 
   # Category to tier mappings (replaces hardcoded scenario IDs)
   category_mappings:
-    # Core clinical decisions - highest priority
+    # Core clinical decisions - highest priority (currently tested)
     treatment_recommendation: high
     drug_recommendation: high
     diagnostic_test: high
+    cancer_treatment: high        # Currently tested in oncology
 
     # Specialized care - conditional coverage
-    cancer_treatment: none        # Requires oncology specialist validation
     genetic_test: medium          # Specialized but stable requirements
+    differential_diagnosis: high  # Core diagnostic workflow
+    drug_interaction: high        # Safety critical
+    adverse_event_monitoring: high # Safety critical
+    diagnostic_appropriateness: high # Safety critical
 
     # Clinical workflow support - medium priority
     next_best_action: medium
-    adverse_event_monitoring: medium
-    drug_interaction: medium
-    diagnostic_appropriateness: medium
+    lifestyle_education: medium
+    value_based_care: medium
     protocol_driven_care: medium
     quality_metrics: medium
 
@@ -81,14 +84,47 @@ coverage_targets:
     documentation_support: low
     care_coordination: low
     patient_reminders: low
-    lifestyle_education: low
     guideline_retrieval: low
 
     # Emerging and specialized areas - minimal coverage initially
-    value_based_care: low
-    public_health_reporting: low
     shared_decision_support: low
+    public_health_reporting: low
     sdoh_integration: low
+
+  # CDS Usage Scenario Coverage Matrix (NEW)
+  cds_usage_scenario_mappings:
+    # Patient Encounter: In-Workflow Decision Support
+    "1.1.1": { category: "differential_diagnosis", tier: "high", tested: false }
+    "1.1.2": { category: "treatment_recommendation", tier: "high", tested: true }
+    "1.1.3": { category: "drug_recommendation", tier: "high", tested: true }
+    "1.1.4": { category: "cancer_treatment", tier: "high", tested: true }
+    "1.1.5": { category: "diagnostic_test", tier: "high", tested: true }
+    "1.1.6": { category: "genetic_test", tier: "medium", tested: false }
+    "1.1.7": { category: "next_best_action", tier: "medium", tested: false }
+    "1.1.8": { category: "value_based_care", tier: "medium", tested: false }
+    "1.1.9": { category: "lifestyle_education", tier: "medium", tested: false }
+
+    # Post-Action Error Prevention
+    "1.2.1": { category: "drug_interaction", tier: "high", tested: false }
+    "1.2.2": { category: "diagnostic_appropriateness", tier: "high", tested: false }
+    "1.2.3": { category: "adverse_event_monitoring", tier: "high", tested: false }
+
+    # Population-Based CDS
+    "2.1.1": { category: "case_management", tier: "low", tested: false }
+    "2.2.1": { category: "quality_metrics", tier: "medium", tested: false }
+    "2.3.1": { category: "risk_stratification", tier: "low", tested: false }
+    "2.4.1": { category: "public_health_reporting", tier: "low", tested: false }
+
+    # Patient-Centered CDS
+    "3.1.1": { category: "shared_decision_support", tier: "low", tested: false }
+    "3.2.1": { category: "sdoh_integration", tier: "low", tested: false }
+    "3.3.1": { category: "patient_reminders", tier: "low", tested: false }
+
+    # Information Retrieval and Protocol Support
+    "4.1.1": { category: "guideline_retrieval", tier: "low", tested: false }
+    "4.2.1": { category: "protocol_driven_care", tier: "medium", tested: false }
+    "4.3.1": { category: "documentation_support", tier: "low", tested: false }
+    "4.4.1": { category: "care_coordination", tier: "low", tested: false }
 
   # Quality thresholds and validation rules
   quality_thresholds:
