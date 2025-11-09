@@ -28,6 +28,12 @@ class CDSUsageScenario(Enum):
     DRUG_INTERACTION = "1.2.1"          # What should I think about (safety)?
     TEST_APPROPRIATENESS = "1.2.2"      # What should I think about (appropriateness)?
     ADVERSE_EVENT = "1.2.3"             # What should I think about (monitoring)?
+    VALUE_BASED_CARE = "1.1.8"          # Quality gap closure alerts
+    SHARED_DECISION_MAKING = "3.1.1"    # Collaborative planning with patient preferences
+    SDOH_INTEGRATION = "3.2.1"          # Social context adjustment
+    PROTOCOL_DRIVEN_CARE = "4.2.1"      # Workflow automation
+    DOCUMENTATION_SUPPORT = "4.3.1"     # Documentation assistance
+    CARE_COORDINATION = "4.4.1"         # Escalation and handoff alerts
 
 @dataclass
 class ClinicalScenario:
@@ -116,6 +122,18 @@ class GuidelineAnalyzer:
             r'(?i)evaluate ([^.]*) for ([^.]*?)\.',
             # Rehabilitation/Therapy: "Recommend X for Y"
             r'(?i)recommend ([^.]*) for ([^.]*?)\.',
+            # Value-based care: "Consider quality metrics for X"
+            r'(?i)consider quality metrics for ([^.]*?)\.',
+            # Shared decision making: "Discuss X with patient"
+            r'(?i)discuss ([^.]*) with patient(?:s)?\.',
+            # SDOH: "Assess social determinants for X"
+            r'(?i)assess social determinants for ([^.]*?)\.',
+            # Protocols: "Follow protocol for X"
+            r'(?i)follow protocol for ([^.]*?)\.',
+            # Documentation: "Document X in the record"
+            r'(?i)document ([^.]*) in the record\.',
+            # Care coordination: "Coordinate care for X"
+            r'(?i)coordinate care for ([^.]*?)\.',
         ]
 
         decisions = []
@@ -134,6 +152,48 @@ class GuidelineAnalyzer:
                     decision = {
                         'action': match.group(1).strip(),
                         'patient_criteria': [match.group(2).strip()],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For value-based care pattern "Consider quality metrics for X"
+                elif 'quality metrics for' in pattern:
+                    decision = {
+                        'action': f'consider quality metrics for {match.group(1).strip()}',
+                        'patient_criteria': ['quality improvement'],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For shared decision making pattern "Discuss X with patient"
+                elif 'discuss' in pattern and 'with patient' in pattern:
+                    decision = {
+                        'action': f'discuss {match.group(1).strip()} with patient',
+                        'patient_criteria': ['shared decision making'],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For SDOH pattern "Assess social determinants for X"
+                elif 'social determinants for' in pattern:
+                    decision = {
+                        'action': f'assess social determinants for {match.group(1).strip()}',
+                        'patient_criteria': ['SDOH consideration'],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For protocol pattern "Follow protocol for X"
+                elif 'follow protocol for' in pattern:
+                    decision = {
+                        'action': f'follow protocol for {match.group(1).strip()}',
+                        'patient_criteria': ['protocol-driven care'],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For documentation pattern "Document X in the record"
+                elif 'document' in pattern and 'in the record' in pattern:
+                    decision = {
+                        'action': f'document {match.group(1).strip()} in the record',
+                        'patient_criteria': ['documentation support'],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For care coordination pattern "Coordinate care for X"
+                elif 'coordinate care for' in pattern:
+                    decision = {
+                        'action': f'coordinate care for {match.group(1).strip()}',
+                        'patient_criteria': ['care coordination'],
                         'context': text[max(0, match.start() - 100):match.end() + 100].strip()
                     }
                 # For monitoring pattern "Monitor patients with X for Y": group 1 is condition, group 2 is what to monitor
@@ -211,6 +271,15 @@ class GuidelineAnalyzer:
 
         scenarios = []
 
+        # Shared Decision Making (3.1.1) - Collaborative planning with patient preferences
+        # Check this early since it can overlap with treatment recommendations
+        criteria_text = ' '.join(criteria)
+        condition1 = 'discuss' in action and 'patient' in action
+        condition2 = any(word in context for word in ['patient preference', 'shared decision', 'collaborative planning'])
+        condition3 = 'shared decision' in criteria_text
+        if condition1 or condition2 or condition3:
+            scenarios.append(CDSUsageScenario.SHARED_DECISION_MAKING)
+
         # Differential Diagnosis (1.1.1) - "What should I think about (diagnosis)?"
         # Look for diagnostic reasoning, differential considerations, diagnostic thinking
         if any(word in action for word in ['consider', 'think about', 'rule out', 'differential', 'diagnosis', 'diagnostic']) and \
@@ -246,6 +315,42 @@ class GuidelineAnalyzer:
         if any(word in action for word in ['appropriate', 'indicated', 'indicated for', 'when to', 'consider testing']) or \
            any(word in context for word in ['appropriateness', 'indicated', 'when to test', 'consider testing']):
             scenarios.append(CDSUsageScenario.TEST_APPROPRIATENESS)
+
+        # Value-Based Care (1.1.8) - Quality gap closure alerts
+        # Look for quality metrics, value-based care, preventive care reminders
+        if any(word in action for word in ['quality', 'metric', 'value-based', 'preventive', 'screening', 'gap', 'closure']) or \
+           any(word in context for word in ['quality measure', 'value-based care', 'preventive care']):
+            scenarios.append(CDSUsageScenario.VALUE_BASED_CARE)
+
+        # Shared Decision Making (3.1.1) - Collaborative planning with patient preferences
+        # Look for patient preferences, shared decision, collaborative planning
+        if any(word in action for word in ['preference', 'shared decision', 'collaborative', 'patient choice', 'discuss with patient']) or \
+           any(word in context for word in ['patient preference', 'shared decision', 'collaborative planning']):
+            scenarios.append(CDSUsageScenario.SHARED_DECISION_MAKING)
+
+        # SDOH Integration (3.2.1) - Social context adjustment
+        # Look for social determinants, food security, housing, transportation
+        if any(word in action for word in ['food', 'housing', 'transportation', 'social', 'determinant', 'security', 'stability']) or \
+           any(word in context for word in ['social determinant', 'food security', 'housing stability', 'transportation access']):
+            scenarios.append(CDSUsageScenario.SDOH_INTEGRATION)
+
+        # Protocol-Driven Care (4.2.1) - Workflow automation
+        # Look for protocols, standing orders, automated workflows
+        if any(word in action for word in ['protocol', 'standing order', 'automated', 'workflow', 'sepsis', 'management']) or \
+           any(word in context for word in ['clinical protocol', 'standing order', 'automated workflow']):
+            scenarios.append(CDSUsageScenario.PROTOCOL_DRIVEN_CARE)
+
+        # Documentation Support (4.3.1) - Documentation assistance
+        # Look for documentation, templates, compliance, reporting
+        if any(word in action for word in ['document', 'template', 'compliance', 'reporting', 'narrative']) or \
+           any(word in context for word in ['documentation template', 'compliant narrative', 'reporting']):
+            scenarios.append(CDSUsageScenario.DOCUMENTATION_SUPPORT)
+
+        # Care Coordination (4.4.1) - Escalation and handoff alerts
+        # Look for coordination, transition, discharge, follow-up, referral
+        if any(word in action for word in ['coordinate', 'transition', 'discharge', 'follow-up', 'refer', 'escalate']) or \
+           any(word in context for word in ['care coordination', 'care transition', 'discharge planning', 'follow-up care']):
+            scenarios.append(CDSUsageScenario.CARE_COORDINATION)
 
         # Monitoring/follow-up
         if any(word in action for word in ['monitor', 'follow', 'assess', 'evaluate']):
@@ -341,6 +446,12 @@ class GuidelineAnalyzer:
             Consider differential diagnosis including atrial flutter and other supraventricular tachycardias.
             Assess for drug interactions with warfarin and common medications.
             Test is appropriate for patients with symptoms suggestive of atrial fibrillation.
+            Consider quality metrics for anticoagulation therapy.
+            Discuss treatment options with patient preferences.
+            Assess social determinants for medication adherence.
+            Follow protocol for anticoagulation management.
+            Document anticoagulation plan in the record.
+            Coordinate care for complex atrial fibrillation cases.
             """
         elif 'hodgkin' in str(pdf_path).lower():
             return """
@@ -351,6 +462,12 @@ class GuidelineAnalyzer:
             Consider differential diagnosis including non-Hodgkin lymphoma and other malignancies.
             Assess for drug interactions with chemotherapy agents and supportive medications.
             Contraindicated in patients with severe cardiac dysfunction.
+            Consider quality metrics for cancer treatment outcomes.
+            Discuss treatment options with patient considering quality of life.
+            Assess social determinants including transportation for chemotherapy.
+            Follow protocol for chemotherapy administration.
+            Document treatment response in the record.
+            Coordinate care for multidisciplinary oncology management.
             """
         elif 'diabetes' in str(pdf_path).lower() or 'ADA' in pdf_path.name:
             return """
@@ -364,6 +481,12 @@ class GuidelineAnalyzer:
             Consider safety with metformin in patients with renal impairment.
             Test is appropriate for patients with risk factors for diabetes.
             Assess for drug interactions with insulin and oral hypoglycemics.
+            Consider quality metrics for diabetes management.
+            Discuss medication options with patient lifestyle preferences.
+            Assess social determinants including food security for diabetes management.
+            Follow protocol for insulin dose adjustment.
+            Document glycemic control in the record.
+            Coordinate care for diabetic patients with multiple comorbidities.
             """
         else:
             return f"Mock guideline content for {pdf_path.name}"

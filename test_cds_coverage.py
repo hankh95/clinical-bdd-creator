@@ -37,6 +37,12 @@ def test_cds_scenario_coverage():
     Evaluate next best steps for complex cases requiring multidisciplinary care.
     Consider lifestyle modifications for all patients.
     Recommend cardiac rehabilitation for heart failure patients.
+    Consider quality metrics for anticoagulation therapy.
+    Discuss treatment options with patient.
+    Assess social determinants for medication adherence.
+    Follow protocol for anticoagulation management.
+    Document anticoagulation plan in the record.
+    Coordinate care for complex atrial fibrillation cases.
     """
 
     # Analyze the guideline
@@ -50,10 +56,10 @@ def test_cds_scenario_coverage():
         print(f"{scenario_type.value}: {count} scenarios")
         total_scenarios += count
 
-    print(f"\nTotal scenarios detected: {total_scenarios}")
-    print(f"Unique CDS categories covered: {len(analysis.coverage_report)}/10")
+    print(f"Total scenarios detected: {total_scenarios}")
+    print(f"Unique CDS categories covered: {len(analysis.coverage_report)}/16")
 
-    # Check if we now cover all 10 scenarios
+    # Check if we now cover all 16 scenarios
     expected_scenarios = {
         '1.1.1',  # DIFFERENTIAL_DX
         '1.1.2',  # TREATMENT_RECOMMENDATION
@@ -65,6 +71,12 @@ def test_cds_scenario_coverage():
         '1.2.1',  # DRUG_INTERACTION
         '1.2.2',  # TEST_APPROPRIATENESS
         '1.2.3',  # ADVERSE_EVENT
+        '1.1.8',  # VALUE_BASED_CARE
+        '3.1.1',  # SHARED_DECISION_MAKING
+        '3.2.1',  # SDOH_INTEGRATION
+        '4.2.1',  # PROTOCOL_DRIVEN_CARE
+        '4.3.1',  # DOCUMENTATION_SUPPORT
+        '4.4.1',  # CARE_COORDINATION
     }
 
     covered_scenarios = {scenario.value for scenario in analysis.coverage_report.keys()}
@@ -74,7 +86,7 @@ def test_cds_scenario_coverage():
         print(f"\n❌ Still missing scenarios: {missing_scenarios}")
         return False
     else:
-        print("\n✅ SUCCESS: All 10 CDS scenarios are now covered!")
+        print("\n✅ SUCCESS: All 16 CDS scenarios are now covered!")
         return True
 
 if __name__ == "__main__":
