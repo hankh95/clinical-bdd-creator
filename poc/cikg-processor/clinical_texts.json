@@ -1,0 +1,27 @@
+[
+  {
+    "text": "For patients with type 2 diabetes and HbA1c > 7.0%, metformin should be initiated as first-line therapy unless contraindicated.",
+    "source": "ADA Diabetes Guidelines",
+    "category": "diabetes_management"
+  },
+  {
+    "text": "When systolic blood pressure >= 140 mmHg in adult patients, ACE inhibitor therapy should be initiated unless contraindicated.",
+    "source": "JNC-8 Hypertension Guidelines",
+    "category": "hypertension_management"
+  },
+  {
+    "text": "For patients with acute coronary syndrome and elevated troponin, dual antiplatelet therapy must be initiated immediately.",
+    "source": "ACC/AHA ACS Guidelines",
+    "category": "acs_management"
+  },
+  {
+    "text": "If a patient with sepsis has lactate > 4.0 mmol/L, broad-spectrum antibiotics should be administered within 1 hour.",
+    "source": "Surviving Sepsis Campaign",
+    "category": "sepsis_management"
+  },
+  {
+    "text": "When LDL cholesterol > 190 mg/dL, high-intensity statin therapy is recommended for cardiovascular risk reduction.",
+    "source": "ACC/AHA Cholesterol Guidelines",
+    "category": "lipid_management"
+  }
+]
