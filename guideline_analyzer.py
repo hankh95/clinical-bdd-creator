@@ -83,6 +83,9 @@ class GuidelineAnalyzer:
         - "Recommend X for patients with Y"
         - "Order X for patients with Y"
         - "Monitor patients with X for Y"
+        - "Consider differential diagnosis including X"
+        - "Assess for drug interactions with Y"
+        - "Test is appropriate for patients with X"
         """
         decision_patterns = [
             # Simple treatment recommendations: "For patients with X, recommend Y"
@@ -95,6 +98,24 @@ class GuidelineAnalyzer:
             r'(?i)order ([^.]*) for ([^.]*?)\.',
             # Monitoring: "Monitor patients with X for Y"
             r'(?i)monitor patients with ([^,]*?) for ([^.]*?)\.',
+            # Differential diagnosis: "Consider differential diagnosis including X"
+            r'(?i)consider differential diagnosis including ([^.]*?)\.',
+            # Drug interactions: "Assess for drug interactions with X"
+            r'(?i)assess for drug interactions with ([^.]*?)\.',
+            # Safety considerations: "Consider safety with X"
+            r'(?i)consider safety with ([^.]*?)\.',
+            # Test appropriateness: "Test is appropriate for X"
+            r'(?i)(?:test|testing) is appropriate for ([^.]*?)\.',
+            # Contraindications: "Contraindicated in patients with X"
+            r'(?i)contraindicated in patients with ([^.]*?)\.',
+            # General considerations: "Consider X in patients with Y"
+            r'(?i)consider ([^.]*) in patients with ([^.]*?)\.',
+            # General considerations: "Consider X for Y"
+            r'(?i)consider ([^.]*) for ([^.]*?)\.',
+            # Evaluate/Assess: "Evaluate X for Y"
+            r'(?i)evaluate ([^.]*) for ([^.]*?)\.',
+            # Rehabilitation/Therapy: "Recommend X for Y"
+            r'(?i)recommend ([^.]*) for ([^.]*?)\.',
         ]
 
         decisions = []
@@ -102,10 +123,17 @@ class GuidelineAnalyzer:
             matches = re.finditer(pattern, text)
             for match in matches:
                 # For pattern "For patients with X, recommend Y": group 1 is condition, group 2 is action
-                if 'for patients with' in pattern and 'recommend' in pattern:
+                if 'for patients with' in pattern and 'recommend' in pattern and pattern.count('patients with') == 1:
                     decision = {
                         'action': match.group(2).strip(),
                         'patient_criteria': [match.group(1).strip()],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For general "Recommend X for Y" patterns (not the "for patients with" one above)
+                elif 'recommend' in pattern and 'for patients with' not in pattern:
+                    decision = {
+                        'action': match.group(1).strip(),
+                        'patient_criteria': [match.group(2).strip()],
                         'context': text[max(0, match.start() - 100):match.end() + 100].strip()
                     }
                 # For monitoring pattern "Monitor patients with X for Y": group 1 is condition, group 2 is what to monitor
@@ -113,6 +141,48 @@ class GuidelineAnalyzer:
                     decision = {
                         'action': f'monitor for {match.group(2).strip()}',
                         'patient_criteria': [match.group(1).strip()],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For differential diagnosis pattern "Consider differential diagnosis including X"
+                elif 'differential diagnosis including' in pattern:
+                    decision = {
+                        'action': f'consider differential diagnosis including {match.group(1).strip()}',
+                        'patient_criteria': ['differential diagnosis consideration'],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For drug interactions pattern "Assess for drug interactions with X"
+                elif 'drug interactions with' in pattern:
+                    decision = {
+                        'action': f'assess for drug interactions with {match.group(1).strip()}',
+                        'patient_criteria': ['drug safety consideration'],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For safety pattern "Consider safety with X"
+                elif 'consider safety with' in pattern:
+                    decision = {
+                        'action': f'consider safety with {match.group(1).strip()}',
+                        'patient_criteria': ['safety consideration'],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For test appropriateness pattern "Test is appropriate for X"
+                elif 'is appropriate for' in pattern:
+                    decision = {
+                        'action': f'test is appropriate for {match.group(1).strip()}',
+                        'patient_criteria': [match.group(1).strip()],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For contraindications pattern "Contraindicated in patients with X"
+                elif 'contraindicated in patients with' in pattern:
+                    decision = {
+                        'action': f'contraindicated in patients with {match.group(1).strip()}',
+                        'patient_criteria': [match.group(1).strip()],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For general considerations "Consider X in patients with Y": group 1 is consideration, group 2 is condition
+                elif 'consider' in pattern and 'in patients with' in pattern and pattern.count('patients with') == 1:
+                    decision = {
+                        'action': f'consider {match.group(1).strip()}',
+                        'patient_criteria': [match.group(2).strip()],
                         'context': text[max(0, match.start() - 100):match.end() + 100].strip()
                     }
                 # For general ordering pattern "Order X for Y": group 1 is action, group 2 is criteria/purpose
@@ -141,9 +211,15 @@ class GuidelineAnalyzer:
 
         scenarios = []
 
+        # Differential Diagnosis (1.1.1) - "What should I think about (diagnosis)?"
+        # Look for diagnostic reasoning, differential considerations, diagnostic thinking
+        if any(word in action for word in ['consider', 'think about', 'rule out', 'differential', 'diagnosis', 'diagnostic']) and \
+           any(word in action for word in ['differential', 'diagnosis', 'diagnostic', 'considerations']):
+            scenarios.append(CDSUsageScenario.DIFFERENTIAL_DX)
+
         # Treatment recommendations
-        if any(word in action for word in ['treatment', 'therapy', 'medication', 'drug', 'chemotherapy', 'radiation', 'anticoagulation']):
-            if 'cancer' in criteria or 'tumor' in criteria:
+        if any(word in action for word in ['treatment', 'therapy', 'medication', 'drug', 'chemotherapy', 'radiation', 'anticoagulation', 'rehabilitation', 'rehab', 'counseling', 'modification', 'lifestyle']):
+            if 'cancer' in criteria or 'tumor' in criteria or 'lymphoma' in criteria or 'carcinoma' in criteria or 'malignanc' in criteria:
                 scenarios.append(CDSUsageScenario.CANCER_TREATMENT)
             elif any(word in action for word in ['medication', 'drug', 'dose', 'prescribe', 'anticoagulation', 'warfarin', 'doac']):
                 scenarios.append(CDSUsageScenario.DRUG_RECOMMENDATION)
@@ -151,13 +227,25 @@ class GuidelineAnalyzer:
                 scenarios.append(CDSUsageScenario.TREATMENT_RECOMMENDATION)
 
         # Test ordering - check both action and context for ordering keywords
-        if (any(word in action for word in ['order', 'perform', 'obtain']) or 
+        if (any(word in action for word in ['order', 'perform', 'obtain']) or
             any(word in context for word in ['order', 'perform', 'obtain'])) and \
            any(word in action for word in ['score', 'test', 'assessment', 'scan', 'ct', 'mri', 'lab', 'evaluation']):
             if 'genetic' in action or 'dna' in action:
                 scenarios.append(CDSUsageScenario.GENETIC_TEST)
             else:
                 scenarios.append(CDSUsageScenario.DIAGNOSTIC_TEST)
+
+        # Drug Interaction/Safety (1.2.1) - "What should I think about (safety)?"
+        # Look for safety considerations, interactions, contraindications
+        if any(word in action for word in ['interaction', 'contraindication', 'safety', 'adverse', 'allergy', 'caution']) or \
+           any(word in context for word in ['interaction', 'contraindication', 'safety', 'adverse', 'allergy', 'caution']):
+            scenarios.append(CDSUsageScenario.DRUG_INTERACTION)
+
+        # Test Appropriateness (1.2.2) - "What should I think about (appropriateness)?"
+        # Look for appropriateness considerations, indications, when to test
+        if any(word in action for word in ['appropriate', 'indicated', 'indicated for', 'when to', 'consider testing']) or \
+           any(word in context for word in ['appropriateness', 'indicated', 'when to test', 'consider testing']):
+            scenarios.append(CDSUsageScenario.TEST_APPROPRIATENESS)
 
         # Monitoring/follow-up
         if any(word in action for word in ['monitor', 'follow', 'assess', 'evaluate']):
@@ -250,6 +338,9 @@ class GuidelineAnalyzer:
             For patients with atrial fibrillation and high bleeding risk, recommend anticoagulation with warfarin.
             Order CHA2DS2-VASc score for stroke risk assessment.
             Monitor patients with atrial fibrillation for bleeding complications.
+            Consider differential diagnosis including atrial flutter and other supraventricular tachycardias.
+            Assess for drug interactions with warfarin and common medications.
+            Test is appropriate for patients with symptoms suggestive of atrial fibrillation.
             """
         elif 'hodgkin' in str(pdf_path).lower():
             return """
@@ -257,6 +348,9 @@ class GuidelineAnalyzer:
             For patients with Hodgkin's lymphoma stage III-IV, recommend escalated BEACOPP chemotherapy.
             Order PET-CT scan for staging and response assessment.
             Monitor patients with Hodgkin's lymphoma for treatment response.
+            Consider differential diagnosis including non-Hodgkin lymphoma and other malignancies.
+            Assess for drug interactions with chemotherapy agents and supportive medications.
+            Contraindicated in patients with severe cardiac dysfunction.
             """
         elif 'diabetes' in str(pdf_path).lower() or 'ADA' in pdf_path.name:
             return """
@@ -267,6 +361,9 @@ class GuidelineAnalyzer:
             Monitor patients with diabetes for hypoglycemia and hyperglycemia.
             For patients with type 1 diabetes, recommend intensive insulin therapy.
             Order lipid profile for cardiovascular risk assessment in diabetic patients.
+            Consider safety with metformin in patients with renal impairment.
+            Test is appropriate for patients with risk factors for diabetes.
+            Assess for drug interactions with insulin and oral hypoglycemics.
             """
         else:
             return f"Mock guideline content for {pdf_path.name}"
