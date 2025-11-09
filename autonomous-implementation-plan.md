@@ -8,6 +8,27 @@
 
 Implement enhanced testing coverage by adding 3 new fidelity levels and expanding from 4 to 23 CDS usage scenario categories. Current coverage: 17% (4/23 categories). Target: 100% coverage with evaluation-focused fidelity levels.
 
+## 📊 Progress Monitoring
+
+**GitHub Issue:** [#5 - Enhanced Testing Coverage Implementation Progress](https://github.com/hankh95/clinical-bdd-creator/issues/5)
+**Monitor Script:** `progress_monitor.sh`
+**Update Frequency:** After each phase completion and major milestones
+
+### Monitoring Features:
+- ✅ Real-time progress tracking on GitHub Issues
+- ✅ Automatic commit history with progress updates
+- ✅ Phase completion status with checkboxes
+- ✅ Coverage percentage calculations
+- ✅ Recent activity log from git commits
+- ✅ Mobile-friendly updates via GitHub app
+
+### How to Monitor:
+1. **GitHub App:** Check issue #5 for real-time updates
+2. **Commit History:** View progress commits in repository
+3. **Progress Script:** Run `./progress_monitor.sh` manually for instant update
+
+---
+
 ## 📋 Implementation Roadmap
 
 ### Phase 1: Evaluation-Only Fidelity Mode
