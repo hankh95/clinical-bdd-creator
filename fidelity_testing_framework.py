@@ -146,8 +146,21 @@ import json
 sys.path.insert(0, r"{self.project_root / "phase6-ai-validation"}")
 
 # Mock dependencies
+from dataclasses import dataclass
+from typing import Optional, List
+
+@dataclass
+class MockClinicalScenario:
+    scenario: str
+    condition: str
+    action: str
+    context: str
+    contraindications: Optional[List[str]] = None
+    expected_outcome: Optional[str] = None
+
 class MockBDDGenerator:
-    pass
+    def generate_feature(self, scenario):
+        return f"Feature: {{scenario.scenario}}\\n  Scenario: Test scenario\\n    Given test context\\n    When test condition\\n    Then test outcome"
 
 class MockCIKGProcessor:
     pass
@@ -160,7 +173,7 @@ class MockCDSUsageScenario:
 
 sys.modules['poc_bdd_generator'] = type(sys)('poc_bdd_generator')
 sys.modules['poc_bdd_generator'].BDDGenerator = MockBDDGenerator
-sys.modules['poc_bdd_generator'].ClinicalScenario = type('ClinicalScenario', (), {{}})
+sys.modules['poc_bdd_generator'].ClinicalScenario = MockClinicalScenario
 
 sys.modules['poc_cikg_processor'] = type(sys)('poc_cikg_processor')
 sys.modules['poc_cikg_processor'].CIKGProcessor = MockCIKGProcessor
@@ -491,7 +504,8 @@ print(json.dumps(result))
 
             if successful_results:
                 avg_time = statistics.mean(r.execution_time for r in successful_results)
-                success_rate = len(successful_results) / len([r for guideline_results in all_results.values() if mode in guideline_results])
+                total_tests_for_mode = sum(1 for guideline_results in all_results.values() if mode in guideline_results)
+                success_rate = len(successful_results) / total_tests_for_mode if total_tests_for_mode > 0 else 0
                 mode_performance[mode] = {"avg_time": avg_time, "success_rate": success_rate}
 
         if mode_performance:
@@ -613,13 +627,13 @@ def main():
         report = framework.run_comprehensive_test(guideline_names, fidelity_modes)
         framework.save_reports(report, args.per_guideline_reports, args.comprehensive_report)
 
-        print("
-🎉 Fidelity testing completed successfully!"        print(f"📊 Results saved to: {framework.output_dir}")
+        print("\n🎉 Fidelity testing completed successfully!")
+        print(f"📊 Results saved to: {framework.output_dir}")
 
         # Print summary
         perf = report.performance_summary
         success_rate = perf['successful_tests'] / perf['total_tests'] * 100 if perf['total_tests'] > 0 else 0
-        print(".1f"
+        print(f"✅ Success Rate: {success_rate:.1f}%")
     except Exception as e:
         print(f"❌ Testing failed: {e}")
         sys.exit(1)
