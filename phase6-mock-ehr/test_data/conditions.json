@@ -1,0 +1,173 @@
+[
+  {
+    "resourceType": "Condition",
+    "id": "condition-hypertension-001",
+    "clinicalStatus": {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+          "code": "active",
+          "display": "Active"
+        }
+      ]
+    },
+    "verificationStatus": {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+          "code": "confirmed",
+          "display": "Confirmed"
+        }
+      ]
+    },
+    "category": [
+      {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+            "code": "encounter-diagnosis",
+            "display": "Encounter Diagnosis"
+          }
+        ]
+      }
+    ],
+    "code": {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "38341003",
+          "display": "Hypertension"
+        },
+        {
+          "system": "http://hl7.org/fhir/sid/icd-10",
+          "code": "I10",
+          "display": "Essential (primary) hypertension"
+        }
+      ],
+      "text": "Hypertension"
+    },
+    "subject": {
+      "reference": "Patient/patient-hypertension-001",
+      "display": "John Smith"
+    },
+    "onsetDateTime": "2023-05-10",
+    "recordedDate": "2023-05-15"
+  },
+  {
+    "resourceType": "Condition",
+    "id": "condition-diabetes-001",
+    "clinicalStatus": {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+          "code": "active",
+          "display": "Active"
+        }
+      ]
+    },
+    "verificationStatus": {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+          "code": "confirmed",
+          "display": "Confirmed"
+        }
+      ]
+    },
+    "category": [
+      {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+            "code": "encounter-diagnosis",
+            "display": "Encounter Diagnosis"
+          }
+        ]
+      }
+    ],
+    "code": {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "44054006",
+          "display": "Type 2 diabetes mellitus"
+        },
+        {
+          "system": "http://hl7.org/fhir/sid/icd-10",
+          "code": "E11.9",
+          "display": "Type 2 diabetes mellitus without complications"
+        }
+      ],
+      "text": "Type 2 Diabetes Mellitus"
+    },
+    "subject": {
+      "reference": "Patient/patient-diabetes-001",
+      "display": "Mary Johnson"
+    },
+    "onsetDateTime": "2020-03-20",
+    "recordedDate": "2020-03-25"
+  },
+  {
+    "resourceType": "Condition",
+    "id": "condition-sepsis-001",
+    "clinicalStatus": {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+          "code": "active",
+          "display": "Active"
+        }
+      ]
+    },
+    "verificationStatus": {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+          "code": "confirmed",
+          "display": "Confirmed"
+        }
+      ]
+    },
+    "category": [
+      {
+        "coding": [
+          {
+          "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+            "code": "encounter-diagnosis",
+            "display": "Encounter Diagnosis"
+          }
+        ]
+      }
+    ],
+    "severity": {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "24484000",
+          "display": "Severe"
+        }
+      ]
+    },
+    "code": {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "91302008",
+          "display": "Sepsis"
+        },
+        {
+          "system": "http://hl7.org/fhir/sid/icd-10",
+          "code": "A41.9",
+          "display": "Sepsis, unspecified organism"
+        }
+      ],
+      "text": "Sepsis"
+    },
+    "subject": {
+      "reference": "Patient/patient-sepsis-001",
+      "display": "Robert Williams"
+    },
+    "onsetDateTime": "2025-11-09T02:00:00Z",
+    "recordedDate": "2025-11-09T02:30:00Z"
+  }
+]
