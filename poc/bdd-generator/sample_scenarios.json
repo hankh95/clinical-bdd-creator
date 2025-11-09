@@ -1,0 +1,26 @@
+[
+  {
+    "scenario": "Hypertension Management",
+    "condition": "systolic BP >= 140 mmHg",
+    "action": "initiate ACE inhibitor therapy",
+    "context": "adult patient, no contraindications",
+    "contraindications": ["pregnancy", "bilateral renal artery stenosis"],
+    "expected_outcome": "the prescription should include dosage instructions"
+  },
+  {
+    "scenario": "Type 2 Diabetes Management",
+    "condition": "HbA1c >= 7.0%",
+    "action": "initiate metformin therapy",
+    "context": "newly diagnosed adult patient",
+    "contraindications": ["severe renal impairment", "metabolic acidosis"],
+    "expected_outcome": "lifestyle modification counseling should be provided"
+  },
+  {
+    "scenario": "Acute Coronary Syndrome",
+    "condition": "chest pain with elevated troponin",
+    "action": "initiate dual antiplatelet therapy",
+    "context": "adult patient with no bleeding risk",
+    "contraindications": ["active bleeding", "recent stroke"],
+    "expected_outcome": "urgent cardiology consultation should be ordered"
+  }
+]
