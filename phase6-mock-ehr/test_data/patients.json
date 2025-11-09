@@ -1,0 +1,113 @@
+[
+  {
+    "resourceType": "Patient",
+    "id": "patient-hypertension-001",
+    "identifier": [
+      {
+        "system": "http://hospital.example.org/patients",
+        "value": "HTN001"
+      }
+    ],
+    "active": true,
+    "name": [
+      {
+        "use": "official",
+        "family": "Smith",
+        "given": ["John", "Robert"]
+      }
+    ],
+    "gender": "male",
+    "birthDate": "1965-03-15",
+    "address": [
+      {
+        "use": "home",
+        "line": ["123 Main Street"],
+        "city": "Springfield",
+        "state": "IL",
+        "postalCode": "62701",
+        "country": "USA"
+      }
+    ],
+    "telecom": [
+      {
+        "system": "phone",
+        "value": "555-123-4567",
+        "use": "home"
+      }
+    ]
+  },
+  {
+    "resourceType": "Patient",
+    "id": "patient-diabetes-001",
+    "identifier": [
+      {
+        "system": "http://hospital.example.org/patients",
+        "value": "DM001"
+      }
+    ],
+    "active": true,
+    "name": [
+      {
+        "use": "official",
+        "family": "Johnson",
+        "given": ["Mary", "Ann"]
+      }
+    ],
+    "gender": "female",
+    "birthDate": "1972-08-22",
+    "address": [
+      {
+        "use": "home",
+        "line": ["456 Oak Avenue"],
+        "city": "Springfield",
+        "state": "IL",
+        "postalCode": "62702",
+        "country": "USA"
+      }
+    ],
+    "telecom": [
+      {
+        "system": "phone",
+        "value": "555-234-5678",
+        "use": "home"
+      }
+    ]
+  },
+  {
+    "resourceType": "Patient",
+    "id": "patient-sepsis-001",
+    "identifier": [
+      {
+        "system": "http://hospital.example.org/patients",
+        "value": "SEP001"
+      }
+    ],
+    "active": true,
+    "name": [
+      {
+        "use": "official",
+        "family": "Williams",
+        "given": ["Robert", "James"]
+      }
+    ],
+    "gender": "male",
+    "birthDate": "1985-11-30",
+    "address": [
+      {
+        "use": "home",
+        "line": ["789 Elm Street"],
+        "city": "Springfield",
+        "state": "IL",
+        "postalCode": "62703",
+        "country": "USA"
+      }
+    ],
+    "telecom": [
+      {
+        "system": "phone",
+        "value": "555-345-6789",
+        "use": "home"
+      }
+    ]
+  }
+]

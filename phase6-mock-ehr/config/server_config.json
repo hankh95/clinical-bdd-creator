@@ -1,0 +1,35 @@
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 5000,
+    "debug": true
+  },
+  "fhir": {
+    "version": "4.0.1",
+    "base_url": "http://localhost:5000/fhir"
+  },
+  "cds_hooks": {
+    "version": "1.0",
+    "discovery_url": "http://localhost:5000/cds-services"
+  },
+  "test_scenarios": {
+    "hypertension": {
+      "patient_id": "patient-hypertension-001",
+      "condition_id": "condition-hypertension-001",
+      "encounter_id": "encounter-001",
+      "key_observations": ["obs-bp-001"]
+    },
+    "diabetes": {
+      "patient_id": "patient-diabetes-001",
+      "condition_id": "condition-diabetes-001",
+      "encounter_id": "encounter-002",
+      "key_observations": ["obs-hba1c-001", "obs-glucose-001"]
+    },
+    "sepsis": {
+      "patient_id": "patient-sepsis-001",
+      "condition_id": "condition-sepsis-001",
+      "encounter_id": "encounter-003",
+      "key_observations": ["obs-temp-001", "obs-wbc-001", "obs-lactate-001"]
+    }
+  }
+}
