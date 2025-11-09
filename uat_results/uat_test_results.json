@@ -1,0 +1,151 @@
+{
+  "test_date": "2025-11-09T06:50:58.508211",
+  "total_guidelines": 8,
+  "successful": 8,
+  "failed": 0,
+  "success_rate": 100.0,
+  "total_time_sec": 0.0,
+  "total_time_min": 0.0,
+  "avg_time_per_guideline": 0.0,
+  "total_scenarios": 36,
+  "total_entities": 35,
+  "total_triples": 18,
+  "results": [
+    {
+      "guideline_name": "ACC-AFIB",
+      "guideline_path": "examples/guidelines/acc-afib/joglar-et-al-2023-acc-aha-accp-hrs-guideline-for-the-diagnosis-and-management-of-atrial-fibrillation.pdf",
+      "status": "success",
+      "start_time": 1762671058.5032828,
+      "metrics": {
+        "file_size_mb": 11.2,
+        "text_length": 469,
+        "entities_extracted": 4,
+        "gsrl_triples": 4,
+        "bdd_scenarios": 8,
+        "positive_scenarios": 4,
+        "negative_scenarios": 4
+      },
+      "scenario_file": "uat_results/scenarios/acc-afib.feature",
+      "processing_time_sec": 0.0
+    },
+    {
+      "guideline_name": "Diabetes Management",
+      "guideline_path": "examples/guidelines/diabetes-management/ADA_2025_Chapter_9_dc25s009.pdf",
+      "status": "success",
+      "start_time": 1762671058.50486,
+      "metrics": {
+        "file_size_mb": 1.79,
+        "text_length": 421,
+        "entities_extracted": 8,
+        "gsrl_triples": 3,
+        "bdd_scenarios": 6,
+        "positive_scenarios": 3,
+        "negative_scenarios": 3
+      },
+      "scenario_file": "uat_results/scenarios/diabetes_management.feature",
+      "processing_time_sec": 0.0
+    },
+    {
+      "guideline_name": "Breast Cancer",
+      "guideline_path": "examples/guidelines/nccn-cancer/breast.pdf",
+      "status": "success",
+      "start_time": 1762671058.505535,
+      "metrics": {
+        "file_size_mb": 3.47,
+        "text_length": 459,
+        "entities_extracted": 6,
+        "gsrl_triples": 4,
+        "bdd_scenarios": 8,
+        "positive_scenarios": 4,
+        "negative_scenarios": 4
+      },
+      "scenario_file": "uat_results/scenarios/breast_cancer.feature",
+      "processing_time_sec": 0.0
+    },
+    {
+      "guideline_name": "Colon Cancer",
+      "guideline_path": "examples/guidelines/nccn-cancer/colon.pdf",
+      "status": "success",
+      "start_time": 1762671058.5060992,
+      "metrics": {
+        "file_size_mb": 5.39,
+        "text_length": 417,
+        "entities_extracted": 6,
+        "gsrl_triples": 2,
+        "bdd_scenarios": 4,
+        "positive_scenarios": 2,
+        "negative_scenarios": 2
+      },
+      "scenario_file": "uat_results/scenarios/colon_cancer.feature",
+      "processing_time_sec": 0.0
+    },
+    {
+      "guideline_name": "Head and Neck Cancer",
+      "guideline_path": "examples/guidelines/nccn-cancer/head-and-neck.pdf",
+      "status": "success",
+      "start_time": 1762671058.5065417,
+      "metrics": {
+        "file_size_mb": 3.1,
+        "text_length": 430,
+        "entities_extracted": 2,
+        "gsrl_triples": 1,
+        "bdd_scenarios": 2,
+        "positive_scenarios": 1,
+        "negative_scenarios": 1
+      },
+      "scenario_file": "uat_results/scenarios/head_and_neck_cancer.feature",
+      "processing_time_sec": 0.0
+    },
+    {
+      "guideline_name": "Oropharyngeal Cancer",
+      "guideline_path": "examples/guidelines/nccn-cancer/hn-oropharyngeal-patient.pdf",
+      "status": "success",
+      "start_time": 1762671058.5070295,
+      "metrics": {
+        "file_size_mb": 1.33,
+        "text_length": 74,
+        "entities_extracted": 0,
+        "gsrl_triples": 0,
+        "bdd_scenarios": 0,
+        "positive_scenarios": 0,
+        "negative_scenarios": 0
+      },
+      "scenario_file": "uat_results/scenarios/oropharyngeal_cancer.feature",
+      "processing_time_sec": 0.0
+    },
+    {
+      "guideline_name": "Hodgkins Lymphoma",
+      "guideline_path": "examples/guidelines/nccn-cancer/hodgkins.pdf",
+      "status": "success",
+      "start_time": 1762671058.5072758,
+      "metrics": {
+        "file_size_mb": 1.79,
+        "text_length": 376,
+        "entities_extracted": 3,
+        "gsrl_triples": 2,
+        "bdd_scenarios": 4,
+        "positive_scenarios": 2,
+        "negative_scenarios": 2
+      },
+      "scenario_file": "uat_results/scenarios/hodgkins_lymphoma.feature",
+      "processing_time_sec": 0.0
+    },
+    {
+      "guideline_name": "NSCL Cancer",
+      "guideline_path": "examples/guidelines/nccn-cancer/nscl.pdf",
+      "status": "success",
+      "start_time": 1762671058.5077271,
+      "metrics": {
+        "file_size_mb": 3.54,
+        "text_length": 422,
+        "entities_extracted": 6,
+        "gsrl_triples": 2,
+        "bdd_scenarios": 4,
+        "positive_scenarios": 2,
+        "negative_scenarios": 2
+      },
+      "scenario_file": "uat_results/scenarios/nscl_cancer.feature",
+      "processing_time_sec": 0.0
+    }
+  ]
+}
