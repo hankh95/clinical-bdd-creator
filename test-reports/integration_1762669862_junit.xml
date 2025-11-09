@@ -1,0 +1,2 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuites name="Clinical BDD Integration Tests" time="2.021491" tests="0" failures="0"><testsuite name="Component Integration Tests" time="2.020865" tests="0" failures="0" /><testsuite name="E2E Clinical Workflow Tests" time="1.3e-05" tests="0" failures="0" /><testsuite name="Performance Validation Tests" time="3.2e-05" tests="0" failures="0" /><testsuite name="Security Validation Tests" time="4.9e-05" tests="0" failures="0" /></testsuites>

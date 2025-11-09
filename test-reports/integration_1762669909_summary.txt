@@ -1,0 +1,35 @@
+CLINICAL BDD INTEGRATION TEST SUMMARY
+==================================================
+
+Execution ID: integration_1762669909
+Timestamp: 2025-11-09 01:31:49.439632
+Total Duration: 2.35s
+Overall Status: FAILED
+
+TEST SUITE RESULTS:
+------------------------------
+Component Integration Tests:
+  Tests: 8/8 passed
+  Success Rate: 100.0%
+  Duration: 2.02s
+
+E2E Clinical Workflow Tests:
+  Tests: 0/0 passed
+  Success Rate: 0.0%
+  Duration: 0.00s
+
+Performance Validation Tests:
+  Tests: 7/7 passed
+  Success Rate: 100.0%
+  Duration: 0.32s
+
+Security Validation Tests:
+  Tests: 2/7 passed
+  Success Rate: 28.6%
+  Duration: 0.01s
+
+RECOMMENDATIONS:
+--------------------
+• Address failures in 2 test suite(s)
+• Implement security fixes for HIPAA compliance
+• Critical: Improve test reliability and coverage

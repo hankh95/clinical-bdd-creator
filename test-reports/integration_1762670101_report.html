@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clinical BDD Integration Test Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background: #f0f0f0; padding: 20px; border-radius: 5px; }
+        .suite { margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .passed { background: #d4edda; border-color: #c3e6cb; }
+        .failed { background: #f8d7da; border-color: #f5c6cb; }
+        .metrics { background: #e9ecef; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Clinical BDD Integration Test Report</h1>
+        <p><strong>Execution ID:</strong> integration_1762670101</p>
+        <p><strong>Timestamp:</strong> 2025-11-09 01:35:01.288624</p>
+        <p><strong>Total Duration:</strong> 2.35s</p>
+        <p><strong>Overall Status:</strong> ❌ FAILED</p>
+    </div>
+
+    <h2>Test Suite Results</h2>
+
+    <div class="suite passed">
+        <h3>Component Integration Tests</h3>
+        <p><strong>Duration:</strong> 2.02s</p>
+        <p><strong>Tests:</strong> 8/8 passed</p>
+        <p><strong>Success Rate:</strong> 100.0%</p>
+        <div class="metrics">
+            <strong>Metrics:</strong> {}
+        </div>
+    </div>
+
+    <div class="suite passed">
+        <h3>E2E Clinical Workflow Tests</h3>
+        <p><strong>Duration:</strong> 0.01s</p>
+        <p><strong>Tests:</strong> 3/3 passed</p>
+        <p><strong>Success Rate:</strong> 100.0%</p>
+        <div class="metrics">
+            <strong>Metrics:</strong> {}
+        </div>
+    </div>
+
+    <div class="suite passed">
+        <h3>Performance Validation Tests</h3>
+        <p><strong>Duration:</strong> 0.31s</p>
+        <p><strong>Tests:</strong> 7/7 passed</p>
+        <p><strong>Success Rate:</strong> 100.0%</p>
+        <div class="metrics">
+            <strong>Metrics:</strong> {
+  "baseline_performance": {
+    "single_analysis_time": 0.10702300071716309,
+    "memory_delta_mb": 0.0003814697265625,
+    "cpu_usage_percent": 31.700000000000003,
+    "scenarios_generated": 8,
+    "cds_types_detected": 4
+  },
+  "load_testing": {
+    "1": {
+      "total_time": 0.002671957015991211,
+      "throughput_rps": 374.25751762291424,
+      "successful_requests": 1,
+      "error_rate_percent": 0.0,
+      "response_time_p50": 0.0015070438385009766,
+      "response_time_p95": 0.0015070438385009766,
+      "response_time_p99": 0.0015070438385009766,
+      "memory_usage_percent": 0.25768280029296875,
+      "avg_response_time": 0.0015070438385009766
+    },
+    "5": {
+      "total_time": 0.00993204116821289,
+      "throughput_rps": 503.42119160785444,
+      "successful_requests": 5,
+      "error_rate_percent": 0.0,
+      "response_time_p50": 0.001277923583984375,
+      "response_time_p95": 0.003998708724975586,
+      "response_time_p99": 0.003428936004638672,
+      "memory_usage_percent": 0.25806427001953125,
+      "avg_response_time": 0.0018209457397460938
+    },
+    "10": {
+      "total_time": 0.011883735656738281,
+      "throughput_rps": 841.486237059626,
+      "successful_requests": 10,
+      "error_rate_percent": 0.0,
+      "response_time_p50": 0.0009893178939819336,
+      "response_time_p95": 0.002202343940734863,
+      "response_time_p99": 0.002117156982421875,
+      "memory_usage_percent": 0.25844573974609375,
+      "avg_response_time": 0.0011018991470336914
+    }
+  }
+}
+        </div>
+    </div>
+
+    <div class="suite failed">
+        <h3>Security Validation Tests</h3>
+        <p><strong>Duration:</strong> 0.01s</p>
+        <p><strong>Tests:</strong> 2/7 passed</p>
+        <p><strong>Success Rate:</strong> 28.6%</p>
+        <div class="metrics">
+            <strong>Metrics:</strong> {
+  "security_violations": 7
+}
+        </div>
+    </div>
+
+    <h2>Recommendations</h2>
+    <ul>
+        <li>Address failures in 1 test suite(s)</li>
+        <li>Implement security fixes for HIPAA compliance</li>
+        <li>Good test coverage with room for improvement</li>
+
+    </ul>
+</body>
+</html>

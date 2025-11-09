@@ -1,0 +1,79 @@
+{
+  "execution_id": "integration_1762669862",
+  "timestamp": "2025-11-09 01:31:02.256146",
+  "total_duration": 2.021491,
+  "overall_success": true,
+  "test_suites": [
+    {
+      "suite_name": "Component Integration Tests",
+      "start_time": "2025-11-09 01:31:02.256163",
+      "end_time": "2025-11-09 01:31:04.277028",
+      "duration": 2.020865,
+      "tests_run": 0,
+      "tests_passed": 0,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "success_rate": 0,
+      "errors": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    {
+      "suite_name": "E2E Clinical Workflow Tests",
+      "start_time": "2025-11-09 01:31:04.277462",
+      "end_time": "2025-11-09 01:31:04.277475",
+      "duration": 1.3e-05,
+      "tests_run": 0,
+      "tests_passed": 0,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "success_rate": 0,
+      "errors": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    {
+      "suite_name": "Performance Validation Tests",
+      "start_time": "2025-11-09 01:31:04.277510",
+      "end_time": "2025-11-09 01:31:04.277542",
+      "duration": 3.2e-05,
+      "tests_run": 0,
+      "tests_passed": 0,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "success_rate": 0,
+      "errors": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    {
+      "suite_name": "Security Validation Tests",
+      "start_time": "2025-11-09 01:31:04.277569",
+      "end_time": "2025-11-09 01:31:04.277618",
+      "duration": 4.9e-05,
+      "tests_run": 0,
+      "tests_passed": 0,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "success_rate": 0,
+      "errors": [],
+      "warnings": [],
+      "metrics": {}
+    }
+  ],
+  "system_info": {
+    "platform": "macOS-26.0.1-arm64-arm-64bit",
+    "python_version": "3.9.6 (default, Aug  8 2025, 19:06:38) \n[Clang 17.0.0 (clang-1700.3.19.1)]",
+    "cpu_count": 8,
+    "memory_total": 8589934592,
+    "memory_available": 1678999552,
+    "disk_usage": 11.4
+  },
+  "performance_baseline": {},
+  "security_summary": {},
+  "recommendations": [
+    "Review performance benchmarks and optimization opportunities",
+    "Implement security fixes for HIPAA compliance",
+    "Critical: Improve test reliability and coverage"
+  ]
+}

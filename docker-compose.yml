@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  clinical-bdd-creator:
+    build: .
+    container_name: clinical-bdd-creator
+    environment:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+      - PYTHONPATH=/app
+      - TZ=UTC
+    volumes:
+      - ./logs:/app/logs
+      - ./test-reports:/app/test-reports
+      - ./data:/app/data
+    ports:
+      - "3000:3000"
+      - "8000:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.path.insert(0, '.'); from guideline_analyzer import GuidelineAnalyzer; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    command: ["gunicorn", "--bind", "0.0.0.0:3000", "--workers", "4", "app:app"]
+    networks:
+      - clinical-bdd-network
+
+  # Prometheus monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: clinical-bdd-prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    networks:
+      - clinical-bdd-network
+
+  # Grafana dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: clinical-bdd-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    ports:
+      - "3001:3000"
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    networks:
+      - clinical-bdd-network
+
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: clinical-bdd-nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+    depends_on:
+      - clinical-bdd-creator
+      - grafana
+    networks:
+      - clinical-bdd-network
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  clinical-bdd-network:
+    driver: bridge

@@ -1,0 +1,129 @@
+{
+  "execution_id": "integration_1762669909",
+  "timestamp": "2025-11-09 01:31:49.439632",
+  "total_duration": 2.345333,
+  "overall_success": false,
+  "test_suites": [
+    {
+      "suite_name": "Component Integration Tests",
+      "start_time": "2025-11-09 01:31:49.439662",
+      "end_time": "2025-11-09 01:31:51.460081",
+      "duration": 2.020419,
+      "tests_run": 8,
+      "tests_passed": 8,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "success_rate": 100.0,
+      "errors": [],
+      "warnings": [],
+      "metrics": {}
+    },
+    {
+      "suite_name": "E2E Clinical Workflow Tests",
+      "start_time": "2025-11-09 01:31:51.460553",
+      "end_time": "2025-11-09 01:31:51.460577",
+      "duration": 2.4e-05,
+      "tests_run": 0,
+      "tests_passed": 0,
+      "tests_failed": 1,
+      "tests_skipped": 0,
+      "success_rate": 0.0,
+      "errors": [
+        "'E2EClinicalWorkflowTests' object has no attribute 'run_all_workflow_tests'"
+      ],
+      "warnings": [],
+      "metrics": {}
+    },
+    {
+      "suite_name": "Performance Validation Tests",
+      "start_time": "2025-11-09 01:31:51.460610",
+      "end_time": "2025-11-09 01:31:51.776486",
+      "duration": 0.315876,
+      "tests_run": 7,
+      "tests_passed": 7,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "success_rate": 100.0,
+      "errors": [],
+      "warnings": [],
+      "metrics": {
+        "baseline_performance": {
+          "single_analysis_time": 0.10969710350036621,
+          "memory_delta_mb": 0.0003814697265625,
+          "cpu_usage_percent": 15.05,
+          "scenarios_generated": 8,
+          "cds_types_detected": 4
+        },
+        "load_testing": {
+          "1": {
+            "total_time": 0.0030028820037841797,
+            "throughput_rps": 333.013418023025,
+            "successful_requests": 1,
+            "error_rate_percent": 0.0,
+            "response_time_p50": 0.0016710758209228516,
+            "response_time_p95": 0.0016710758209228516,
+            "response_time_p99": 0.0016710758209228516,
+            "memory_usage_percent": 0.2574920654296875,
+            "avg_response_time": 0.0016710758209228516
+          },
+          "5": {
+            "total_time": 0.010502815246582031,
+            "throughput_rps": 476.0628348315627,
+            "successful_requests": 5,
+            "error_rate_percent": 0.0,
+            "response_time_p50": 0.0015780925750732422,
+            "response_time_p95": 0.003930830955505371,
+            "response_time_p99": 0.0034329891204833984,
+            "memory_usage_percent": 0.25787353515625,
+            "avg_response_time": 0.0019033432006835937
+          },
+          "10": {
+            "total_time": 0.013305902481079102,
+            "throughput_rps": 751.5461663889337,
+            "successful_requests": 10,
+            "error_rate_percent": 0.0,
+            "response_time_p50": 0.0010319948196411133,
+            "response_time_p95": 0.002779996395111084,
+            "response_time_p99": 0.002568960189819336,
+            "memory_usage_percent": 0.2582550048828125,
+            "avg_response_time": 0.0012207746505737305
+          }
+        }
+      }
+    },
+    {
+      "suite_name": "Security Validation Tests",
+      "start_time": "2025-11-09 01:31:51.776521",
+      "end_time": "2025-11-09 01:31:51.784949",
+      "duration": 0.008428,
+      "tests_run": 7,
+      "tests_passed": 2,
+      "tests_failed": 2,
+      "tests_skipped": 3,
+      "success_rate": 28.57142857142857,
+      "errors": [
+        "Tested encryption for 3 data types",
+        "Found 4 access control violations"
+      ],
+      "warnings": [],
+      "metrics": {
+        "security_violations": 7
+      }
+    }
+  ],
+  "system_info": {
+    "platform": "macOS-26.0.1-arm64-arm-64bit",
+    "python_version": "3.9.6 (default, Aug  8 2025, 19:06:38) \n[Clang 17.0.0 (clang-1700.3.19.1)]",
+    "cpu_count": 8,
+    "memory_total": 8589934592,
+    "memory_available": 1517355008,
+    "disk_usage": 11.4
+  },
+  "performance_baseline": {},
+  "security_summary": {},
+  "recommendations": [
+    "Address failures in 2 test suite(s)",
+    "Implement security fixes for HIPAA compliance",
+    "Critical: Improve test reliability and coverage"
+  ]
+}
