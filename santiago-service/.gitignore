@@ -1,0 +1,119 @@
+# Santiago Service .gitignore
+# Ignore files and directories for the NeuroSymbolic Clinical Knowledge Graph Service
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+log.txt
+
+# Configuration (contains secrets)
+config/secrets.ini
+config/production.ini
+
+# Data files
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Model files (large)
+models/
+*.pkl
+*.h5
+*.pb
+*.onnx
+*.joblib
+
+# Test artifacts
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Documentation build
+docs/_build/
+docs/build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Docker
+.dockerignore
+
+# Node.js (if any frontend components)
+node_modules/
+npm-debug.log*
+
+# Local development
+.env.local
+.env.development
+.env.test
+
+# Azure
+.azure/
+*.publishsettings
+
+# Terraform
+.terraform/
+terraform.tfstate*
+*.tfvars
+
+# Kubernetes
+kubeconfig

@@ -1,0 +1,62 @@
+# Santiago: NeuroSymbolic Clinical Knowledge Graph Service
+# Requirements for the four-layer clinical knowledge graph service
+
+# Core Python dependencies
+python-jsonrpc-server>=0.4.0
+pydantic>=2.0.0
+dataclasses-json>=0.6.0
+
+# Graph database and Gremlin
+gremlinpython>=3.6.0
+azure-cosmos>=4.3.0
+
+# FHIR and clinical standards
+fhir.resources>=7.0.0
+fhirpy>=0.3.0
+
+# NLP and text processing
+spacy>=3.7.0
+transformers>=4.30.0
+sentence-transformers>=2.2.0
+
+# NeuroSymbolic AI components
+torch>=2.0.0
+tensorflow>=2.13.0
+scikit-learn>=1.3.0
+
+# Clinical terminology and ontologies
+owlready2>=0.40
+rdflib>=6.3.0
+
+# Web framework for MCP server
+fastapi>=0.100.0
+uvicorn>=0.23.0
+
+# Data processing and validation
+pandas>=2.0.0
+jsonschema>=4.17.0
+
+# Logging and monitoring
+structlog>=23.1.0
+prometheus-client>=0.17.0
+
+# Testing and development
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+black>=23.7.0
+mypy>=1.5.0
+flake8>=6.0.0
+
+# Optional: PDF processing for guidelines
+PyPDF2>=3.0.0
+pdfplumber>=0.9.0
+
+# Optional: HTML parsing
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
+# Optional: Clinical NLP models
+# Note: These may require separate installation due to size
+# scispacy>=0.5.0
+# en_core_sci_sm (spaCy model)
+# en_ner_bc5cdr_md (BioCreative V CDR NER model)
