@@ -1,0 +1,118 @@
+# Santiago Service Docker Compose
+# Development and testing environment for the NeuroSymbolic Clinical Knowledge Graph Service
+
+version: '3.8'
+
+services:
+  santiago:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - SANTIAGO_ENV=development
+      - COSMOSDB_ENDPOINT=${COSMOSDB_ENDPOINT:-}
+      - COSMOSDB_KEY=${COSMOSDB_KEY:-}
+      - FHIR_BASE_URL=${FHIR_BASE_URL:-https://api.logicahealth.org/santiago/open}
+    volumes:
+      - ./config:/app/config:ro
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Optional: Local FHIR server for development
+  # Uncomment and configure as needed
+  # hapi-fhir:
+  #   image: hapiproject/hapi:v6.4.0
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - HAPI_FHIR_VERSION=6.4.0
+  #   volumes:
+  #     - hapi_data:/data/hapi
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8080/fhir/metadata"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+  #     start_period: 60s
+  #   restart: unless-stopped
+
+  # Optional: Local CosmosDB emulator for development
+  # Note: Requires Windows/Linux host, not available on macOS
+  # cosmosdb-emulator:
+  #   image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest
+  #   ports:
+  #     - "8081:8081"
+  #     - "10250-10255:10250-10255"
+  #   environment:
+  #     - AZURE_COSMOS_EMULATOR_PARTITION_COUNT=1
+  #     - AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE=true
+  #   volumes:
+  #     - cosmos_data:/tmp/cosmos/appdata
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "https://localhost:8081/_explorer/index.html"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 10
+  #     start_period: 60s
+  #   restart: unless-stopped
+
+  # Monitoring and observability
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  # hapi_data:
+  # cosmos_data:
+  prometheus_data:
+  grafana_data:
