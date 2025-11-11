@@ -1,0 +1,278 @@
+# Santiago-Specific Assertions for HFrEF Scenario
+# This file contains validation rules for knowledge graph, reasoning, QA, and what-if testing
+
+scenario_id: "cardiology-treatment-hfref-001"
+validation_type: "santiago-bdd"
+created: "2025-11-11"
+version: "1.0"
+
+# Knowledge Graph Assertions
+# Validate that clinical knowledge is correctly represented in the graph
+graph_assertions:
+  - id: "graph-hfref-001"
+    description: "HFrEF diagnosis node exists in Layer 2 structured knowledge"
+    layer: "structured_knowledge"
+    gremlin: "g.V().has('concept', 'HFrEF').has('layer', 'structured_knowledge').count()"
+    expect: ">=1"
+    rationale: "HFrEF diagnosis must be captured in structured knowledge layer"
+    severity: "error"
+  
+  - id: "graph-hfref-002"
+    description: "GDMT recommendations linked to HFrEF diagnosis in Layer 3"
+    layer: "computable_logic"
+    gremlin: "g.V().has('diagnosis', 'HFrEF').out('recommends').has('therapy_type', 'GDMT').count()"
+    expect: ">=4"
+    rationale: "Four foundational GDMT therapies should be linked to HFrEF diagnosis"
+    severity: "error"
+  
+  - id: "graph-hfref-003"
+    description: "Sacubitril/valsartan node exists with correct dosing"
+    layer: "computable_logic"
+    gremlin: "g.V().has('medication', 'sacubitril/valsartan').has('initial_dose', '49/51 mg').count()"
+    expect: ">=1"
+    rationale: "ARNI with correct initial dose must be in knowledge graph"
+    severity: "error"
+  
+  - id: "graph-hfref-004"
+    description: "Monitoring requirements linked to MRA (spironolactone)"
+    layer: "computable_logic"
+    gremlin: "g.V().has('medication', 'spironolactone').out('requires_monitoring').has('test', 'potassium').count()"
+    expect: ">=1"
+    rationale: "Potassium monitoring requirement for MRA must be captured"
+    severity: "warning"
+  
+  - id: "graph-hfref-005"
+    description: "Executable workflow node exists in Layer 4"
+    layer: "executable_workflows"
+    gremlin: "g.V().has('layer', 'executable_workflows').has('workflow_type', 'quadruple_gdmt_initiation').count()"
+    expect: ">=1"
+    rationale: "Executable workflow for GDMT initiation must exist"
+    severity: "error"
+  
+  - id: "graph-hfref-006"
+    description: "Evidence links from recommendations to guidelines"
+    layer: "computable_logic"
+    gremlin: "g.V().has('therapy_type', 'GDMT').out('evidence_source').has('guideline', '2022 AHA/ACC/HFSA').count()"
+    expect: ">=1"
+    rationale: "Recommendations must be traceable to source guideline"
+    severity: "error"
+
+# Reasoning Assertions
+# Validate neurosymbolic reasoning capabilities
+reasoning_assertions:
+  - id: "reasoning-hfref-001"
+    description: "Symbolic reasoning identifies quadruple GDMT requirement"
+    reasoning_type: "symbolic"
+    input: 
+      diagnosis: "HFrEF"
+      lvef: 30
+      contraindications: []
+    expected_output:
+      recommendation: "quadruple GDMT"
+      confidence: ">=0.95"
+      reasoning_path: 
+        - "diagnosis_check"
+        - "lvef_threshold_check"
+        - "contraindication_check"
+        - "guideline_lookup"
+    rationale: "Symbolic reasoning should confidently recommend quadruple GDMT for eligible patients"
+  
+  - id: "reasoning-hfref-002"
+    description: "Neural similarity matches HFrEF treatment query"
+    reasoning_type: "neural"
+    query: "What medications treat heart failure with low ejection fraction?"
+    expected_concepts: 
+      - "ARNI"
+      - "beta-blocker"
+      - "MRA"
+      - "SGLT2i"
+    similarity_threshold: 0.85
+    rationale: "Neural component should recognize HFrEF treatment concepts with high similarity"
+  
+  - id: "reasoning-hfref-003"
+    description: "Hybrid reasoning combines symbolic validation with neural matching"
+    reasoning_type: "hybrid"
+    input:
+      patient_description: "65-year-old with symptomatic heart failure and EF of 30%"
+    expected_output:
+      symbolic_weight: ">=0.6"
+      neural_weight: "<=0.4"
+      confidence: ">=0.90"
+      recommendations_include: ["sacubitril/valsartan", "metoprolol", "spironolactone", "dapagliflozin"]
+    rationale: "Hybrid reasoning should favor symbolic for guideline-based recommendations"
+  
+  - id: "reasoning-hfref-004"
+    description: "Reasoning identifies contraindication for angioedema history"
+    reasoning_type: "symbolic"
+    input:
+      diagnosis: "HFrEF"
+      lvef: 30
+      contraindications: ["angioedema_history"]
+    expected_output:
+      arni_contraindicated: true
+      alternative_recommendation: "ACE inhibitor or ARB"
+      confidence: ">=0.95"
+    rationale: "Symbolic reasoning must identify angioedema contraindication for ARNI"
+
+# Clinical QA Assertions
+# Validate clinical question answering accuracy
+qa_assertions:
+  - id: "qa-hfref-001"
+    question: "What is the initial dose of sacubitril/valsartan for HFrEF?"
+    expected_answer_contains: 
+      - "49/51 mg"
+      - "twice daily"
+    expected_evidence:
+      - guideline: "2022 AHA/ACC/HFSA Heart Failure Guideline"
+        section: "Pharmacological Treatment"
+    confidence_threshold: 0.90
+    rationale: "System should accurately provide initial ARNI dosing with evidence"
+  
+  - id: "qa-hfref-002"
+    question: "What monitoring is required after starting spironolactone?"
+    expected_answer_contains: 
+      - "potassium"
+      - "renal function"
+      - "3-7 days"
+    expected_evidence:
+      - guideline: "2022 AHA/ACC/HFSA Heart Failure Guideline"
+    confidence_threshold: 0.85
+    rationale: "System should identify critical MRA monitoring requirements"
+  
+  - id: "qa-hfref-003"
+    question: "Why is dapagliflozin recommended even for non-diabetic HFrEF patients?"
+    expected_answer_contains: 
+      - "mortality benefit"
+      - "DAPA-HF trial"
+      - "regardless of diabetes status"
+    expected_evidence:
+      - guideline: "2022 AHA/ACC/HFSA Heart Failure Guideline"
+      - study: "DAPA-HF"
+    confidence_threshold: 0.85
+    rationale: "System should explain evidence-based rationale for SGLT2i in HFrEF"
+  
+  - id: "qa-hfref-004"
+    question: "What is the target blood pressure for HFrEF patients on GDMT?"
+    expected_answer_contains: 
+      - "<130/80"
+      - "systolic"
+    expected_evidence:
+      - guideline: "2022 AHA/ACC/HFSA Heart Failure Guideline"
+    confidence_threshold: 0.85
+    rationale: "System should provide guideline-based BP targets"
+  
+  - id: "qa-hfref-005"
+    question: "What are contraindications to starting sacubitril/valsartan?"
+    expected_answer_contains: 
+      - "angioedema"
+      - "pregnancy"
+      - "bilateral renal artery stenosis"
+    expected_evidence:
+      - guideline: "2022 AHA/ACC/HFSA Heart Failure Guideline"
+    confidence_threshold: 0.90
+    rationale: "System should identify safety contraindications accurately"
+
+# What-If Assertions
+# Test guideline change scenarios and impact analysis
+whatif_assertions:
+  - id: "whatif-hfref-001"
+    description: "Test impact of new SGLT2i contraindication (eGFR < 20)"
+    change:
+      type: "add_contraindication"
+      drug_class: "SGLT2i"
+      condition: "eGFR < 20"
+    test_patient:
+      diagnosis: "HFrEF"
+      lvef: 28
+      labs:
+        egfr: 18
+    expected_outcome:
+      sglt2i_recommended: false
+      alternative_therapy: "triple therapy without SGLT2i"
+      reasoning_includes: "eGFR below threshold"
+      safety_violations: 0
+    rationale: "System should adapt to new contraindication without safety violations"
+  
+  - id: "whatif-hfref-002"
+    description: "Test impact of dapagliflozin dose change (10 mg to 5 mg)"
+    change:
+      type: "medication_dose_change"
+      drug: "dapagliflozin"
+      old_dose: "10 mg"
+      new_dose: "5 mg"
+    expected_outcome:
+      affected_patients_count: ">=0"
+      recommendation_updates_required: true
+      clinical_impact_score: "<=0.3"
+    rationale: "Dose change should be reflected in recommendations with minimal impact"
+  
+  - id: "whatif-hfref-003"
+    description: "Test impact of removing metoprolol from formulary"
+    change:
+      type: "formulary_change"
+      action: "remove"
+      medication: "metoprolol succinate"
+      alternative: "carvedilol"
+    expected_outcome:
+      substitute_recommended: true
+      substitute_medication: "carvedilol"
+      gdmt_maintained: true
+      safety_violations: 0
+    rationale: "System should suggest appropriate beta-blocker alternative"
+  
+  - id: "whatif-hfref-004"
+    description: "Test impact of new monitoring requirement (weekly K+ for first month)"
+    change:
+      type: "update_criteria"
+      drug_class: "MRA"
+      new_monitoring: "weekly potassium for first month"
+      old_monitoring: "potassium at 3-7 days"
+    expected_outcome:
+      monitoring_plan_updated: true
+      workflow_changes_required: true
+      clinical_impact_score: "<=0.4"
+    rationale: "Enhanced monitoring should be reflected in clinical workflows"
+  
+  - id: "whatif-hfref-005"
+    description: "Test impact of LVEF threshold change (35% to 40%) for GDMT"
+    change:
+      type: "update_criteria"
+      criteria: "lvef_threshold"
+      old_value: "<=35%"
+      new_value: "<=40%"
+    test_patient:
+      diagnosis: "HFrEF"
+      lvef: 38
+    expected_outcome:
+      gdmt_recommended: true
+      patient_now_eligible: true
+      affected_patients_count: ">=100"
+    rationale: "Threshold change should expand eligible patient population"
+
+# Cross-Layer Consistency Checks
+cross_layer_validation:
+  - id: "cross-layer-001"
+    description: "Concepts preserved from Layer 2 to Layer 4"
+    check_type: "semantic_preservation"
+    layers: ["structured_knowledge", "executable_workflows"]
+    expected_concepts_preserved: 
+      - "HFrEF"
+      - "GDMT"
+      - "quadruple therapy"
+    preservation_threshold: 0.95
+  
+  - id: "cross-layer-002"
+    description: "Evidence links maintained across all layers"
+    check_type: "evidence_traceability"
+    layers: ["structured_knowledge", "computable_logic", "executable_workflows"]
+    expected_evidence_preserved: true
+    traceability_threshold: 1.0
+
+# Performance Benchmarks
+performance_benchmarks:
+  graph_query_max_latency_ms: 100
+  reasoning_max_latency_ms: 250
+  qa_max_latency_ms: 500
+  whatif_max_latency_ms: 1000
+  knowledge_graph_node_count_min: 50
+  knowledge_graph_edge_count_min: 100
