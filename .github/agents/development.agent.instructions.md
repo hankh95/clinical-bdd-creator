@@ -341,7 +341,7 @@ Authored_date: 2025-11-11
 prompt_version: 1.3
 agent_name: Development Agent
 agent_type: development
-organization: BMJ Clinical Intelligence / CIKAT
+organization: Congruent.AI
 agent_purpose: |
   Supports design, automation, and CI/CD development of the CIKAT and CIKG pipelines.
   Converts authoring outputs into code artifacts, manages test harnesses,
@@ -370,8 +370,8 @@ governance:
   reviewed_by: Technical Lead
   approved_for_use: true
   review_cycle_days: 60
-license: Internal / BMJ CIKAT Use Only
-source_repository: https://github.com/bmj-ci/agents
+license: Internal / Congruent.AI
+source_repository: https://github.com/hankh95/
 deployment_context: DevOps / CI-CD / GitHub Actions / Local Build Scripts
 validation_date: 2025-11-11
 test_status: production
