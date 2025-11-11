@@ -1515,120 +1515,848 @@ class SantiagoOpenEHRIntegration:
 
 ## Integration Architecture
 
-### Four-Layer Integration Strategy
+### Comprehensive Four-Layer Integration Strategy
 
-**Layer 0 (Prose) Integration:**
-- Use OpenEHR archetypes for structured clinical content input
-- Implement archetype-based templates for consistent data capture
-- Maintain provenance links between archetypes and source content
+Santiago's four-layer model provides a natural framework for integrating clinical standards. Each layer leverages specific standards capabilities to progressively transform clinical knowledge from prose to executable workflows.
 
-**Layer 1 (GSRL) Integration:**
-- Leverage UMLS semantic network for canonical relationship types
-- Use SNOMED CT hierarchies for clinical concept classification
-- Implement terminology normalization using UMLS Metathesaurus
+**Layer 0: Prose (Source Clinical Guidelines)**
 
-**Layer 2 (RALL) Integration:**
-- Direct FHIR resource generation with HAPI FHIR validation
-- Terminology binding using FHIR terminology services
-- CPG artifact creation with clinical reasoning module validation
+*Purpose*: Capture and structure raw clinical guideline content
 
-**Layer 3 (WATL) Integration:**
-- Workflow orchestration using FHIR PlanDefinition resources
-- Temporal logic implementation with CPG workflow profiles
-- Integration with clinical decision support systems
+*Standards Integration*:
+- **OpenEHR Archetypes**: Use archetypes as templates for structuring guideline prose
+  - Map guideline sections to appropriate archetype classes (Observation, Evaluation, Instruction, Action)
+  - Extract clinical patterns using archetype definitions
+  - Maintain semantic rigor from the start
+- **FHIR Implementation Guides**: Reference relevant FHIR profiles for clinical domains
+- **Provenance Tracking**: Document source guidelines and version information
+
+*Output*: Structured clinical content with formal archetype patterns
+
+**Layer 1: GSRL (Guideline Semantic Representation Language - Semantic Triples)**
+
+*Purpose*: Extract semantic relationships from structured content
+
+*Standards Integration*:
+- **UMLS Semantic Network**: 
+  - Use 133 semantic types for triple subject/object classification
+  - Leverage 54 relationship types for triple predicates
+  - Normalize clinical concepts to UMLS CUIs
+- **SNOMED CT Hierarchies**:
+  - Classify clinical findings, procedures, body structures
+  - Use IS-A relationships for concept hierarchies
+  - ECL queries (via Ontoserver) for complex subsumption
+- **OpenEHR Archetype Semantics**:
+  - Extract relationships from archetype constraints
+  - Map archetype attributes to semantic predicates
+- **FHIR Terminology Validation**:
+  - Validate extracted codes using `$validate-code`
+  - Ensure semantic triples use valid terminology
+
+*Output*: Semantic triple store with validated, standardized clinical concepts
+
+**Layer 2: RALL (Resource Asset Logical Layer - FHIR Resources)**
+
+*Purpose*: Transform semantic triples into computable FHIR resources
+
+*Standards Integration*:
+- **FHIR Resource Generation**:
+  - Map GSRL triples to appropriate FHIR resources
+  - Use archetype-to-FHIR mappings (Observation → Observation, Evaluation → Condition, etc.)
+- **HAPI FHIR Validation**:
+  - Validate generated resources against FHIR profiles
+  - Use `IValidationSupport` for custom validation rules
+- **Terminology Binding**:
+  - Bind codes using FHIR ValueSets
+  - Validate bindings with FHIR Terminology Services
+  - Use `$expand` for dynamic value set population
+- **CPG Artifacts**:
+  - Create PlanDefinition for workflows
+  - ActivityDefinition for clinical activities
+  - Clinical rules using CQL (Clinical Quality Language)
+
+*Output*: Valid, computable FHIR resources with proper terminology binding
+
+**Layer 3: WATL (Workflow Asset Transactional Layer - Executable Workflows)**
+
+*Purpose*: Compile FHIR resources into executable clinical workflows
+
+*Standards Integration*:
+- **FHIR PlanDefinition**:
+  - Orchestrate clinical workflows using action sequences
+  - Define conditional logic and temporal constraints
+- **FHIR ActivityDefinition**:
+  - Specify executable clinical activities
+  - Link to terminology for activity classification
+- **CQL/ELM Execution**:
+  - Compile clinical logic to Expression Logical Model
+  - Execute decision logic at runtime
+- **Temporal Reasoning**:
+  - Use FHIR timing elements for temporal logic
+  - Sequence actions based on clinical workflow patterns
+- **Integration Points**:
+  - Connect to clinical decision support systems
+  - Interface with EHR systems via FHIR APIs
+
+*Output*: Executable clinical workflows with decision logic
+
+### Enhanced Service Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        Santiago Service                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐             │
+│  │   Layer 0    │  │   Layer 1    │  │   Layer 2    │  ┌──────────┤
+│  │   Prose      │→ │    GSRL      │→ │    RALL      │→ │ Layer 3  │
+│  │  Processing  │  │  Semantic    │  │   FHIR       │  │  WATL    │
+│  │              │  │  Triples     │  │  Resources   │  │Workflows │
+│  └──────────────┘  └──────────────┘  └──────────────┘  └──────────┘
+│         ↓                  ↓                  ↓                ↓      │
+└─────────┼──────────────────┼──────────────────┼────────────────┼─────┘
+          ↓                  ↓                  ↓                ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│              Terminology Services Abstraction Layer                  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐             │
+│  │  OpenEHR     │  │    UMLS      │  │    FHIR      │             │
+│  │ Archetypes   │  │   Service    │  │ Terminology  │             │
+│  └──────────────┘  └──────────────┘  └──────────────┘             │
+└─────────────────────────────────────────────────────────────────────┘
+          ↓                  ↓                  ↓
+┌─────────────────────────────────────────────────────────────────────┐
+│                  External Standards Services                         │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐             │
+│  │   OpenEHR    │  │     UMLS     │  │     HAPI     │             │
+│  │     CKM      │  │      API     │  │     FHIR     │             │
+│  └──────────────┘  └──────────────┘  └──────────────┘             │
+│  ┌──────────────┐  ┌──────────────┐                               │
+│  │ Ontoserver   │  │   SNOMED     │                               │
+│  │   (CSIRO)    │  │  National    │                               │
+│  └──────────────┘  └──────────────┘                               │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Data Flow Patterns
+
+**1. Guideline Ingestion Flow (Layer 0 → Layer 1)**
+```
+Clinical Guideline (PDF/DOCX)
+    ↓
+OpenEHR Archetype Search (find relevant patterns)
+    ↓
+Archetype-based Structuring
+    ↓
+NLP Extraction with Clinical Models
+    ↓
+UMLS Concept Normalization
+    ↓
+SNOMED CT Classification (Ontoserver ECL)
+    ↓
+Validated Semantic Triples (GSRL)
+```
+
+**2. FHIR Resource Generation Flow (Layer 1 → Layer 2)**
+```
+Semantic Triples (GSRL)
+    ↓
+Archetype-to-FHIR Mapping
+    ↓
+FHIR Resource Construction
+    ↓
+Terminology Binding (ValueSet expansion)
+    ↓
+HAPI FHIR Validation
+    ↓
+Valid FHIR Resources (RALL)
+```
+
+**3. Workflow Compilation Flow (Layer 2 → Layer 3)**
+```
+FHIR Resources (RALL)
+    ↓
+PlanDefinition Creation
+    ↓
+ActivityDefinition Linking
+    ↓
+CQL Logic Compilation
+    ↓
+Temporal Ordering
+    ↓
+Executable Workflow (WATL)
+```
+
+**4. Terminology Resolution Pattern**
+```
+Clinical Term (raw text)
+    ↓
+UMLS API (concept search)
+    ↓
+Get CUI + Semantic Type
+    ↓
+Map to SNOMED CT (if needed)
+    ↓
+Validate via FHIR Terminology Server
+    ↓
+Cache Result (local terminology cache)
+```
+
+**5. Cross-Terminology Mapping Pattern**
+```
+Source Code (e.g., ICD-10)
+    ↓
+UMLS Crosswalk API
+    ↓
+Get Target System Mappings (e.g., SNOMED CT)
+    ↓
+FHIR ConceptMap $translate
+    ↓
+Validated Target Codes
+    ↓
+Update Knowledge Graph Edges
+```
 
 ### Implementation Phases
 
-**Phase 1: Foundation (Current)**
-- Set up HAPI FHIR server infrastructure
-- Implement basic UMLS/SNOMED API clients
-- Create terminology service abstraction layer
+**Phase 1: Foundation Setup (Weeks 1-4)**
 
-**Phase 2: Integration**
-- Build four-layer mapping functions
-- Implement validation pipelines
-- Create archetype-to-FHIR transformation services
+*Objective*: Establish core infrastructure and services
 
-**Phase 3: Optimization**
-- Implement caching and performance optimization
-- Add batch processing capabilities
-- Integrate with Santiago NeuroSymbolic reasoning
+*HAPI FHIR Server*:
+- Deploy HAPI FHIR JPA Server (Docker container)
+- Configure PostgreSQL backend
+- Load base terminologies: SNOMED CT, LOINC, RxNorm
+- Set up terminology versioning
+- Configure Implementation Guides (US Core, AU Core)
+
+*UMLS/SNOMED Integration*:
+- Obtain UMLS API credentials
+- Set up UMLS Metathesaurus API client
+- Configure SNOMED CT national edition access
+- Implement local caching layer for API responses
+
+*Ontoserver Evaluation*:
+- Access Ontoserver test instance (r4.ontoserver.csiro.au)
+- Test ECL query capabilities for SNOMED CT
+- Evaluate syndication features
+- Compare performance with HAPI FHIR
+
+*OpenEHR Archetype Repository*:
+- Access international CKM (ckm.openehr.org)
+- Download relevant archetypes (observation, evaluation, instruction)
+- Set up local archetype repository
+- Install ADL Workbench for archetype development
+
+*Deliverables*:
+- Functional HAPI FHIR server with terminology loaded
+- UMLS API integration with caching
+- Ontoserver test integration
+- Local archetype repository with 50+ archetypes
+
+**Phase 2: Service Integration (Weeks 5-12)**
+
+*Objective*: Build terminology service abstraction layer and four-layer processors
+
+*Terminology Service Abstraction*:
+- Create unified terminology service interface
+- Implement adapters for HAPI FHIR, Ontoserver, UMLS
+- Add connection pooling and retry logic
+- Implement comprehensive caching strategy
+
+*Layer 0 → Layer 1 Processor*:
+- NLP extraction using clinical language models
+- OpenEHR archetype pattern matching
+- UMLS concept normalization
+- Semantic triple generation with validation
+
+*Layer 1 → Layer 2 Processor*:
+- Semantic triple to FHIR resource mapping
+- Archetype-to-FHIR transformation rules
+- Terminology binding with ValueSet expansion
+- HAPI FHIR validation integration
+
+*Layer 2 → Layer 3 Processor*:
+- PlanDefinition generation from resource sequences
+- ActivityDefinition creation
+- CQL logic compilation
+- Temporal constraint specification
+
+*Testing Infrastructure*:
+- Unit tests for each layer processor
+- Integration tests for end-to-end pipeline
+- Terminology validation test suite
+- Performance benchmarking
+
+*Deliverables*:
+- Complete terminology service abstraction layer
+- Functional four-layer processing pipeline
+- Comprehensive test suite with >80% coverage
+- Performance benchmarks documented
+
+**Phase 3: NeuroSymbolic Integration & Optimization (Weeks 13-20)**
+
+*Objective*: Integrate with Santiago NeuroSymbolic reasoning and optimize for production
+
+*Knowledge Graph Construction*:
+- Build graph schema from archetypes and FHIR resources
+- Populate graph from four-layer outputs
+- Implement graph reasoning algorithms
+- Add neural embeddings for concept similarity
+
+*NeuroSymbolic Reasoning*:
+- Integrate symbolic logic from Layer 3
+- Add neural pattern recognition for uncertainty
+- Implement hybrid reasoning for clinical questions
+- Add explanation generation for reasoning paths
+
+*Performance Optimization*:
+- Implement batch processing for terminology operations
+- Add connection pooling for all external services
+- Optimize graph queries with indices
+- Implement distributed caching (Redis)
+- Profile and optimize hot paths
+
+*Production Readiness*:
+- Add comprehensive monitoring and logging
+- Implement health checks for all services
+- Add rate limiting and circuit breakers
+- Configure auto-scaling policies
+- Set up backup and recovery procedures
+
+*Deliverables*:
+- Production-ready Santiago service
+- NeuroSymbolic reasoning engine
+- Optimized knowledge graph with <100ms query time
+- Complete monitoring and observability suite
 
 ## Technical Recommendations
 
-### 1. Service Architecture
+### 1. Enhanced Service Architecture
+
+**Microservices Design:**
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Santiago      │────│  Terminology     │────│   External      │
-│   Service       │    │  Service         │    │   Standards     │
-│                 │    │  Abstraction     │    │   Services      │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                                │
-                                ▼
-                   ┌──────────────────┐
-                   │  Local HAPI      │
-                   │  FHIR Server     │
-                   └──────────────────┘
+Santiago Service Layer
+├── Guideline Processor Service (Layer 0 → 1)
+├── Semantic Triple Service (Layer 1 → 2)
+├── FHIR Resource Service (Layer 2 → 3)
+├── Workflow Compiler Service (Layer 3 → execution)
+└── Clinical QA Service (NeuroSymbolic reasoning)
+
+Terminology Services Layer
+├── Terminology Abstraction Service (facade)
+│   ├── HAPI FHIR Adapter
+│   ├── Ontoserver Adapter
+│   ├── UMLS Adapter
+│   └── Cache Manager (Redis)
+└── Archetype Service
+    ├── CKM Client
+    └── Local Archetype Repository
+
+Data Layer
+├── Knowledge Graph (CosmosDB/Gremlin)
+├── FHIR Resource Store (HAPI FHIR PostgreSQL)
+├── Terminology Cache (Redis)
+└── Archetype Repository (File system/S3)
 ```
 
-### 2. Data Flow Patterns
-1. **Terminology Resolution**: Santiago → Terminology Service → UMLS/SNOMED APIs
-2. **Validation Pipeline**: Generated Assets → FHIR Terminology Server → Validation Results
-3. **Concept Mapping**: Source Codes → UMLS Crosswalk → Standardized Codes
+**Deployment Architecture:**
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Load Balancer (Azure LB)                 │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│              Santiago API Gateway (Azure API Management)     │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌──────────────────┬──────────────────┬──────────────────────┐
+│  Layer Processor │  Terminology     │   NeuroSymbolic      │
+│  Services        │  Services        │   Reasoning          │
+│  (Kubernetes)    │  (Kubernetes)    │   (Azure ML)         │
+└──────────────────┴──────────────────┴──────────────────────┘
+                            ↓
+┌──────────────────┬──────────────────┬──────────────────────┐
+│  CosmosDB        │  PostgreSQL      │   Redis              │
+│  (Graph)         │  (HAPI FHIR)     │   (Cache)            │
+└──────────────────┴──────────────────┴──────────────────────┘
+```
 
-### 3. Caching Strategy
-- **Local Terminology Cache**: Frequently used codes and ValueSets
-- **UMLS Response Cache**: API responses with TTL-based expiration
-- **Validation Result Cache**: FHIR validation outcomes
+### 2. Enhanced Data Flow Patterns
 
-### 4. Error Handling
-- **Graceful Degradation**: Continue processing with warnings for terminology failures
-- **Retry Logic**: Exponential backoff for external API calls
-- **Fallback Mechanisms**: Local code validation when external services unavailable
+**Pattern 1: High-Volume Terminology Resolution**
+- Use connection pooling (100+ concurrent connections)
+- Implement request batching (batch 50 validations)
+- Cache aggressively (95% cache hit rate target)
+- Fallback to local terminology on external service failure
+
+**Pattern 2: Streaming Guideline Processing**
+- Process guidelines in chunks (avoid memory issues)
+- Use async/await for I/O-bound operations
+- Implement backpressure for downstream services
+- Progress tracking for long-running operations
+
+**Pattern 3: Graph Update Propagation**
+- Detect terminology version changes
+- Compute diff using Ontoserver `$diff`
+- Propagate updates to affected graph nodes
+- Maintain graph consistency during updates
+
+### 3. Comprehensive Caching Strategy
+
+**Multi-Tier Caching:**
+
+**Tier 1: In-Memory Cache (Application Level)**
+- Hot terminology codes (last 10,000 lookups)
+- Frequently used ValueSets
+- TTL: 15 minutes
+- Invalidation: LRU (Least Recently Used)
+
+**Tier 2: Distributed Cache (Redis)**
+- UMLS API responses
+- FHIR validation results
+- Archetype definitions
+- TTL: 24 hours
+- Invalidation: Explicit on terminology updates
+
+**Tier 3: Persistent Cache (Database)**
+- Historical terminology versions
+- Validated code system snapshots
+- Archetype repository mirror
+- TTL: 90 days
+- Invalidation: Manual on major updates
+
+**Cache Warming Strategy:**
+- Pre-load common terminology codes on startup
+- Background refresh of expiring entries
+- Predictive caching based on usage patterns
+
+### 4. Enhanced Error Handling
+
+**Error Classification:**
+
+**Category 1: Terminology Errors (Recoverable)**
+- Invalid codes → Warn and continue with flagging
+- Service timeout → Retry with exponential backoff
+- Rate limit exceeded → Queue request for later processing
+
+**Category 2: Validation Errors (User-Actionable)**
+- FHIR validation failures → Return detailed error messages
+- Archetype constraint violations → Suggest corrections
+- Missing required terminology bindings → List required ValueSets
+
+**Category 3: System Errors (Escalate)**
+- Database connection failure → Trigger alert, attempt reconnection
+- External service unavailable → Switch to cached/fallback mode
+- Memory exhaustion → Graceful degradation, alert operations
+
+**Retry Strategy:**
+```python
+# Exponential backoff with jitter
+max_retries = 3
+base_delay = 1  # seconds
+for attempt in range(max_retries):
+    try:
+        result = call_external_service()
+        return result
+    except ServiceUnavailable:
+        if attempt < max_retries - 1:
+            delay = min(base_delay * (2 ** attempt), 30)
+            jitter = random.uniform(0, 0.1 * delay)
+            time.sleep(delay + jitter)
+        else:
+            # Use fallback mechanism
+            return fallback_handler()
+```
+
+**Circuit Breaker Pattern:**
+- Monitor external service failure rates
+- Open circuit after 50% failure rate (10 consecutive failures)
+- Half-open state after 60 seconds
+- Close circuit after 5 successful calls
+- Fallback to cached data during open circuit
 
 ## Licensing and Deployment Considerations
 
 ### Licensing Requirements
-- **UMLS License**: Required for production use, annual renewal
-- **SNOMED CT License**: Through UMLS or direct national release centers
-- **HAPI FHIR**: Apache 2.0 license, free for commercial use
-- **OpenEHR**: GPL license for core components, commercial options available
+
+**UMLS (Unified Medical Language System)**
+- **License Type**: Free for research and healthcare use, requires registration
+- **Restrictions**: Cannot redistribute UMLS Metathesaurus
+- **Renewal**: Annual renewal required
+- **Access**: Via UMLS REST API with authentication
+- **Cost**: Free (no licensing fees)
+- **National Releases**: SNOMED CT licenses through UMLS for US-based organizations
+
+**SNOMED CT**
+- **International License**: Through SNOMED International member countries
+- **US License**: Free for US healthcare organizations via UMLS
+- **UK License**: Through NHS Digital for UK organizations
+- **Australia License**: Through Australian Digital Health Agency
+- **Cost**: Free for member countries' healthcare use
+- **Commercial Use**: Separate affiliate license may be required
+
+**HAPI FHIR**
+- **License**: Apache License 2.0
+- **Commercial Use**: Permitted without restrictions
+- **Distribution**: Can be distributed and modified
+- **Cost**: Free and open source
+- **Support**: Community support free, commercial support available
+
+**OpenEHR**
+- **Specifications**: Creative Commons Attribution-NoDerivs 3.0
+- **Archetypes**: Creative Commons Attribution-ShareAlike 3.0
+- **Software Tools**: Various licenses (Apache 2.0, GPL, LGPL)
+- **Commercial Use**: Permitted with attribution
+- **Cost**: Free for all uses
+
+**Ontoserver**
+- **Test Instance**: Free public access (r4.ontoserver.csiro.au)
+- **Production License**: Commercial license from CSIRO
+- **National Instances**: Available through national terminology services
+- **Cost**: Contact CSIRO for pricing
+- **Support**: Included with production licenses
 
 ### Deployment Architectures
-1. **Local Deployment**: HAPI FHIR server with local terminology database
-2. **Hybrid Approach**: Local cache with external API fallbacks
-3. **Cloud Integration**: Azure Health Data Services with FHIR APIs
 
-### Security Considerations
-- **API Key Management**: Secure storage of UMLS and external service credentials
-- **Data Privacy**: Ensure PHI/PII handling compliance
-- **Access Control**: Role-based access to terminology services
+**Architecture 1: Development/Research (Low Cost)**
+```
+Components:
+- HAPI FHIR (local Docker)
+- UMLS API (cloud, free tier)
+- Ontoserver test instance (cloud, free)
+- PostgreSQL (local)
+- OpenEHR CKM (cloud access)
+
+Pros:
+- Zero licensing costs
+- Quick setup
+- Good for prototyping
+
+Cons:
+- Not production-ready
+- Limited performance
+- Test data only on Ontoserver
+```
+
+**Architecture 2: Hybrid Cloud (Balanced)**
+```
+Components:
+- HAPI FHIR (Azure Container Instances)
+- UMLS API (cloud)
+- National terminology service (e.g., NCTS for Australia)
+- Azure PostgreSQL
+- Redis Cache (Azure Cache for Redis)
+- OpenEHR local repository
+
+Pros:
+- Production-grade performance
+- Manageable costs
+- Scalable
+- National terminology support
+
+Cons:
+- Requires cloud infrastructure
+- Ongoing operational costs
+```
+
+**Architecture 3: Enterprise On-Premise (High Control)**
+```
+Components:
+- HAPI FHIR (on-premise cluster)
+- Full UMLS Metathesaurus (local install)
+- SNOMED CT (local database)
+- PostgreSQL cluster
+- Redis cluster
+- OpenEHR server (local)
+
+Pros:
+- Complete control
+- Best performance
+- No external dependencies
+- Data sovereignty
+
+Cons:
+- High infrastructure costs
+- Complex setup and maintenance
+- Requires dedicated ops team
+```
+
+**Architecture 4: Full Cloud (Scalable)**
+```
+Components:
+- HAPI FHIR (Azure Kubernetes Service)
+- UMLS API (cloud)
+- Ontoserver (production license)
+- Azure CosmosDB (knowledge graph)
+- Azure PostgreSQL (HAPI FHIR backend)
+- Azure Cache for Redis
+- Azure Blob Storage (archetypes)
+
+Pros:
+- Highly scalable
+- Managed services
+- Geographic distribution
+- High availability
+
+Cons:
+- Highest operational cost
+- Vendor lock-in
+- Egress costs for high volume
+```
+
+**Recommended Architecture for Santiago:**
+Start with **Architecture 2 (Hybrid Cloud)** for production deployment:
+- Use national terminology services when available (e.g., NCTS, NHS)
+- Deploy HAPI FHIR in containers for flexibility
+- Use cloud-managed databases for reliability
+- Implement caching aggressively to reduce API calls
+
+### Security and Compliance Considerations
+
+**Data Privacy (HIPAA/GDPR Compliance)**
+- No PHI in terminology requests (use anonymous queries)
+- Encrypt data in transit (TLS 1.3)
+- Encrypt data at rest (AES-256)
+- Audit all terminology API calls
+- Implement data retention policies
+
+**API Security**
+- OAuth2 for external service authentication
+- API key rotation (90-day cycle)
+- Secure credential storage (Azure Key Vault)
+- Rate limiting to prevent abuse
+- IP allowlisting for production services
+
+**Access Control**
+- Role-based access control (RBAC) for Santiago services
+- Separate credentials for each environment (dev, staging, prod)
+- Least-privilege principle for service accounts
+- Multi-factor authentication for admin access
+
+**Monitoring and Compliance**
+- Log all terminology operations
+- Monitor for unusual access patterns
+- Alert on license expiration
+- Track terminology version updates
+- Maintain audit trail for compliance
 
 ## Implementation Roadmap
 
-### Immediate Actions (Phase 1 Completion)
-1. **Complete HAPI FHIR Server Setup**: Deploy local terminology server
-2. **Implement Basic API Clients**: UMLS, SNOMED, FHIR terminology services
-3. **Create Service Abstraction Layer**: Unified interface for all terminology operations
+### Phase 1: Foundation (Weeks 1-4) - COMPLETED IN THIS REPORT
 
-### Short-term Goals (Phase 2)
-1. **Build Integration Pipelines**: Connect standards to four-layer processing
-2. **Implement Validation Workflows**: Automated quality assurance
-3. **Create Transformation Services**: Archetype-to-FHIR mapping
+**Deliverables:**
+1. ✓ Comprehensive research on HAPI FHIR capabilities
+2. ✓ Analysis of FHIR Terminology Services (HL7 standard)
+3. ✓ Evaluation of Ontoserver CSIRO features
+4. ✓ Understanding of OpenEHR Archetypes and ADL
+5. ✓ Integration strategies for Santiago's four layers
+6. ✓ Technical implementation examples
+7. ✓ Deployment architecture recommendations
 
-### Long-term Vision (Phase 3)
-1. **NeuroSymbolic Integration**: Standards-aware reasoning capabilities
-2. **Performance Optimization**: Advanced caching and batch processing
-3. **Advanced Features**: Machine learning-enhanced terminology mapping
+**Next Steps:**
+- Review report with Santiago development team
+- Prioritize standards based on immediate needs
+- Begin Phase 2 infrastructure setup
+
+### Phase 2: Infrastructure Setup (Weeks 5-8)
+
+**Week 5-6: Core Services**
+- [ ] Deploy HAPI FHIR JPA Server (Docker)
+- [ ] Configure PostgreSQL backend
+- [ ] Obtain UMLS API credentials
+- [ ] Set up Ontoserver test access
+- [ ] Access OpenEHR CKM
+
+**Week 7-8: Integration Layer**
+- [ ] Implement terminology service abstraction
+- [ ] Create HAPI FHIR client
+- [ ] Create UMLS API client
+- [ ] Create Ontoserver client (with ECL support)
+- [ ] Create OpenEHR archetype client
+- [ ] Set up Redis caching
+
+### Phase 3: Layer Processors (Weeks 9-16)
+
+**Week 9-10: Layer 0 → 1 Processor**
+- [ ] Clinical NLP extraction
+- [ ] OpenEHR archetype pattern matching
+- [ ] UMLS concept normalization
+- [ ] Semantic triple generation
+
+**Week 11-12: Layer 1 → 2 Processor**
+- [ ] Triple to FHIR resource mapping
+- [ ] Archetype-to-FHIR transformations
+- [ ] Terminology binding with ValueSets
+- [ ] HAPI FHIR validation integration
+
+**Week 13-14: Layer 2 → 3 Processor**
+- [ ] PlanDefinition generation
+- [ ] ActivityDefinition creation
+- [ ] CQL logic compilation
+- [ ] Temporal constraint handling
+
+**Week 15-16: Integration Testing**
+- [ ] End-to-end pipeline tests
+- [ ] Performance benchmarking
+- [ ] Error handling validation
+- [ ] Documentation updates
+
+### Phase 4: NeuroSymbolic Integration (Weeks 17-24)
+
+**Week 17-20: Knowledge Graph**
+- [ ] Graph schema design
+- [ ] CosmosDB/Gremlin setup
+- [ ] Graph population from layers
+- [ ] Relationship inference
+
+**Week 21-24: Reasoning Engine**
+- [ ] Symbolic reasoning implementation
+- [ ] Neural component integration
+- [ ] Hybrid reasoning algorithms
+- [ ] Clinical QA interface
+
+### Phase 5: Production Readiness (Weeks 25-28)
+
+**Week 25-26: Optimization**
+- [ ] Performance profiling
+- [ ] Caching optimization
+- [ ] Batch processing
+- [ ] Load testing
+
+**Week 27-28: Operations**
+- [ ] Monitoring setup
+- [ ] Alerting configuration
+- [ ] Backup/recovery procedures
+- [ ] Documentation finalization
+- [ ] Team training
+
 
 ## Conclusion
 
-The integration of HAPI FHIR Server, UMLS/SNOMED CT, FHIR Terminology Services, and OpenEHR Archetypes provides a robust foundation for Santiago's clinical knowledge graph construction. The four-layer architecture naturally aligns with these standards, enabling progressive computability from prose to executable workflows.
+This comprehensive report provides a detailed analysis and actionable recommendations for integrating clinical standards into Santiago's NeuroSymbolic clinical knowledge graph architecture. Based on extensive research of official documentation from HAPI FHIR (hapifhir.io), HL7 FHIR Terminology (hl7.org), Ontoserver CSIRO (ontoserver.csiro.au), and OpenEHR (openehr.atlassian.net), we have established a solid foundation for building Santiago's four-layer clinical knowledge representation system.
 
-Key success factors include:
-- **Standards Compliance**: Maintaining fidelity to HL7 and clinical terminology standards
-- **Performance Optimization**: Efficient caching and local service deployment
-- **Quality Assurance**: Comprehensive validation at each layer
-- **Scalability**: Cloud-native architecture supporting growth
+### Key Findings
 
-This integration will enable Santiago to serve as a bridge between clinical knowledge and computable decision support, advancing the state of clinical informatics.
+**1. Standards Complementarity**
+The reviewed standards complement each other naturally within Santiago's architecture:
+- **OpenEHR Archetypes**: Provide semantic rigor at Layer 0 (Prose) through formal clinical modeling
+- **UMLS/SNOMED CT**: Enable concept normalization and classification at Layer 1 (GSRL)
+- **FHIR Resources**: Support computable representation at Layer 2 (RALL)
+- **FHIR CPG/PlanDefinition**: Enable executable workflows at Layer 3 (WATL)
+
+**2. Technology Maturity**
+All reviewed standards are production-ready with strong international adoption:
+- HAPI FHIR: Proven open-source implementation with 10+ years development
+- FHIR Terminology: HL7 standard with broad industry support
+- Ontoserver: National-scale deployment (Australia's NCTS, NHS England)
+- OpenEHR: International standard with 1000+ clinical archetypes
+
+**3. Integration Feasibility**
+Technical integration is achievable within the proposed timeline:
+- Well-documented APIs and operations
+- Extensive code examples and client libraries
+- Active communities and support channels
+- Clear upgrade and version management paths
+
+### Critical Success Factors
+
+**1. Standards Compliance**
+- Maintain fidelity to HL7 FHIR, openEHR, and terminology standards
+- Validate all generated artifacts against official specifications
+- Track standards evolution and update Santiago accordingly
+- Participate in standards communities for early awareness
+
+**2. Performance Optimization**
+- Implement multi-tier caching (in-memory, Redis, persistent)
+- Use batch operations where possible
+- Deploy services strategically (local vs. cloud)
+- Monitor and optimize hot paths continuously
+
+**3. Quality Assurance**
+- Validate at each layer transformation
+- Implement comprehensive testing (unit, integration, E2E)
+- Use terminology validation for all clinical codes
+- Maintain traceability from source to execution
+
+**4. Operational Excellence**
+- Comprehensive monitoring and alerting
+- Graceful degradation on service failures
+- Clear documentation and runbooks
+- Regular backup and disaster recovery drills
+
+**5. Scalability and Flexibility**
+- Cloud-native architecture with containerization
+- Horizontal scaling for compute-intensive operations
+- Microservices design for independent scaling
+- API-first approach for future integrations
+
+### Impact on Santiago Development
+
+**Immediate Benefits:**
+- Clear technical roadmap for implementation
+- Proven patterns and code examples
+- Understanding of licensing and deployment options
+- Risk mitigation through standards adoption
+
+**Medium-Term Benefits:**
+- Interoperability with EHR systems via FHIR
+- Access to international clinical content (archetypes)
+- Leveraging national terminology services
+- Community support and shared learnings
+
+**Long-Term Benefits:**
+- Future-proof architecture based on international standards
+- Ability to contribute back to standards communities
+- Foundation for advanced NeuroSymbolic reasoning
+- Pathway to commercial applications
+
+### Recommended Next Steps
+
+**1. Immediate (Week 1-2)**
+- Review this report with Santiago development team
+- Prioritize standards based on immediate development needs
+- Obtain necessary licenses (UMLS, SNOMED CT)
+- Set up development environment with HAPI FHIR
+
+**2. Short-Term (Week 3-8)**
+- Deploy core infrastructure (HAPI FHIR, databases, caching)
+- Implement terminology service abstraction layer
+- Build first layer processor (Layer 0 → Layer 1)
+- Establish testing and CI/CD pipelines
+
+**3. Medium-Term (Week 9-20)**
+- Complete all four layer processors
+- Integrate knowledge graph construction
+- Implement NeuroSymbolic reasoning prototype
+- Conduct performance optimization
+
+**4. Long-Term (Week 21+)**
+- Production deployment
+- Integration with BDD Creator
+- Advanced features (clinical QA, revenue services)
+- Continuous improvement and scaling
+
+### Final Remarks
+
+The integration of HAPI FHIR Server, UMLS/SNOMED CT, FHIR Terminology Services, Ontoserver, and OpenEHR Archetypes provides a robust, standards-based foundation for Santiago's clinical knowledge graph construction. The four-layer architecture naturally aligns with these standards, enabling progressive computability from clinical guideline prose to executable clinical workflows.
+
+By following the recommendations in this report, Santiago will:
+- Build on proven, internationally-adopted standards
+- Achieve interoperability with healthcare systems
+- Leverage existing clinical content and terminologies
+- Position itself as a bridge between clinical knowledge and computable decision support
+- Advance the state of clinical informatics through NeuroSymbolic AI
+
+The journey from clinical guidelines to executable knowledge graphs is complex, but with these standards as the foundation, Santiago is well-positioned to deliver on its vision of providing wisdom-generating services for the healthcare ecosystem.
+
+---
+
+**Report Version**: 2.0  
+**Date**: November 11, 2025  
+**Author**: GitHub Copilot (with research from official documentation)  
+**Status**: Ready for Implementation  
+
+**References:**
+- HAPI FHIR Documentation: https://hapifhir.io/hapi-fhir/docs/
+- HL7 FHIR Terminology Module: https://www.hl7.org/fhir/terminology-module.html
+- Ontoserver Documentation: https://ontoserver.csiro.au/docs/
+- OpenEHR Archetypes: https://openehr.atlassian.net/wiki/spaces/healthmod/
+- Santiago Research Plan: ../santiago-research-plan.md
