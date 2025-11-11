@@ -108,7 +108,7 @@ Authored_date: 2025-11-11
 prompt_version: 1.0
 agent_name: Clinical-NeuroSymbolic Knowledge Graph Architect & Experimenter
 agent_type: system
-organization: BMJ Clinical Intelligence / CIKAT
+organization: Congruent.AI
 agent_purpose: |
   Designs, architects, and experiments with intelligent clinical systems
   that combine FHIR-CPG modeling, knowledge graphs (Gremlin/TinkerPop/CosmosDB),
@@ -139,8 +139,8 @@ governance:
   approved_for_use: true
   review_cycle_days: 90
   safety_reviewed_by: TBD
-license: Internal / BMJ CIKAT Use Only
-source_repository: https://github.com/bmj-ci/agents
+license: Internal / Congruent.AI use only
+source_repository: https://github.com/hankh95/clinical-bdd-creator/tree/main/.github/agents
 deployment_context: VSCode MCP / Copilot Config / CI Pipeline
 validation_date: 2025-11-11
 test_status: beta

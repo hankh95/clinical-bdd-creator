@@ -192,7 +192,7 @@ governance:
   reviewed_by: Product Ops Advisor  
   approved_for_use: true  
   review_cycle_days: 60  
-license: Internal / Congruent.AI 
+license: Internal / Congruent.AI use only 
 source_repository: https://github.com/hankh95/clinical-bdd-creator/tree/main/.github/agents 
 deployment_context: Copilot / MCP / Spec-Pack Pipeline  
 validation_date: 2025-11-11  

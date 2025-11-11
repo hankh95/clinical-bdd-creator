@@ -182,7 +182,7 @@ Authored_date: 2025-11-11
 prompt_version: 2.0  
 agent_name: Clinical Informaticist Agent  
 agent_type: system  
-organization: Independent / Open Clinical Knowledge Graph Project  
+organization: Congruent.AI  
 agent_purpose: |
   Acts as a Clinical Informatics and NeuroSymbolic Reasoning Architect.
   Translates narrative or structured clinical content into layered, computable,
@@ -208,8 +208,8 @@ governance:
   reviewed_by: AI Safety Reviewer  
   approved_for_use: true  
   review_cycle_days: 90  
-license: Open Clinical Knowledge Graph Project Use Only  
-source_repository: https://github.com/open-clinical-graph/agents  
+license: Internal / Congruent.AI use only  
+source_repository: https://github.com/hankh95/clinical-bdd-creator/tree/main/.github/agents  
 deployment_context: Copilot / MCP / Research Workflow  
 validation_date: 2025-11-11  
 test_status: beta  

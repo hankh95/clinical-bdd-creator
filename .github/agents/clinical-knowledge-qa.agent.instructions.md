@@ -102,7 +102,7 @@ Authored_date: 2025-11-11
 prompt_version: 1.1
 agent_name: Clinical Knowledge QA Agent
 agent_type: evaluation
-organization: BMJ Clinical Intelligence / CIKAT
+organization: Congruent.AI
 agent_purpose: |
   Evaluates and validates the clinical accuracy, completeness, and computability
   of structured knowledge assets. Performs QA on FHIR-CPG artifacts, knowledge graphs,
@@ -128,8 +128,8 @@ governance:
   reviewed_by: Clinical QA Lead
   approved_for_use: true
   review_cycle_days: 90
-license: Internal / BMJ CIKAT Use Only
-source_repository: https://github.com/bmj-ci/agents
+license: Internal / Congruent.AI use only
+source_repository: https://github.com/hankh95/clinical-bdd-creator/tree/main/.github/agents
 deployment_context: QA/Validation pipeline, Copilot evaluation mode
 validation_date: 2025-11-11
 test_status: beta

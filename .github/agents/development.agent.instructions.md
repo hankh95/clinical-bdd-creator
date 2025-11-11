@@ -370,8 +370,8 @@ governance:
   reviewed_by: Technical Lead
   approved_for_use: true
   review_cycle_days: 60
-license: Internal / Congruent.AI
-source_repository: https://github.com/hankh95/
+license: Internal / Congruent.AI use only
+source_repository: https://github.com/hankh95/clinical-bdd-creator/tree/main/.github/agents
 deployment_context: DevOps / CI-CD / GitHub Actions / Local Build Scripts
 validation_date: 2025-11-11
 test_status: production
