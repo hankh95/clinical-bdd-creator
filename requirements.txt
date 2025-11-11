@@ -8,6 +8,8 @@ pytz>=2023.3
 pandas>=2.0.0
 numpy>=1.24.0
 scipy>=1.11.0
+PyPDF2>=3.0.0  # PDF document processing
+beautifulsoup4>=4.12.0  # HTML document processing
 
 # Machine Learning & NLP
 scikit-learn>=1.3.0
