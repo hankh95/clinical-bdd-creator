@@ -179,7 +179,7 @@ class GraphValidator:
             cross_layer_consistency=0.90,
         )
         
-        # Create placeholder layer results
+        # Create placeholder layer results for all layers
         for layer in ValidationLayer:
             result.layer_results[layer] = LayerValidationResult(
                 layer=layer,
