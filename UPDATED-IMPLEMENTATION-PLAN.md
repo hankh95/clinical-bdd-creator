@@ -75,18 +75,24 @@ This updated implementation plan integrates the comprehensive GitHub project man
 
 ### 🎯 Objectives
 - Complete clinical standards research integration
-- Begin Santiago knowledge graph implementation
-- Establish clinical terminology mappings
+- Begin Santiago knowledge graph implementation with lessons learned
+- Establish clinical terminology mappings and core semantic relationships
 
 ### 📋 Key Deliverables
-- [ ] Clinical standards integration report (from PR #8)
+- [ ] Clinical standards integration report (from PR #8) ✅ COMPLETED
 - [ ] HAPI FHIR, UMLS/SNOMED, OpenEHR integration plan
-- [ ] Santiago knowledge graph schema design
+- [ ] Santiago knowledge graph schema design with direct UMLS ontology loading
 - [ ] Clinical terminology mapping framework
+- [ ] **NEW:** Core semantic relationships definition (treats, investigates, complicates, risk-factor)
+- [ ] **NEW:** Layer 0 document loading and deep asset linking implementation
+- [ ] **NEW:** VSAC value set integration for Layer 2
+- [ ] **NEW:** Multi-model support (FHIR-CPG + OpenEHR archetypes) for Layer 3
 
-### 📊 Effort Estimate: 60-80 hours
-- Research analysis: 20 hours
-- Integration design: 30 hours
+### 📊 Effort Estimate: 80-100 hours (increased due to lessons learned)
+- Research analysis: 20 hours ✅ COMPLETED
+- Integration design: 40 hours (increased for multi-model support)
+- Core relationships definition: 15 hours (new)
+- Document loading implementation: 25 hours (new)
 - Implementation: 30 hours
 
 ---
@@ -94,21 +100,29 @@ This updated implementation plan integrates the comprehensive GitHub project man
 ## Phase 3: Santiago Core Implementation (Weeks 7-12)
 
 ### 🎯 Objectives
-- Implement Santiago four-layer architecture
-- Develop NeuroSymbolic reasoning engine
-- Create clinical question answering capabilities
+- Implement Santiago four-layer architecture with lessons learned
+- Develop NeuroSymbolic reasoning engine with direct terminology integration
+- Create clinical question answering capabilities with fidelity validation
 
 ### 📋 Technical Components
-- [ ] Layer 1: Raw text processing pipeline
-- [ ] Layer 2: Structured knowledge extraction
-- [ ] Layer 3: Computable logic formalization
-- [ ] Layer 4: Executable workflow generation
+- [ ] **CRITICAL:** BDD testing framework implementation (key architecture component)
+- [ ] Layer 0: Document loading and deep asset linking
+- [ ] Layer 1: Raw text processing with core semantic relationships
+- [ ] Layer 2: Structured knowledge with direct UMLS ontology loading
+- [ ] Layer 3: Computable logic with asset co-location and multi-model support
+- [ ] Layer 4: Executable workflow generation with Neurosymbolic reasoning
 - [ ] MCP interface implementation
 - [ ] Graph database integration (CosmosDB/Gremlin)
+- [ ] **NEW:** Multi-AI model validation framework
+- [ ] **NEW:** Goals and measures generation from knowledge changes
+- [ ] **NEW:** CDS effectiveness measurement (5 rights framework)
 
-### 📊 Effort Estimate: 120-150 hours
+### 📊 Effort Estimate: 150-180 hours (increased for lessons learned implementation)
+- BDD framework: 30 hours (new priority)
 - Architecture implementation: 60 hours
 - NeuroSymbolic engine: 40 hours
+- Direct terminology integration: 20 hours (new)
+- Validation frameworks: 30 hours (new)
 - Testing and validation: 50 hours
 
 ---
