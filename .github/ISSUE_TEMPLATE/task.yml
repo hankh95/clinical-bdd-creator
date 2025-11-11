@@ -1,0 +1,120 @@
+name: Task
+description: Create a development task or work item
+title: "[Task]: "
+labels: ["type: task", "status: needs-triage"]
+projects: ["hankh95/2"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Task
+        Create a specific development task or work item.
+        
+  - type: textarea
+    id: description
+    attributes:
+      label: Task Description
+      description: What needs to be done?
+    validations:
+      required: true
+      
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: How will we know this task is complete? (Use BDD format if applicable)
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Tests pass
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: suggested-agent
+    attributes:
+      label: Suggested Agent Assignment
+      description: Which agent(s) would be best suited for this task?
+      multiple: true
+      options:
+        - "👤 Human Developer"
+        - "🤖 Development Agent (General)"
+        - "🏥 Clinical Informaticist Agent"
+        - "🧬 NeuroSymbolic Clinical Architect Agent"
+        - "✅ Clinical Knowledge QA Agent"
+        - "📊 Product Manager Agent"
+        - "🔧 DevOps Expert Agent"
+        - "💰 Monetization Expert Agent"
+        - "🤝 Multiple Agents (specify in description)"
+    validations:
+      required: false
+      
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: What is the priority of this task?
+      options:
+        - "🔴 P0 - Critical (Blocking)"
+        - "🟠 P1 - High"
+        - "🟡 P2 - Medium"
+        - "🟢 P3 - Low"
+      default: 2
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: effort
+    attributes:
+      label: Estimated Effort
+      description: Rough estimate of effort required
+      options:
+        - "XS - < 2 hours"
+        - "S - 2-4 hours"
+        - "M - 4-8 hours"
+        - "L - 1-2 days"
+        - "XL - 2-5 days"
+        - "XXL - > 1 week"
+    validations:
+      required: false
+      
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which area does this task relate to?
+      multiple: true
+      options:
+        - "Santiago Service (NeuroSymbolic)"
+        - "BDD Framework"
+        - "Clinical Knowledge Graph"
+        - "FHIR Integration"
+        - "Testing Infrastructure"
+        - "Documentation"
+        - "DevOps/Deployment"
+        - "MCP Integration"
+        - "API/Interface"
+        - "Other"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Dependencies, blockers, or related issues
+    validations:
+      required: false
+      
+  - type: checkboxes
+    id: task-type
+    attributes:
+      label: Task Type
+      description: What type of work is this?
+      options:
+        - label: Implementation (writing code)
+        - label: Testing (writing tests)
+        - label: Documentation (writing docs)
+        - label: Research (investigating approaches)
+        - label: Refactoring (improving existing code)
+        - label: DevOps (deployment/infrastructure)

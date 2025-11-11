@@ -1,0 +1,42 @@
+name: Stale Issues and PRs
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-issue-message: |
+            This issue has been automatically marked as stale because it has not had recent activity. 
+            It will be closed if no further activity occurs within 7 days.
+            
+            If this is still relevant, please:
+            - Comment to keep it open
+            - Update the issue with current status
+            - Add the 'keep-open' label
+            
+            Thank you for your contributions!
+          stale-pr-message: |
+            This pull request has been automatically marked as stale because it has not had recent activity.
+            It will be closed if no further activity occurs within 7 days.
+            
+            If you're still working on this, please comment or push new commits.
+            
+            Thank you for your contributions!
+          close-issue-message: 'Closing stale issue. Please reopen if this is still relevant.'
+          close-pr-message: 'Closing stale PR. Please reopen when you are ready to continue.'
+          days-before-stale: 60
+          days-before-close: 7
+          stale-issue-label: 'status: stale'
+          stale-pr-label: 'status: stale'
+          exempt-issue-labels: 'status: blocked,status: in-progress,keep-open'
+          exempt-pr-labels: 'status: blocked,status: in-progress,keep-open'
+          operations-per-run: 30
