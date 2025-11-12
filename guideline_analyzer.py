@@ -132,13 +132,13 @@ class GuidelineAnalyzer:
             # Value-based care: "Consider quality metrics for X"
             r'(?i)consider quality metrics for ([^.]*?)\.',
             # Shared decision making: "Discuss X with patient"
-            r'(?i)discuss ([^.]*) with patient(?:s)?\.',
+            r'(?i)discuss (.*?) with patient',
             # SDOH: "Assess social determinants for X"
             r'(?i)assess social determinants for ([^.]*?)\.',
             # Protocols: "Follow protocol for X"
             r'(?i)follow protocol for ([^.]*?)\.',
             # Documentation: "Document X in the record"
-            r'(?i)document ([^.]*) in the record\.',
+            r'(?i)document (.*?) in the record',
             # Care coordination: "Coordinate care for X"
             r'(?i)coordinate care for ([^.]*?)\.',
             # Lifestyle education: "Recommend lifestyle modifications for X"
