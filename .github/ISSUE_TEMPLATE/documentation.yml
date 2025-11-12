@@ -1,0 +1,102 @@
+name: Documentation
+description: Suggest improvements to documentation
+title: "[Docs]: "
+labels: ["type: documentation", "status: needs-triage"]
+projects: ["hankh95/2"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Documentation Request
+        Help us improve our documentation!
+        
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: Documentation Type
+      description: What type of documentation needs work?
+      options:
+        - "API Documentation"
+        - "User Guide"
+        - "Developer Guide"
+        - "Architecture Documentation"
+        - "Clinical Guidelines Documentation"
+        - "README improvements"
+        - "Code comments"
+        - "Other"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: description
+    attributes:
+      label: What needs to be documented?
+      description: Describe the documentation that needs to be created or improved
+    validations:
+      required: true
+      
+  - type: textarea
+    id: current-state
+    attributes:
+      label: Current State (if updating)
+      description: What currently exists and what's wrong with it?
+    validations:
+      required: false
+      
+  - type: textarea
+    id: desired-state
+    attributes:
+      label: Desired State
+      description: What should the documentation look like when complete?
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: suggested-agent
+    attributes:
+      label: Suggested Agent Assignment
+      description: Which agent would be best for this documentation?
+      multiple: true
+      options:
+        - "👤 Human Developer"
+        - "🤖 Development Agent (General)"
+        - "🏥 Clinical Informaticist Agent"
+        - "🧬 NeuroSymbolic Clinical Architect Agent"
+        - "📊 Product Manager Agent"
+        - "🤝 Multiple Agents (specify in description)"
+    validations:
+      required: false
+      
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this documentation?
+      options:
+        - "🔴 P0 - Critical (Blocking usage)"
+        - "🟠 P1 - High (Frequently needed)"
+        - "🟡 P2 - Medium (Occasionally needed)"
+        - "🟢 P3 - Low (Nice to have)"
+      default: 2
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which area does this documentation relate to?
+      multiple: true
+      options:
+        - "Santiago Service (NeuroSymbolic)"
+        - "BDD Framework"
+        - "Clinical Knowledge Graph"
+        - "FHIR Integration"
+        - "Testing Infrastructure"
+        - "Documentation"
+        - "DevOps/Deployment"
+        - "MCP Integration"
+        - "API/Interface"
+        - "Other"
+    validations:
+      required: true

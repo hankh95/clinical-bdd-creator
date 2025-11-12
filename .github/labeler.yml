@@ -1,0 +1,29 @@
+# Label PRs based on file paths
+'area: santiago-service':
+  - santiago-service/**/*
+
+'area: bdd-framework':
+  - examples/bdd-tests/**/*
+  - spec-pack/**/*
+
+'area: testing':
+  - '**/*test*.py'
+  - test-reports/**/*
+
+'area: documentation':
+  - '**/*.md'
+  - 'docs/**/*'
+
+'area: devops':
+  - .github/**/*
+  - Dockerfile
+  - docker-compose.yml
+  - deploy.sh
+
+'area: clinical-knowledge':
+  - data/**/*
+  - examples/clinical-guidelines/**/*
+
+'area: api':
+  - app.py
+  - '**/api/**/*'
