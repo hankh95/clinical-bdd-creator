@@ -1,0 +1,123 @@
+{
+  "passed": [
+    {
+      "scenario_id": "1.1.1",
+      "scenario_name": "Differential Diagnosis",
+      "instances": 1
+    },
+    {
+      "scenario_id": "1.1.5",
+      "scenario_name": "Diagnostic Test",
+      "instances": 2
+    },
+    {
+      "scenario_id": "1.1.6",
+      "scenario_name": "Genetic Test",
+      "instances": 1
+    },
+    {
+      "scenario_id": "1.1.7",
+      "scenario_name": "Next Best Action",
+      "instances": 1
+    },
+    {
+      "scenario_id": "1.1.8",
+      "scenario_name": "Value Based Care",
+      "instances": 2
+    },
+    {
+      "scenario_id": "1.1.9",
+      "scenario_name": "Lifestyle Education",
+      "instances": 2
+    },
+    {
+      "scenario_id": "1.2.2",
+      "scenario_name": "Test Appropriateness",
+      "instances": 1
+    },
+    {
+      "scenario_id": "2.1.1",
+      "scenario_name": "Case Management",
+      "instances": 1
+    },
+    {
+      "scenario_id": "2.2.1",
+      "scenario_name": "Quality Metrics",
+      "instances": 1
+    },
+    {
+      "scenario_id": "2.3.1",
+      "scenario_name": "Risk Stratification",
+      "instances": 2
+    },
+    {
+      "scenario_id": "3.1.1",
+      "scenario_name": "Shared Decision Making",
+      "instances": 1
+    },
+    {
+      "scenario_id": "3.2.1",
+      "scenario_name": "SDOH Integration",
+      "instances": 1
+    },
+    {
+      "scenario_id": "3.3.1",
+      "scenario_name": "Patient Reminders",
+      "instances": 1
+    },
+    {
+      "scenario_id": "4.1.1",
+      "scenario_name": "Guideline Retrieval",
+      "instances": 1
+    },
+    {
+      "scenario_id": "4.2.1",
+      "scenario_name": "Protocol Driven Care",
+      "instances": 1
+    },
+    {
+      "scenario_id": "4.4.1",
+      "scenario_name": "Care Coordination",
+      "instances": 1
+    }
+  ],
+  "failed": [
+    {
+      "scenario_id": "1.1.3",
+      "scenario_name": "Drug Recommendation",
+      "issue": "Scenario not detected"
+    },
+    {
+      "scenario_id": "1.1.4",
+      "scenario_name": "Cancer Treatment",
+      "issue": "Scenario not detected"
+    },
+    {
+      "scenario_id": "1.2.1",
+      "scenario_name": "Drug Interaction",
+      "issue": "Scenario not detected"
+    },
+    {
+      "scenario_id": "1.2.3",
+      "scenario_name": "Adverse Event Monitoring",
+      "issue": "Scenario not detected"
+    },
+    {
+      "scenario_id": "2.4.1",
+      "scenario_name": "Public Health Reporting",
+      "issue": "Scenario not detected"
+    },
+    {
+      "scenario_id": "4.3.1",
+      "scenario_name": "Documentation Support",
+      "issue": "Scenario not detected"
+    }
+  ],
+  "warnings": [
+    {
+      "scenario_id": "1.1.2",
+      "scenario_name": "Treatment Recommendation",
+      "issue": "Low instance count: 1 < 2"
+    }
+  ]
+}
