@@ -29,8 +29,15 @@ class CDSUsageScenario(Enum):
     TEST_APPROPRIATENESS = "1.2.2"      # What should I think about (appropriateness)?
     ADVERSE_EVENT = "1.2.3"             # What should I think about (monitoring)?
     VALUE_BASED_CARE = "1.1.8"          # Quality gap closure alerts
+    LIFESTYLE_EDUCATION = "1.1.9"       # Behavior change interventions
+    CASE_MANAGEMENT = "2.1.1"           # Case management and care coordination
+    QUALITY_METRICS = "2.2.1"           # Quality measurement and reporting
+    RISK_STRATIFICATION = "2.3.1"       # Patient risk assessment
+    PUBLIC_HEALTH_REPORTING = "2.4.1"   # Population health surveillance
     SHARED_DECISION_MAKING = "3.1.1"    # Collaborative planning with patient preferences
     SDOH_INTEGRATION = "3.2.1"          # Social context adjustment
+    PATIENT_REMINDERS = "3.3.1"         # Patient education and reminder systems
+    GUIDELINE_RETRIEVAL = "4.1.1"       # Clinical guideline information retrieval
     PROTOCOL_DRIVEN_CARE = "4.2.1"      # Workflow automation
     DOCUMENTATION_SUPPORT = "4.3.1"     # Documentation assistance
     CARE_COORDINATION = "4.4.1"         # Escalation and handoff alerts
@@ -134,6 +141,42 @@ class GuidelineAnalyzer:
             r'(?i)document ([^.]*) in the record\.',
             # Care coordination: "Coordinate care for X"
             r'(?i)coordinate care for ([^.]*?)\.',
+            # Lifestyle education: "Recommend lifestyle modifications for X"
+            r'(?i)recommend (?:lifestyle|diet|exercise|behavior|smoking cessation) (?:modifications?|changes?|interventions?) for ([^.]*?)\.',
+            # Lifestyle education: "Counsel patients about X"
+            r'(?i)counsel patients (?:about|on) ([^.]*?)\.',
+            # Lifestyle education: "Provide education on X"
+            r'(?i)provide education on ([^.]*?)\.',
+            # Case management: "Refer to case management for X"
+            r'(?i)refer to (?:case management|care manager|case manager) for ([^.]*?)\.',
+            # Case management: "Manage complex cases with X"
+            r'(?i)manage (?:complex|high-risk) (?:cases?|patients?) (?:with|requiring) ([^.]*?)\.',
+            # Quality metrics: "Track quality measures for X"
+            r'(?i)track (?:quality|performance) (?:measures?|metrics?|indicators?) for ([^.]*?)\.',
+            # Quality metrics: "Report quality outcomes for X"
+            r'(?i)report (?:quality|clinical) outcomes for ([^.]*?)\.',
+            # Risk stratification: "Assess risk for X"
+            r'(?i)assess (?:risk|likelihood) (?:of|for) ([^.]*?)\.',
+            # Risk stratification: "Stratify patients by risk for X"
+            r'(?i)stratify patients (?:by|based on) (?:risk|score) (?:for|of) ([^.]*?)\.',
+            # Risk stratification: "Calculate risk score for X"
+            r'(?i)calculate (?:risk|prognostic) score for ([^.]*?)\.',
+            # Public health reporting: "Report to public health for X"
+            r'(?i)report to public health (?:for|regarding) ([^.]*?)\.',
+            # Public health reporting: "Notify authorities of X"
+            r'(?i)notify (?:authorities|health department) of ([^.]*?)\.',
+            # Patient reminders: "Remind patients to X"
+            r'(?i)remind patients to ([^.]*?)\.',
+            # Patient reminders: "Schedule follow-up reminder for X"
+            r'(?i)schedule (?:follow-up|reminder) (?:for|about) ([^.]*?)\.',
+            # Patient reminders: "Send reminder for X"
+            r'(?i)send reminder for ([^.]*?)\.',
+            # Guideline retrieval: "Consult guideline for X"
+            r'(?i)consult (?:guideline|protocol|standard) for ([^.]*?)\.',
+            # Guideline retrieval: "Refer to guideline for X"
+            r'(?i)refer to (?:guideline|protocol|standard) for ([^.]*?)\.',
+            # Guideline retrieval: "Review recommendations for X"
+            r'(?i)review (?:guideline|evidence-based) recommendations for ([^.]*?)\.',
         ]
 
         decisions = []
@@ -147,11 +190,18 @@ class GuidelineAnalyzer:
                         'patient_criteria': [match.group(1).strip()],
                         'context': text[max(0, match.start() - 100):match.end() + 100].strip()
                     }
-                # For general "Recommend X for Y" patterns (not the "for patients with" one above)
-                elif 'recommend' in pattern and 'for patients with' not in pattern:
+                # For general "Recommend X for Y" patterns with 2 groups
+                elif 'recommend' in pattern and 'for patients with' not in pattern and len(match.groups()) >= 2:
                     decision = {
                         'action': match.group(1).strip(),
                         'patient_criteria': [match.group(2).strip()],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For single-group patterns (lifestyle, case management, quality, risk, reminders, guideline)
+                elif len(match.groups()) == 1:
+                    decision = {
+                        'action': match.group(0).strip(),  # Full match as action
+                        'patient_criteria': [match.group(1).strip()],
                         'context': text[max(0, match.start() - 100):match.end() + 100].strip()
                     }
                 # For value-based care pattern "Consider quality metrics for X"
@@ -194,6 +244,55 @@ class GuidelineAnalyzer:
                     decision = {
                         'action': f'coordinate care for {match.group(1).strip()}',
                         'patient_criteria': ['care coordination'],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For lifestyle education patterns
+                elif 'lifestyle' in pattern or 'counsel patients' in pattern or 'provide education' in pattern:
+                    decision = {
+                        'action': f'lifestyle education: {match.group(1).strip()}',
+                        'patient_criteria': ['lifestyle modification'],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For case management patterns
+                elif 'case management' in pattern or 'case manager' in pattern or 'manage complex' in pattern or 'manage high-risk' in pattern:
+                    decision = {
+                        'action': f'case management for {match.group(1).strip()}',
+                        'patient_criteria': ['case management'],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For quality metrics patterns
+                elif 'quality' in pattern and ('measures' in pattern or 'metrics' in pattern or 'outcomes' in pattern):
+                    decision = {
+                        'action': f'quality metrics for {match.group(1).strip()}',
+                        'patient_criteria': ['quality measurement'],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For risk stratification patterns
+                elif 'risk' in pattern and ('assess' in pattern or 'stratify' in pattern or 'calculate' in pattern):
+                    decision = {
+                        'action': f'risk assessment for {match.group(1).strip()}',
+                        'patient_criteria': ['risk stratification'],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For public health reporting patterns
+                elif 'public health' in pattern or 'notify authorities' in pattern:
+                    decision = {
+                        'action': f'public health reporting for {match.group(1).strip()}',
+                        'patient_criteria': ['public health'],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For patient reminders patterns
+                elif 'remind' in pattern or 'reminder' in pattern:
+                    decision = {
+                        'action': f'patient reminder for {match.group(1).strip()}',
+                        'patient_criteria': ['patient engagement'],
+                        'context': text[max(0, match.start() - 100):match.end() + 100].strip()
+                    }
+                # For guideline retrieval patterns
+                elif 'consult guideline' in pattern or 'refer to guideline' in pattern or 'refer to protocol' in pattern or 'refer to standard' in pattern or 'review' in pattern and 'recommendations' in pattern:
+                    decision = {
+                        'action': f'guideline retrieval for {match.group(1).strip()}',
+                        'patient_criteria': ['guideline access'],
                         'context': text[max(0, match.start() - 100):match.end() + 100].strip()
                     }
                 # For monitoring pattern "Monitor patients with X for Y": group 1 is condition, group 2 is what to monitor
@@ -351,6 +450,49 @@ class GuidelineAnalyzer:
         if any(word in action for word in ['coordinate', 'transition', 'discharge', 'follow-up', 'refer', 'escalate']) or \
            any(word in context for word in ['care coordination', 'care transition', 'discharge planning', 'follow-up care']):
             scenarios.append(CDSUsageScenario.CARE_COORDINATION)
+
+        # Lifestyle Education (1.1.9) - Behavior change interventions
+        # Look for lifestyle modifications, counseling, behavior change, education
+        if any(word in action for word in ['lifestyle', 'diet', 'exercise', 'smoking', 'counsel', 'behavior', 'modification', 'education']) and \
+           any(word in action for word in ['lifestyle', 'counsel', 'education', 'modification']) or \
+           'lifestyle modification' in criteria:
+            scenarios.append(CDSUsageScenario.LIFESTYLE_EDUCATION)
+
+        # Case Management (2.1.1) - Case management and care coordination
+        # Look for case management, high-risk patients, complex care
+        if any(word in action for word in ['case management', 'case manager', 'manage complex', 'manage high-risk']) or \
+           'case management' in criteria:
+            scenarios.append(CDSUsageScenario.CASE_MANAGEMENT)
+
+        # Quality Metrics (2.2.1) - Quality measurement and reporting
+        # Look for quality metrics, performance indicators, clinical outcomes
+        if any(word in action for word in ['quality metrics', 'quality measures', 'performance', 'track', 'report outcomes']) or \
+           'quality measurement' in criteria:
+            scenarios.append(CDSUsageScenario.QUALITY_METRICS)
+
+        # Risk Stratification (2.3.1) - Patient risk assessment
+        # Look for risk assessment, risk scores, stratification
+        if any(word in action for word in ['risk assessment', 'assess risk', 'stratify', 'calculate risk', 'risk score']) or \
+           'risk stratification' in criteria:
+            scenarios.append(CDSUsageScenario.RISK_STRATIFICATION)
+
+        # Public Health Reporting (2.4.1) - Population health surveillance
+        # Look for public health reporting, notifiable diseases, surveillance
+        if any(word in action for word in ['public health', 'report to', 'notify authorities', 'surveillance']) or \
+           'public health' in criteria:
+            scenarios.append(CDSUsageScenario.PUBLIC_HEALTH_REPORTING)
+
+        # Patient Reminders (3.3.1) - Patient education and reminder systems
+        # Look for reminders, follow-up alerts, patient notifications
+        if any(word in action for word in ['remind', 'reminder', 'schedule follow-up', 'send reminder']) or \
+           'patient engagement' in criteria:
+            scenarios.append(CDSUsageScenario.PATIENT_REMINDERS)
+
+        # Guideline Retrieval (4.1.1) - Clinical guideline information retrieval
+        # Look for guideline consultation, protocol reference, evidence-based recommendations
+        if any(word in action for word in ['consult guideline', 'refer to guideline', 'refer to protocol', 'review recommendations', 'guideline retrieval']) or \
+           'guideline access' in criteria:
+            scenarios.append(CDSUsageScenario.GUIDELINE_RETRIEVAL)
 
         # Monitoring/follow-up
         if any(word in action for word in ['monitor', 'follow', 'assess', 'evaluate']):
