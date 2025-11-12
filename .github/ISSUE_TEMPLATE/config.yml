@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: GitHub Discussions
+    url: https://github.com/hankh95/clinical-bdd-creator/discussions
+    about: For questions, ideas, and general discussions
+  - name: GitHub Project Board
+    url: https://github.com/users/hankh95/projects/2
+    about: View the project roadmap and current work

@@ -1,0 +1,78 @@
+# Sample Clinical Guideline: Hypertension Management
+
+## Introduction
+
+Hypertension, or high blood pressure, is a common condition that affects millions of people worldwide. This guideline provides evidence-based recommendations for the diagnosis, evaluation, and management of hypertension in adults.
+
+## Definition and Classification
+
+### Blood Pressure Categories
+- **Normal**: Systolic < 120 mmHg and Diastolic < 80 mmHg
+- **Elevated**: Systolic 120-129 mmHg and Diastolic < 80 mmHg
+- **Stage 1 Hypertension**: Systolic 130-139 mmHg or Diastolic 80-89 mmHg
+- **Stage 2 Hypertension**: Systolic ≥ 140 mmHg or Diastolic ≥ 90 mmHg
+
+### Measurement Techniques
+Blood pressure should be measured using a validated device with an appropriately sized cuff. Measurements should be taken after the patient has been seated quietly for at least 5 minutes, with the arm supported at heart level.
+
+## Initial Evaluation
+
+### History and Physical Examination
+- Assess for cardiovascular risk factors
+- Evaluate for secondary causes of hypertension
+- Perform comprehensive physical examination
+
+### Diagnostic Tests
+- Basic metabolic panel (electrolytes, creatinine, glucose)
+- Lipid profile
+- Urinalysis
+- Electrocardiogram (ECG)
+
+## Treatment Recommendations
+
+### Lifestyle Modifications
+- Weight reduction if overweight
+- DASH eating plan
+- Dietary sodium reduction (< 2.4 g/day)
+- Increased physical activity
+- Moderation of alcohol consumption
+
+### Pharmacologic Treatment
+
+#### First-Line Agents
+- Thiazide diuretics (e.g., hydrochlorothiazide)
+- ACE inhibitors (e.g., lisinopril)
+- ARBs (e.g., losartan)
+- Calcium channel blockers (e.g., amlodipine)
+
+#### Combination Therapy
+For patients requiring additional blood pressure reduction, combination therapy with two first-line agents from different classes is recommended.
+
+## Follow-up and Monitoring
+
+### Frequency of Visits
+- Initial follow-up: Within 1 month
+- Subsequent visits: Every 3-6 months depending on control
+
+### Home Blood Pressure Monitoring
+Home blood pressure monitoring is recommended for:
+- Diagnosis of hypertension
+- Assessment of treatment effectiveness
+- Detection of white coat hypertension
+
+## Special Populations
+
+### Elderly Patients
+Treatment should be initiated cautiously in patients ≥ 80 years old, starting with lower doses and titrating slowly.
+
+### Patients with Diabetes
+Blood pressure target: < 130/80 mmHg
+
+### Patients with Chronic Kidney Disease
+Blood pressure target: < 130/80 mmHg
+ACE inhibitors or ARBs are preferred first-line agents.
+
+## References
+
+1. Whelton PK, et al. 2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA Guideline for the Prevention, Detection, Evaluation, and Management of High Blood Pressure in Adults. Hypertension. 2018;71:e13-e115.
+2. Williams B, et al. 2018 ESC/ESH Guidelines for the management of arterial hypertension. Eur Heart J. 2018;39:3021-3104.

@@ -1,0 +1,118 @@
+name: Feature Request
+description: Propose a new feature or enhancement for the Clinical BDD Creator
+title: "[Feature]: "
+labels: ["type: feature", "status: needs-triage"]
+projects: ["hankh95/2"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature Request
+        Thank you for proposing a new feature! Please provide details to help us understand and implement your idea.
+        
+  - type: textarea
+    id: user-story
+    attributes:
+      label: User Story
+      description: Describe the feature as a user story using BDD format
+      placeholder: |
+        As a [role]
+        I want [feature]
+        So that [benefit]
+    validations:
+      required: true
+      
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Define specific, testable acceptance criteria in BDD format
+      placeholder: |
+        Given [context]
+        When [action]
+        Then [outcome]
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: suggested-agent
+    attributes:
+      label: Suggested Agent Assignment
+      description: Which agent(s) would be best suited for this work?
+      multiple: true
+      options:
+        - "👤 Human Developer"
+        - "🤖 Development Agent (General)"
+        - "🏥 Clinical Informaticist Agent"
+        - "🧬 NeuroSymbolic Clinical Architect Agent"
+        - "✅ Clinical Knowledge QA Agent"
+        - "📊 Product Manager Agent"
+        - "🔧 DevOps Expert Agent"
+        - "💰 Monetization Expert Agent"
+        - "🤝 Multiple Agents (specify in description)"
+    validations:
+      required: false
+      
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: What is the priority of this feature?
+      options:
+        - "🔴 P0 - Critical (Blocking/Security)"
+        - "🟠 P1 - High (Core functionality)"
+        - "🟡 P2 - Medium (Important but not urgent)"
+        - "🟢 P3 - Low (Nice to have)"
+      default: 2
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which area does this feature relate to?
+      multiple: true
+      options:
+        - "Santiago Service (NeuroSymbolic)"
+        - "BDD Framework"
+        - "Clinical Knowledge Graph"
+        - "FHIR Integration"
+        - "Testing Infrastructure"
+        - "Documentation"
+        - "DevOps/Deployment"
+        - "MCP Integration"
+        - "API/Interface"
+        - "Other"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Product Hypothesis (Optional)
+      description: For PM Agent - Define the hypothesis this feature tests
+      placeholder: |
+        We believe that [doing X] for [users Y] will achieve [outcome Z].
+        We'll know we're right when we see [metric N] move by [M%].
+    validations:
+      required: false
+      
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Any other context, mockups, or references
+    validations:
+      required: false
+      
+  - type: checkboxes
+    id: clinical-safety
+    attributes:
+      label: Clinical Safety Considerations
+      description: Does this feature involve clinical decision support?
+      options:
+        - label: This feature involves clinical decision support and requires clinical validation
+          required: false
+        - label: This feature has been reviewed for patient safety implications
+          required: false

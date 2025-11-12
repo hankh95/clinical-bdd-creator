@@ -1,0 +1,406 @@
+{
+  "id": "hypertension_management_guideline_acc_aha_2018_6a2cd50c",
+  "title": "Hypertension Management Guideline",
+  "source": "ACC/AHA",
+  "version": "2018",
+  "publication_date": "2018-01-01",
+  "authors": [
+    "Whelton PK",
+    "et al."
+  ],
+  "organization": "American College of Cardiology/American Heart Association",
+  "document_type": "guideline",
+  "format": "text",
+  "file_path": "/Users/hankhead/Projects/Personal/clinical-bdd-creator/test_guideline.md",
+  "url": null,
+  "checksum": "f40bd4ac93dea25d045fefc465ebd68217dec6de220d45d25f85baacddbd19fb",
+  "loaded_at": "2025-11-10T22:25:13.037118",
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "Sample Clinical Guideline: Hypertension Management",
+      "content": "",
+      "level": 1,
+      "start_position": 0,
+      "end_position": 53,
+      "parent_id": null,
+      "subsections": [
+        "section_2",
+        "section_3",
+        "section_6",
+        "section_9",
+        "section_14",
+        "section_17",
+        "section_21"
+      ],
+      "anchors": []
+    },
+    {
+      "id": "section_2",
+      "title": "Introduction",
+      "content": "Hypertension, or high blood pressure, is a common condition that affects millions of people worldwide. This guideline provides evidence-based recommendations for the diagnosis, evaluation, and management of hypertension in adults.\n",
+      "level": 2,
+      "start_position": 53,
+      "end_position": 300,
+      "parent_id": "section_1",
+      "subsections": [],
+      "anchors": []
+    },
+    {
+      "id": "section_3",
+      "title": "Definition and Classification",
+      "content": "",
+      "level": 2,
+      "start_position": 300,
+      "end_position": 333,
+      "parent_id": "section_1",
+      "subsections": [
+        "section_4",
+        "section_5"
+      ],
+      "anchors": []
+    },
+    {
+      "id": "section_4",
+      "title": "Blood Pressure Categories",
+      "content": "- **Normal**: Systolic < 120 mmHg and Diastolic < 80 mmHg\n- **Elevated**: Systolic 120-129 mmHg and Diastolic < 80 mmHg\n- **Stage 1 Hypertension**: Systolic 130-139 mmHg or Diastolic 80-89 mmHg\n- **Stage 2 Hypertension**: Systolic ≥ 140 mmHg or Diastolic ≥ 90 mmHg\n",
+      "level": 3,
+      "start_position": 333,
+      "end_position": 628,
+      "parent_id": "section_3",
+      "subsections": [],
+      "anchors": []
+    },
+    {
+      "id": "section_5",
+      "title": "Measurement Techniques",
+      "content": "Blood pressure should be measured using a validated device with an appropriately sized cuff. Measurements should be taken after the patient has been seated quietly for at least 5 minutes, with the arm supported at heart level.\n",
+      "level": 3,
+      "start_position": 628,
+      "end_position": 882,
+      "parent_id": "section_3",
+      "subsections": [],
+      "anchors": []
+    },
+    {
+      "id": "section_6",
+      "title": "Initial Evaluation",
+      "content": "",
+      "level": 2,
+      "start_position": 882,
+      "end_position": 904,
+      "parent_id": "section_1",
+      "subsections": [
+        "section_7",
+        "section_8"
+      ],
+      "anchors": []
+    },
+    {
+      "id": "section_7",
+      "title": "History and Physical Examination",
+      "content": "- Assess for cardiovascular risk factors\n- Evaluate for secondary causes of hypertension\n- Perform comprehensive physical examination\n",
+      "level": 3,
+      "start_position": 904,
+      "end_position": 1075,
+      "parent_id": "section_6",
+      "subsections": [],
+      "anchors": []
+    },
+    {
+      "id": "section_8",
+      "title": "Diagnostic Tests",
+      "content": "- Basic metabolic panel (electrolytes, creatinine, glucose)\n- Lipid profile\n- Urinalysis\n- Electrocardiogram (ECG)\n",
+      "level": 3,
+      "start_position": 1075,
+      "end_position": 1211,
+      "parent_id": "section_6",
+      "subsections": [],
+      "anchors": []
+    },
+    {
+      "id": "section_9",
+      "title": "Treatment Recommendations",
+      "content": "",
+      "level": 2,
+      "start_position": 1211,
+      "end_position": 1240,
+      "parent_id": "section_1",
+      "subsections": [
+        "section_10",
+        "section_11"
+      ],
+      "anchors": []
+    },
+    {
+      "id": "section_10",
+      "title": "Lifestyle Modifications",
+      "content": "- Weight reduction if overweight\n- DASH eating plan\n- Dietary sodium reduction (< 2.4 g/day)\n- Increased physical activity\n- Moderation of alcohol consumption\n",
+      "level": 3,
+      "start_position": 1240,
+      "end_position": 1427,
+      "parent_id": "section_9",
+      "subsections": [],
+      "anchors": []
+    },
+    {
+      "id": "section_11",
+      "title": "Pharmacologic Treatment",
+      "content": "",
+      "level": 3,
+      "start_position": 1427,
+      "end_position": 1455,
+      "parent_id": "section_9",
+      "subsections": [
+        "section_12",
+        "section_13"
+      ],
+      "anchors": []
+    },
+    {
+      "id": "section_12",
+      "title": "First-Line Agents",
+      "content": "- Thiazide diuretics (e.g., hydrochlorothiazide)\n- ACE inhibitors (e.g., lisinopril)\n- ARBs (e.g., losartan)\n- Calcium channel blockers (e.g., amlodipine)\n",
+      "level": 4,
+      "start_position": 1455,
+      "end_position": 1633,
+      "parent_id": "section_11",
+      "subsections": [],
+      "anchors": []
+    },
+    {
+      "id": "section_13",
+      "title": "Combination Therapy",
+      "content": "For patients requiring additional blood pressure reduction, combination therapy with two first-line agents from different classes is recommended.\n",
+      "level": 4,
+      "start_position": 1633,
+      "end_position": 1804,
+      "parent_id": "section_11",
+      "subsections": [],
+      "anchors": []
+    },
+    {
+      "id": "section_14",
+      "title": "Follow-up and Monitoring",
+      "content": "",
+      "level": 2,
+      "start_position": 1804,
+      "end_position": 1832,
+      "parent_id": "section_1",
+      "subsections": [
+        "section_15",
+        "section_16"
+      ],
+      "anchors": []
+    },
+    {
+      "id": "section_15",
+      "title": "Frequency of Visits",
+      "content": "- Initial follow-up: Within 1 month\n- Subsequent visits: Every 3-6 months depending on control\n",
+      "level": 3,
+      "start_position": 1832,
+      "end_position": 1951,
+      "parent_id": "section_14",
+      "subsections": [],
+      "anchors": []
+    },
+    {
+      "id": "section_16",
+      "title": "Home Blood Pressure Monitoring",
+      "content": "Home blood pressure monitoring is recommended for:\n- Diagnosis of hypertension\n- Assessment of treatment effectiveness\n- Detection of white coat hypertension\n",
+      "level": 3,
+      "start_position": 1951,
+      "end_position": 2144,
+      "parent_id": "section_14",
+      "subsections": [],
+      "anchors": []
+    },
+    {
+      "id": "section_17",
+      "title": "Special Populations",
+      "content": "",
+      "level": 2,
+      "start_position": 2144,
+      "end_position": 2167,
+      "parent_id": "section_1",
+      "subsections": [
+        "section_18",
+        "section_19",
+        "section_20"
+      ],
+      "anchors": []
+    },
+    {
+      "id": "section_18",
+      "title": "Elderly Patients",
+      "content": "Treatment should be initiated cautiously in patients ≥ 80 years old, starting with lower doses and titrating slowly.\n",
+      "level": 3,
+      "start_position": 2167,
+      "end_position": 2305,
+      "parent_id": "section_17",
+      "subsections": [],
+      "anchors": []
+    },
+    {
+      "id": "section_19",
+      "title": "Patients with Diabetes",
+      "content": "Blood pressure target: < 130/80 mmHg\n",
+      "level": 3,
+      "start_position": 2305,
+      "end_position": 2369,
+      "parent_id": "section_17",
+      "subsections": [],
+      "anchors": []
+    },
+    {
+      "id": "section_20",
+      "title": "Patients with Chronic Kidney Disease",
+      "content": "Blood pressure target: < 130/80 mmHg\nACE inhibitors or ARBs are preferred first-line agents.\n",
+      "level": 3,
+      "start_position": 2369,
+      "end_position": 2503,
+      "parent_id": "section_17",
+      "subsections": [],
+      "anchors": []
+    },
+    {
+      "id": "section_21",
+      "title": "References",
+      "content": "1. Whelton PK, et al. 2017 ACC/AHA/AAPA/ABC/ACPM/AGS/APhA/ASH/ASPC/NMA/PCNA Guideline for the Prevention, Detection, Evaluation, and Management of High Blood Pressure in Adults. Hypertension. 2018;71:e13-e115.\n2. Williams B, et al. 2018 ESC/ESH Guidelines for the management of arterial hypertension. Eur Heart J. 2018;39:3021-3104.\n",
+      "level": 2,
+      "start_position": 2503,
+      "end_position": 2850,
+      "parent_id": "section_1",
+      "subsections": [],
+      "anchors": []
+    }
+  ],
+  "toc": [
+    {
+      "id": "section_1",
+      "title": "Sample Clinical Guideline: Hypertension Management",
+      "level": 1,
+      "parent_id": null
+    },
+    {
+      "id": "section_2",
+      "title": "Introduction",
+      "level": 2,
+      "parent_id": "section_1"
+    },
+    {
+      "id": "section_3",
+      "title": "Definition and Classification",
+      "level": 2,
+      "parent_id": "section_1"
+    },
+    {
+      "id": "section_4",
+      "title": "Blood Pressure Categories",
+      "level": 3,
+      "parent_id": "section_3"
+    },
+    {
+      "id": "section_5",
+      "title": "Measurement Techniques",
+      "level": 3,
+      "parent_id": "section_3"
+    },
+    {
+      "id": "section_6",
+      "title": "Initial Evaluation",
+      "level": 2,
+      "parent_id": "section_1"
+    },
+    {
+      "id": "section_7",
+      "title": "History and Physical Examination",
+      "level": 3,
+      "parent_id": "section_6"
+    },
+    {
+      "id": "section_8",
+      "title": "Diagnostic Tests",
+      "level": 3,
+      "parent_id": "section_6"
+    },
+    {
+      "id": "section_9",
+      "title": "Treatment Recommendations",
+      "level": 2,
+      "parent_id": "section_1"
+    },
+    {
+      "id": "section_10",
+      "title": "Lifestyle Modifications",
+      "level": 3,
+      "parent_id": "section_9"
+    },
+    {
+      "id": "section_11",
+      "title": "Pharmacologic Treatment",
+      "level": 3,
+      "parent_id": "section_9"
+    },
+    {
+      "id": "section_12",
+      "title": "First-Line Agents",
+      "level": 4,
+      "parent_id": "section_11"
+    },
+    {
+      "id": "section_13",
+      "title": "Combination Therapy",
+      "level": 4,
+      "parent_id": "section_11"
+    },
+    {
+      "id": "section_14",
+      "title": "Follow-up and Monitoring",
+      "level": 2,
+      "parent_id": "section_1"
+    },
+    {
+      "id": "section_15",
+      "title": "Frequency of Visits",
+      "level": 3,
+      "parent_id": "section_14"
+    },
+    {
+      "id": "section_16",
+      "title": "Home Blood Pressure Monitoring",
+      "level": 3,
+      "parent_id": "section_14"
+    },
+    {
+      "id": "section_17",
+      "title": "Special Populations",
+      "level": 2,
+      "parent_id": "section_1"
+    },
+    {
+      "id": "section_18",
+      "title": "Elderly Patients",
+      "level": 3,
+      "parent_id": "section_17"
+    },
+    {
+      "id": "section_19",
+      "title": "Patients with Diabetes",
+      "level": 3,
+      "parent_id": "section_17"
+    },
+    {
+      "id": "section_20",
+      "title": "Patients with Chronic Kidney Disease",
+      "level": 3,
+      "parent_id": "section_17"
+    },
+    {
+      "id": "section_21",
+      "title": "References",
+      "level": 2,
+      "parent_id": "section_1"
+    }
+  ]
+}

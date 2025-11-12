@@ -1,182 +1,455 @@
-# GitHub Copilot Instructions for Clinical BDD Creator
+<<<<<<< HEAD
+# Copilot Coding Agent Instructions
 
-## Project Overview
+## Repository Overview
 
-The **Clinical BDD Creator** is a Python-based application that transforms clinical practice guidelines into Behavior-Driven Development (BDD) test scenarios and computable FHIR-CPG assets. The repository includes:
+This repository (`clinical-bdd-creator`) contains the **Clinical BDD Creator** project, a comprehensive system for transforming clinical guidelines into Behavior-Driven Development (BDD) scenarios and executable clinical decision support systems.
 
-1. **Clinical BDD Creator**: Main application for generating BDD test scenarios from clinical guidelines
-2. **Santiago NeuroSymbolic Service**: A sister MCP (Model Context Protocol) service that transforms clinical guidelines into a four-layer NeuroSymbolic knowledge graph
+### Key Components
 
-### Key Capabilities
-- Transform clinical guidelines into BDD test scenarios (Gherkin format)
-- Generate FHIR-CPG (Clinical Practice Guidelines) assets
-- Four-layer knowledge representation (L0 Prose → L1 GSRL → L2 RALL → L3 WATL)
-- NeuroSymbolic reasoning combining symbolic logic with neural networks
-- MCP interface for AI assistant integrations
-- REST API endpoints with health checks and monitoring
+1. **Santiago Service** (`santiago-service/`): NeuroSymbolic clinical knowledge graph service
+   - Four-layer architecture: Raw Text → Structured Knowledge → Computable Logic → Executable Workflows
+   - MCP (Model Context Protocol) integration for clinical question answering
+   - Dynamic Relationship Discovery Engine (DRDE) for clinical relationship discovery
 
-## Repository Structure
+2. **Agent Instructions** (`.github/agents/`): Specialized agent configurations for different aspects of clinical informatics work
 
-```
-├── app.py                          # Main Flask application entry point
-├── guideline_analyzer.py           # Core guideline analysis logic
-├── integration_test_runner.py      # Integration testing framework
-├── santiago-service/               # Santiago NeuroSymbolic service implementation
-├── spec-pack/                      # Clinical specifications and guidelines
-├── test*.py                        # Test files (pytest)
-├── config/                         # Configuration files
-├── monitoring/                     # Monitoring and observability setup
-├── .github/agents/                 # Custom agent instructions
-├── requirements.txt                # Python dependencies
-└── Dockerfile                      # Container configuration
-```
+3. **Documentation** (`prompts/`, `requirements/`, `dev_plan/`): Comprehensive documentation and planning materials
 
-## Technology Stack
+4. **Testing Infrastructure**: Comprehensive test suites for clinical workflow validation
 
-### Core Technologies
-- **Python 3.11+**: Primary development language with type hints and dataclasses
-- **Flask**: Web framework for REST API endpoints
-- **pytest**: Testing framework with fixtures and coverage reporting
-- **Docker**: Containerized deployment
-- **Azure CosmosDB/Gremlin**: Graph database for knowledge storage
-- **FHIR-CPG**: HL7 Clinical Practice Guidelines implementation (R4)
+## Coding Standards & Practices
 
-### Key Dependencies
-- Flask, Flask-CORS, Gunicorn (web framework)
-- pandas, numpy, scipy (data processing)
-- scikit-learn, nltk, spacy, transformers, torch (ML/NLP)
-- pytest, pytest-cov (testing)
-- prometheus-client, structlog (monitoring)
+### Python Standards
+- **Style**: Follow PEP 8 with Black formatting
+- **Type Hints**: Use comprehensive type annotations
+- **Documentation**: Docstrings for all public functions/classes
+- **Error Handling**: Comprehensive exception handling with meaningful messages
+- **Logging**: Use Python logging module with appropriate levels
 
-## Development Practices
+### Clinical Informatics Standards
+- **Terminology**: Use SNOMED CT, LOINC, ICD-10, RxNorm appropriately
+- **Standards Compliance**: Follow HL7 FHIR, OpenEHR, and clinical practice guidelines
+- **Patient Safety**: Prioritize clinical accuracy and safety in all implementations
+- **Evidence-Based**: Ground implementations in clinical evidence and best practices
 
-### Code Standards
-- **Type Hints**: Use type hints for all function parameters and return values
-- **Dataclasses**: Leverage dataclasses for data structures
-- **PEP 8**: Follow PEP 8 naming conventions
-- **pathlib**: Use `pathlib.Path` for file operations
-- **Error Handling**: Implement proper error handling and logging
+### Testing Requirements
+- **Unit Tests**: 80%+ code coverage minimum
+- **Integration Tests**: End-to-end clinical workflow testing
+- **Clinical Validation**: Test against real clinical scenarios
+- **Performance**: Benchmark clinical decision support performance
 
-### Import Organization
-```python
-from __future__ import annotations
-import standard_library
-import third_party
-import local_modules
-```
+## Agent Collaboration Guidelines
 
-### Testing Framework
-- **Unit Tests**: Individual function/component testing
-- **Integration Tests**: Cross-component pipeline validation
-- **BDD Tests**: Clinical scenario validation using Gherkin
-- **Performance Tests**: API call efficiency and resource usage
-- **Fidelity Tests**: Validation of clinical knowledge accuracy
+### When to Use Agents
+- **Research Tasks**: Clinical standards analysis, terminology research
+- **Implementation**: Complex feature development with clear specifications
+- **Documentation**: Technical writing and specification development
+- **Testing**: Comprehensive test suite development
 
-## How to Build and Test
+### Agent Communication
+- **Clear Specifications**: Provide detailed requirements and acceptance criteria
+- **Context Sharing**: Include relevant clinical context and use cases
+- **Review Process**: All agent work should be reviewed by human experts
+- **Iterative Development**: Use feedback loops for refinement
 
-### Setup Environment
-```bash
-# Install dependencies
-pip install -r requirements.txt
+### Quality Assurance
+- **Clinical Accuracy**: All outputs must be clinically validated
+- **Code Quality**: Follow repository standards and best practices
+- **Documentation**: Comprehensive documentation for all deliverables
+- **Testing**: Automated testing for all new functionality
 
-# Copy environment configuration
-cp .env.example .env
-# Edit .env with your configuration
-```
+## Project-Specific Context
 
-### Run Tests
-```bash
-# Run all tests with pytest
-pytest
+### Clinical Domain Knowledge
+- **Cardiovascular Disease**: Focus on hypertension, diabetes management, heart failure
+- **Evidence-Based Medicine**: Ground all implementations in clinical evidence
+- **Interoperability**: Ensure compatibility with EHR systems and clinical workflows
+- **Regulatory Compliance**: Consider HIPAA, GDPR, and clinical safety requirements
 
-# Run tests with coverage
-python -m pytest --cov
+### Technical Architecture
+- **Microservices**: Modular design with clear service boundaries
+- **API-First**: RESTful APIs with OpenAPI specifications
+- **Database**: Graph databases for knowledge representation, relational for structured data
+- **Deployment**: Containerized deployment with Kubernetes orchestration
 
-# Run specific test file
-pytest test_sample_guidelines.py
+### Development Workflow
+- **Git Flow**: Feature branches with pull request reviews
+- **Documentation**: Update documentation with all changes
+- **Testing**: Automated testing in CI/CD pipeline
+- **Code Review**: Peer review for all changes
 
-# Run integration tests
-python integration_test_runner.py
-```
+## Agent Task Guidelines
 
-### Run the Application
-```bash
-# Development mode
-python app.py
+### Task Assignment Criteria
+- **Complexity**: Tasks requiring research, analysis, or specialized knowledge
+- **Scope**: Well-defined deliverables with clear acceptance criteria
+- **Independence**: Tasks that can be completed with minimal ongoing supervision
+- **Value**: High-impact tasks that advance clinical informatics goals
 
-# Production deployment with Docker
-docker-compose up -d
+### Task Completion Standards
+- **Deliverables**: Complete, tested, and documented code/features
+- **Quality**: Meets all coding standards and clinical requirements
+- **Documentation**: Complete documentation and usage examples
+- **Testing**: Full test coverage with clinical validation scenarios
 
-# Check deployment status
-./deploy.sh status
-```
+### Communication Expectations
+- **Progress Updates**: Regular updates on task progress and challenges
+- **Issue Escalation**: Immediate notification of blockers or critical issues
+- **Knowledge Sharing**: Documentation of learnings and best practices
+- **Collaboration**: Proactive coordination with other agents and human team members
 
-### Health Checks
-```bash
-# Check service health
-curl -k https://localhost/health
+## Repository Structure Expectations
 
-# View logs
-./deploy.sh logs clinical-bdd-creator
-```
+### File Organization
+- **Source Code**: Organized by feature/module with clear naming conventions
+- **Tests**: Parallel test structure mirroring source code organization
+- **Documentation**: Comprehensive docs in appropriate directories
+- **Configuration**: Centralized configuration management
 
-## Git Workflow
-
-### Branch Strategy
-- `main`: Production-ready code
-- Feature branches: `feature/santiago-component-description`
-- Bug fixes: `fix/component-issue-description`
-- Research branches: `research/santiago-capability`
+### Naming Conventions
+- **Files**: snake_case for Python files, kebab-case for documentation
+- **Classes**: PascalCase with descriptive names
+- **Functions**: snake_case with verb-noun pattern
+- **Variables**: snake_case with descriptive names
 
 ### Commit Standards
-- Clear, descriptive commit messages
-- Reference GitHub Issues in commits (use closing keywords: `Closes #123`, `Fixes #123`, `Resolves #123`)
-- Group related changes logically
-- Use conventional commit format when appropriate
+- **Messages**: Clear, descriptive commit messages following conventional commits
+- **Atomic**: Each commit represents a single logical change
+- **Frequent**: Regular commits to maintain history granularity
 
-## GitHub Collaboration
+## Clinical Safety & Ethics
 
-### Issues Management
-- **Create Issues First**: Always create a GitHub issue before starting work on new features, bugs, or enhancements
-- Tag issues with appropriate labels (bug, enhancement, documentation, santiago, research)
-- Reference issues in commits and PRs
-- **Close Issues When Complete**: Use closing keywords in PR descriptions to automatically close issues when work is merged
+### Patient Safety First
+- **Clinical Accuracy**: All implementations must prioritize patient safety
+- **Evidence-Based**: Ground decisions in clinical evidence and best practices
+- **Error Prevention**: Comprehensive validation and error handling
+- **Audit Trail**: Maintain traceability for clinical decision support
 
-### Pull Request Process
-- Create feature branches from `main`
-- Keep PRs focused on single concerns
-- Request clinical informaticist review for Santiago logic changes
-- Include testing and documentation updates
-- Link to issues in PR descriptions using closing keywords
+### Ethical Considerations
+- **Privacy**: Protect patient data and maintain confidentiality
+- **Bias Mitigation**: Ensure equitable clinical decision support
+- **Transparency**: Clear documentation of algorithms and decision logic
+- **Accountability**: Maintain responsibility for clinical recommendations
 
-## Santiago Four-Layer Model
+## Performance & Scalability
 
-When working with the Santiago service, understand the four-layer architecture:
-- **Layer 0 (Prose)**: Human-readable clinical content with YAML metadata and provenance
-- **Layer 1 (GSRL)**: Semantic triples using canonical relations (no logic/thresholds)
-- **Layer 2 (RALL)**: Computable FHIR-CPG assets (ActivityDefinitions, PlanDefinitions, Libraries)
-- **Layer 3 (WATL)**: Workflow orchestration with temporal sequencing and NeuroSymbolic reasoning
+### Performance Targets
+- **Response Time**: <100ms for clinical decision support queries
+- **Throughput**: Support concurrent clinical workflows
+- **Resource Usage**: Efficient memory and CPU utilization
+- **Scalability**: Horizontal scaling for increased load
 
-## Clinical Safety Considerations
+### Monitoring & Observability
+- **Metrics**: Comprehensive performance and clinical outcome metrics
+- **Logging**: Structured logging with appropriate detail levels
+- **Alerting**: Proactive monitoring and alerting for issues
+- **Tracing**: End-to-end request tracing for debugging
 
-- **Clinical Accuracy**: Ensure all Santiago components maintain clinical accuracy
-- **Provenance**: All assets must link back to source content
-- **Interoperability**: Follow FHIR standards for healthcare data exchange
-- **Testing**: Comprehensive testing required for clinical decision support features
+## Integration Points
 
-## Important Files and Documentation
+### External Systems
+- **EHR Integration**: FHIR-based integration with electronic health records
+- **Terminology Services**: Integration with clinical terminology systems
+- **Knowledge Bases**: Connection to clinical knowledge repositories
+- **Decision Support**: Integration with clinical decision support systems
 
-- **PRODUCTION-README.md**: Production operations guide
-- **OPERATIONAL-RUNBOOK.md**: Complete operational procedures and troubleshooting
-- **UAT-CHECKLIST.md**: User acceptance testing validation checklist
-- **santiago-research-plan.md**: Santiago service research and development roadmap
-- **.github/agents/**: Custom agent instructions for specialized tasks
+### API Design
+- **RESTful**: Consistent REST API design following FHIR patterns
+- **Versioning**: API versioning for backward compatibility
+- **Documentation**: OpenAPI specifications for all APIs
+- **Security**: OAuth2/JWT authentication and authorization
 
-## Notes for Copilot
+## Development Environment
 
-- This project involves clinical decision support, so accuracy and safety are paramount
-- Always run tests after making changes to ensure clinical logic remains correct
-- When working with Santiago service, maintain the four-layer architecture integrity
-- Reference existing agent instructions in `.github/agents/` for specialized guidance
-- Follow established patterns in the codebase for consistency
-- Document any changes that affect clinical logic or FHIR-CPG output
+### Local Development
+- **Containerization**: Docker-based development environment
+- **Dependencies**: Comprehensive dependency management
+- **Testing**: Local test execution with coverage reporting
+- **Debugging**: Integrated debugging and profiling tools
+
+### CI/CD Pipeline
+- **Automated Testing**: Comprehensive test automation
+- **Code Quality**: Static analysis and code quality checks
+- **Security Scanning**: Automated security vulnerability detection
+- **Deployment**: Automated deployment to staging and production
+
+## Agent-Specific Instructions
+
+### For Clinical Research Tasks
+- **Evidence Review**: Comprehensive review of clinical literature
+- **Standards Analysis**: Deep analysis of clinical standards and specifications
+- **Implementation Guidance**: Practical implementation recommendations
+- **Validation Strategies**: Methods for clinical validation and testing
+
+### For Implementation Tasks
+- **Code Quality**: Production-ready code following all standards
+- **Testing**: Comprehensive test coverage with clinical scenarios
+- **Documentation**: Complete documentation and usage examples
+- **Integration**: Seamless integration with existing systems
+
+### For Documentation Tasks
+- **Clarity**: Clear, concise, and clinically accurate documentation
+- **Completeness**: Comprehensive coverage of all aspects
+- **Accessibility**: Appropriate for different audiences (clinicians, developers, administrators)
+- **Maintenance**: Easy to update and maintain over time
+
+## Emergency Procedures
+
+### Critical Issues
+- **Patient Safety**: Immediate escalation for any patient safety concerns
+- **Data Breach**: Immediate response to potential data security issues
+- **System Downtime**: Rapid response to system availability issues
+- **Clinical Errors**: Immediate investigation of potential clinical errors
+
+### Escalation Paths
+- **Technical Issues**: Escalate to development team leads
+- **Clinical Issues**: Escalate to clinical informatics experts
+- **Security Issues**: Escalate to security team immediately
+- **Compliance Issues**: Escalate to compliance and legal teams
+
+## Continuous Improvement
+
+### Feedback Loops
+- **Code Reviews**: Regular review and feedback on all changes
+- **Performance Monitoring**: Continuous monitoring of system performance
+- **User Feedback**: Incorporation of user feedback and requirements
+- **Clinical Validation**: Ongoing validation of clinical accuracy
+
+### Learning & Adaptation
+- **Technology Updates**: Stay current with evolving technologies and standards
+- **Best Practices**: Adopt industry best practices and lessons learned
+- **Innovation**: Explore new approaches to improve clinical outcomes
+- **Knowledge Sharing**: Share learnings across the team and organization
+
+---
+
+*This document provides comprehensive guidance for Copilot coding agents working on the Clinical BDD Creator project. All agents should familiarize themselves with this document and follow the established standards and practices.*
+=======
+# Copilot Coding Agent Instructions
+
+## Repository Overview
+
+This repository (`clinical-bdd-creator`) contains the **Clinical BDD Creator** project, a comprehensive system for transforming clinical guidelines into Behavior-Driven Development (BDD) scenarios and executable clinical decision support systems.
+
+### Key Components
+
+1. **Santiago Service** (`santiago-service/`): NeuroSymbolic clinical knowledge graph service
+   - Four-layer architecture: Raw Text → Structured Knowledge → Computable Logic → Executable Workflows
+   - MCP (Model Context Protocol) integration for clinical question answering
+   - Dynamic Relationship Discovery Engine (DRDE) for clinical relationship discovery
+
+2. **Agent Instructions** (`.github/agents/`): Specialized agent configurations for different aspects of clinical informatics work
+
+3. **Documentation** (`prompts/`, `requirements/`, `dev_plan/`): Comprehensive documentation and planning materials
+
+4. **Testing Infrastructure**: Comprehensive test suites for clinical workflow validation
+
+## Coding Standards & Practices
+
+### Python Standards
+- **Style**: Follow PEP 8 with Black formatting
+- **Type Hints**: Use comprehensive type annotations
+- **Documentation**: Docstrings for all public functions/classes
+- **Error Handling**: Comprehensive exception handling with meaningful messages
+- **Logging**: Use Python logging module with appropriate levels
+
+### Clinical Informatics Standards
+- **Terminology**: Use SNOMED CT, LOINC, ICD-10, RxNorm appropriately
+- **Standards Compliance**: Follow HL7 FHIR, OpenEHR, and clinical practice guidelines
+- **Patient Safety**: Prioritize clinical accuracy and safety in all implementations
+- **Evidence-Based**: Ground implementations in clinical evidence and best practices
+
+### Testing Requirements
+- **Unit Tests**: 80%+ code coverage minimum
+- **Integration Tests**: End-to-end clinical workflow testing
+- **Clinical Validation**: Test against real clinical scenarios
+- **Performance**: Benchmark clinical decision support performance
+
+## Agent Collaboration Guidelines
+
+### When to Use Agents
+- **Research Tasks**: Clinical standards analysis, terminology research
+- **Implementation**: Complex feature development with clear specifications
+- **Documentation**: Technical writing and specification development
+- **Testing**: Comprehensive test suite development
+
+### Agent Communication
+- **Clear Specifications**: Provide detailed requirements and acceptance criteria
+- **Context Sharing**: Include relevant clinical context and use cases
+- **Review Process**: All agent work should be reviewed by human experts
+- **Iterative Development**: Use feedback loops for refinement
+
+### Quality Assurance
+- **Clinical Accuracy**: All outputs must be clinically validated
+- **Code Quality**: Follow repository standards and best practices
+- **Documentation**: Comprehensive documentation for all deliverables
+- **Testing**: Automated testing for all new functionality
+
+## Project-Specific Context
+
+### Clinical Domain Knowledge
+- **Cardiovascular Disease**: Focus on hypertension, diabetes management, heart failure
+- **Evidence-Based Medicine**: Ground all implementations in clinical evidence
+- **Interoperability**: Ensure compatibility with EHR systems and clinical workflows
+- **Regulatory Compliance**: Consider HIPAA, GDPR, and clinical safety requirements
+
+### Technical Architecture
+- **Microservices**: Modular design with clear service boundaries
+- **API-First**: RESTful APIs with OpenAPI specifications
+- **Database**: Graph databases for knowledge representation, relational for structured data
+- **Deployment**: Containerized deployment with Kubernetes orchestration
+
+### Development Workflow
+- **Git Flow**: Feature branches with pull request reviews
+- **Documentation**: Update documentation with all changes
+- **Testing**: Automated testing in CI/CD pipeline
+- **Code Review**: Peer review for all changes
+
+## Agent Task Guidelines
+
+### Task Assignment Criteria
+- **Complexity**: Tasks requiring research, analysis, or specialized knowledge
+- **Scope**: Well-defined deliverables with clear acceptance criteria
+- **Independence**: Tasks that can be completed with minimal ongoing supervision
+- **Value**: High-impact tasks that advance clinical informatics goals
+
+### Task Completion Standards
+- **Deliverables**: Complete, tested, and documented code/features
+- **Quality**: Meets all coding standards and clinical requirements
+- **Documentation**: Comprehensive documentation and usage examples
+- **Testing**: Full test coverage with clinical validation scenarios
+
+### Communication Expectations
+- **Progress Updates**: Regular updates on task progress and challenges
+- **Issue Escalation**: Immediate notification of blockers or critical issues
+- **Knowledge Sharing**: Documentation of learnings and best practices
+- **Collaboration**: Proactive coordination with other agents and human team members
+
+## Repository Structure Expectations
+
+### File Organization
+- **Source Code**: Organized by feature/module with clear naming conventions
+- **Tests**: Parallel test structure mirroring source code organization
+- **Documentation**: Comprehensive docs in appropriate directories
+- **Configuration**: Centralized configuration management
+
+### Naming Conventions
+- **Files**: snake_case for Python files, kebab-case for documentation
+- **Classes**: PascalCase with descriptive names
+- **Functions**: snake_case with verb-noun pattern
+- **Variables**: snake_case with descriptive names
+
+### Commit Standards
+- **Messages**: Clear, descriptive commit messages following conventional commits
+- **Atomic**: Each commit represents a single logical change
+- **Frequent**: Regular commits to maintain history granularity
+
+## Clinical Safety & Ethics
+
+### Patient Safety First
+- **Clinical Accuracy**: All implementations must prioritize patient safety
+- **Evidence-Based**: Ground decisions in clinical evidence and best practices
+- **Error Prevention**: Comprehensive validation and error handling
+- **Audit Trail**: Maintain traceability for clinical decision support
+
+### Ethical Considerations
+- **Privacy**: Protect patient data and maintain confidentiality
+- **Bias Mitigation**: Ensure equitable clinical decision support
+- **Transparency**: Clear documentation of algorithms and decision logic
+- **Accountability**: Maintain responsibility for clinical recommendations
+
+## Performance & Scalability
+
+### Performance Targets
+- **Response Time**: <100ms for clinical decision support queries
+- **Throughput**: Support concurrent clinical workflows
+- **Resource Usage**: Efficient memory and CPU utilization
+- **Scalability**: Horizontal scaling for increased load
+
+### Monitoring & Observability
+- **Metrics**: Comprehensive performance and clinical outcome metrics
+- **Logging**: Structured logging with appropriate detail levels
+- **Alerting**: Proactive monitoring and alerting for issues
+- **Tracing**: End-to-end request tracing for debugging
+
+## Integration Points
+
+### External Systems
+- **EHR Integration**: FHIR-based integration with electronic health records
+- **Terminology Services**: Integration with clinical terminology systems
+- **Knowledge Bases**: Connection to clinical knowledge repositories
+- **Decision Support**: Integration with clinical decision support systems
+
+### API Design
+- **RESTful**: Consistent REST API design following FHIR patterns
+- **Versioning**: API versioning for backward compatibility
+- **Documentation**: OpenAPI specifications for all APIs
+- **Security**: OAuth2/JWT authentication and authorization
+
+## Development Environment
+
+### Local Development
+- **Containerization**: Docker-based development environment
+- **Dependencies**: Comprehensive dependency management
+- **Testing**: Local test execution with coverage reporting
+- **Debugging**: Integrated debugging and profiling tools
+
+### CI/CD Pipeline
+- **Automated Testing**: Comprehensive test automation
+- **Code Quality**: Static analysis and code quality checks
+- **Security Scanning**: Automated security vulnerability detection
+- **Deployment**: Automated deployment to staging and production
+
+## Agent-Specific Instructions
+
+### For Clinical Research Tasks
+- **Evidence Review**: Comprehensive review of clinical literature
+- **Standards Analysis**: Deep analysis of clinical standards and specifications
+- **Implementation Guidance**: Practical implementation recommendations
+- **Validation Strategies**: Methods for clinical validation and testing
+
+### For Implementation Tasks
+- **Code Quality**: Production-ready code following all standards
+- **Testing**: Comprehensive test coverage with clinical scenarios
+- **Documentation**: Complete documentation and usage examples
+- **Integration**: Seamless integration with existing systems
+
+### For Documentation Tasks
+- **Clarity**: Clear, concise, and clinically accurate documentation
+- **Completeness**: Comprehensive coverage of all aspects
+- **Accessibility**: Appropriate for different audiences (clinicians, developers, administrators)
+- **Maintenance**: Easy to update and maintain over time
+
+## Emergency Procedures
+
+### Critical Issues
+- **Patient Safety**: Immediate escalation for any patient safety concerns
+- **Data Breach**: Immediate response to potential data security issues
+- **System Downtime**: Rapid response to system availability issues
+- **Clinical Errors**: Immediate investigation of potential clinical errors
+
+### Escalation Paths
+- **Technical Issues**: Escalate to development team leads
+- **Clinical Issues**: Escalate to clinical informatics experts
+- **Security Issues**: Escalate to security team immediately
+- **Compliance Issues**: Escalate to compliance and legal teams
+
+## Continuous Improvement
+
+### Feedback Loops
+- **Code Reviews**: Regular review and feedback on all changes
+- **Performance Monitoring**: Continuous monitoring of system performance
+- **User Feedback**: Incorporation of user feedback and requirements
+- **Clinical Validation**: Ongoing validation of clinical accuracy
+
+### Learning & Adaptation
+- **Technology Updates**: Stay current with evolving technologies and standards
+- **Best Practices**: Adopt industry best practices and lessons learned
+- **Innovation**: Explore new approaches to improve clinical outcomes
+- **Knowledge Sharing**: Share learnings across the team and organization
+
+---
+
+*This document provides comprehensive guidance for Copilot coding agents working on the Clinical BDD Creator project. All agents should familiarize themselves with this document and follow the established standards and practices.*
+>>>>>>> origin/main

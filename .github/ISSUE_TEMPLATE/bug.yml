@@ -1,0 +1,138 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+title: "[Bug]: "
+labels: ["type: bug", "status: needs-triage"]
+projects: ["hankh95/2"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug Report
+        Thank you for reporting a bug! Please provide details to help us reproduce and fix the issue.
+        
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear description of what the bug is
+    validations:
+      required: true
+      
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What should happen? (Use BDD format if applicable)
+      placeholder: |
+        Given [initial state]
+        When [action is performed]
+        Then [expected outcome]
+    validations:
+      required: true
+      
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happens?
+      placeholder: |
+        Given [initial state]
+        When [action is performed]
+        Then [actual outcome that differs from expected]
+    validations:
+      required: true
+      
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Step-by-step instructions to reproduce the bug
+      placeholder: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: suggested-agent
+    attributes:
+      label: Suggested Agent Assignment
+      description: Which agent(s) would be best suited to fix this?
+      multiple: true
+      options:
+        - "👤 Human Developer"
+        - "🤖 Development Agent (General)"
+        - "🏥 Clinical Informaticist Agent"
+        - "🧬 NeuroSymbolic Clinical Architect Agent"
+        - "✅ Clinical Knowledge QA Agent"
+        - "🔧 DevOps Expert Agent"
+        - "🤝 Multiple Agents (specify in description)"
+    validations:
+      required: false
+      
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How severe is this bug?
+      options:
+        - "🔴 Critical - System unusable/Data loss/Security issue"
+        - "🟠 High - Major feature broken"
+        - "🟡 Medium - Feature partially broken"
+        - "🟢 Low - Minor issue/Cosmetic"
+      default: 2
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which area does this bug affect?
+      multiple: true
+      options:
+        - "Santiago Service (NeuroSymbolic)"
+        - "BDD Framework"
+        - "Clinical Knowledge Graph"
+        - "FHIR Integration"
+        - "Testing Infrastructure"
+        - "Documentation"
+        - "DevOps/Deployment"
+        - "MCP Integration"
+        - "API/Interface"
+        - "Other"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Relevant environment details
+      placeholder: |
+        - OS: 
+        - Python version: 
+        - Dependencies: 
+    validations:
+      required: false
+      
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs/Error Messages
+      description: Any relevant logs or error messages
+      render: shell
+    validations:
+      required: false
+      
+  - type: checkboxes
+    id: clinical-impact
+    attributes:
+      label: Clinical Impact
+      description: Does this bug have clinical implications?
+      options:
+        - label: This bug could affect clinical decision support accuracy
+          required: false
+        - label: This bug could impact patient safety
+          required: false
